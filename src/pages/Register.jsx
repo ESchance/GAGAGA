@@ -1,8 +1,28 @@
 import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
 import AuthForm from '../components/AuthForm'
 import { allowedEmails } from '../lib/allowedEmails'
 
 export default function Register() {
+  const [registeredEmails, setRegisteredEmails] = useState([])
+
+  useEffect(() => {
+    fetchRegisteredEmails()
+  }, [])
+
+  const fetchRegisteredEmails = async () => {
+    try {
+      const { data, error } = await supabase
+        .rpc('get_registered_emails')
+
+      if (error) throw error
+      setRegisteredEmails(data?.map(item => item.email) || [])
+    } catch (error) {
+      console.error('获取已注册邮箱失败:', error)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
       <AuthForm type="register" />
@@ -11,15 +31,24 @@ export default function Register() {
         <h3 className="text-sm font-semibold text-blue-800 mb-2">
           📧 可用的注册邮箱：
         </h3>
-        <div className="max-h-40 overflow-y-auto text-xs text-blue-700">
-          {allowedEmails.map((email, index) => (
-            <div key={index} className="py-1 border-b border-blue-100 last:border-0">
-              {email}
-            </div>
-          ))}
+        <div className="max-h-40 overflow-y-auto text-xs">
+          {allowedEmails.map((email, index) => {
+            const isRegistered = registeredEmails.includes(email)
+            return (
+              <div
+                key={index}
+                className={`py-1 border-b border-blue-100 last:border-0 ${
+                  isRegistered ? 'text-red-500 line-through' : 'text-blue-700'
+                }`}
+              >
+                {email}
+                {isRegistered && ' (已注册)'}
+              </div>
+            )
+          })}
         </div>
         <p className="text-xs text-blue-600 mt-2">
-          请使用以上邮箱进行注册，密码可自行设置（6位以上）
+          红色删除线表示已注册，密码需包含大小写字母和数字
         </p>
       </div>
 

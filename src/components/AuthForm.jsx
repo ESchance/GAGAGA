@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { isEmailAllowed } from '../lib/allowedEmails'
+import { isEmailAllowed, allowedEmails } from '../lib/allowedEmails'
 
 export default function AuthForm({ type = 'login' }) {
   const [email, setEmail] = useState('')
@@ -9,7 +9,58 @@ export default function AuthForm({ type = 'login' }) {
   const [username, setUsername] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
+  const [emailRegistered, setEmailRegistered] = useState(false)
+  const [checkingEmail, setCheckingEmail] = useState(false)
   const navigate = useNavigate()
+
+  // 检查邮箱是否已注册
+  const checkEmailRegistered = async (emailToCheck) => {
+    if (!emailToCheck || !isEmailAllowed(emailToCheck)) {
+      setEmailRegistered(false)
+      return
+    }
+
+    setCheckingEmail(true)
+    try {
+      // 查询 auth.users 表看是否有这个邮箱
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id')
+        .limit(1)
+
+      // 如果查询失败或有数据，说明可能已注册
+      // 由于无法直接查询 auth.users，我们在提交时检查
+      setEmailRegistered(false)
+    } catch (error) {
+      console.error('检查邮箱失败:', error)
+    } finally {
+      setCheckingEmail(false)
+    }
+  }
+
+  // 密码验证
+  const validatePassword = (pwd) => {
+    const hasUpperCase = /[A-Z]/.test(pwd)
+    const hasLowerCase = /[a-z]/.test(pwd)
+    const hasNumber = /[0-9]/.test(pwd)
+    return hasUpperCase && hasLowerCase && hasNumber
+  }
+
+  // 密码强度提示
+  const getPasswordStrength = (pwd) => {
+    if (!pwd) return { level: 0, text: '', color: '' }
+
+    const hasUpperCase = /[A-Z]/.test(pwd)
+    const hasLowerCase = /[a-z]/.test(pwd)
+    const hasNumber = /[0-9]/.test(pwd)
+    const hasMinLength = pwd.length >= 6
+
+    const score = [hasUpperCase, hasLowerCase, hasNumber, hasMinLength].filter(Boolean).length
+
+    if (score < 3) return { level: 1, text: '密码强度：弱', color: 'text-red-500' }
+    if (score < 4) return { level: 2, text: '密码强度：中', color: 'text-yellow-500' }
+    return { level: 3, text: '密码强度：强', color: 'text-green-500' }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -23,7 +74,12 @@ export default function AuthForm({ type = 'login' }) {
           throw new Error('该邮箱未被授权注册，请使用指定的邮箱地址')
         }
 
-        // 检查该邮箱是否已被注册
+        // 检查密码强度
+        if (!validatePassword(password)) {
+          throw new Error('密码必须包含大写字母、小写字母和数字')
+        }
+
+        // 检查该用户名是否已被使用
         const { data: existingUser } = await supabase
           .from('profiles')
           .select('id')
@@ -72,6 +128,8 @@ export default function AuthForm({ type = 'login' }) {
     }
   }
 
+  const passwordStrength = getPasswordStrength(password)
+
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-center">
@@ -102,11 +160,29 @@ export default function AuthForm({ type = 'login' }) {
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={(e) => {
+              setEmail(e.target.value)
+              setEmailRegistered(false)
+            }}
+            onBlur={() => checkEmailRegistered(email)}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+              emailRegistered
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:ring-blue-500'
+            }`}
             placeholder="请输入邮箱"
             required
           />
+          {emailRegistered && (
+            <p className="mt-1 text-sm text-red-500 line-through">
+              该邮箱已注册，请直接登录
+            </p>
+          )}
+          {type === 'register' && !emailRegistered && (
+            <p className="mt-1 text-xs text-gray-500">
+              只能使用指定的邮箱注册
+            </p>
+          )}
         </div>
 
         <div>
@@ -122,6 +198,32 @@ export default function AuthForm({ type = 'login' }) {
             required
             minLength={6}
           />
+          {type === 'register' && password && (
+            <div className="mt-2">
+              <p className={`text-sm ${passwordStrength.color}`}>
+                {passwordStrength.text}
+              </p>
+              <div className="flex gap-2 mt-1">
+                <div className={`h-1 flex-1 rounded ${passwordStrength.level >= 1 ? 'bg-red-500' : 'bg-gray-200'}`}></div>
+                <div className={`h-1 flex-1 rounded ${passwordStrength.level >= 2 ? 'bg-yellow-500' : 'bg-gray-200'}`}></div>
+                <div className={`h-1 flex-1 rounded ${passwordStrength.level >= 3 ? 'bg-green-500' : 'bg-gray-200'}`}></div>
+              </div>
+              <ul className="mt-2 text-xs text-gray-500 space-y-1">
+                <li className={/[A-Z]/.test(password) ? 'text-green-500' : ''}>
+                  {/[A-Z]/.test(password) ? '✓' : '○'} 包含大写字母
+                </li>
+                <li className={/[a-z]/.test(password) ? 'text-green-500' : ''}>
+                  {/[a-z]/.test(password) ? '✓' : '○'} 包含小写字母
+                </li>
+                <li className={/[0-9]/.test(password) ? 'text-green-500' : ''}>
+                  {/[0-9]/.test(password) ? '✓' : '○'} 包含数字
+                </li>
+                <li className={password.length >= 6 ? 'text-green-500' : ''}>
+                  {password.length >= 6 ? '✓' : '○'} 至少6位
+                </li>
+              </ul>
+            </div>
+          )}
         </div>
 
         <button
