@@ -10,18 +10,18 @@ export default function Home() {
     // 获取所有帖子
     fetchPosts()
 
-    // 订阅新帖子的实时更新
+    // 订阅新帖子和删除帖子的实时更新
     const subscription = supabase
       .channel('posts')
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event: '*', // 监听所有事件（INSERT, UPDATE, DELETE）
           schema: 'public',
           table: 'posts'
         },
         (payload) => {
-          // 新帖子到来，重新获取列表
+          // 数据变化，重新获取列表
           fetchPosts()
         }
       )
@@ -48,6 +48,10 @@ export default function Home() {
     }
   }
 
+  const handleDeletePost = (postId) => {
+    setPosts(posts.filter(post => post.id !== postId))
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -68,7 +72,7 @@ export default function Home() {
         ) : (
           <div className="space-y-4">
             {posts.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <PostCard key={post.id} post={post} onDelete={handleDeletePost} />
             ))}
           </div>
         )}

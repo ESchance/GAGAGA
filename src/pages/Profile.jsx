@@ -46,6 +46,10 @@ export default function Profile() {
     }
   }
 
+  const handleDeletePost = (postId) => {
+    setPosts(posts.filter(post => post.id !== postId))
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -76,7 +80,7 @@ export default function Profile() {
         ) : (
           <div className="space-y-4">
             {posts.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <PostCard key={post.id} post={post} onDelete={handleDeletePost} />
             ))}
           </div>
         )}

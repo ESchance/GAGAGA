@@ -1,14 +1,21 @@
 import { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import CommentList from '../components/CommentList'
 
 export default function PostDetail() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const [post, setPost] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
+    // 获取当前用户
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+    })
+
     fetchPost()
   }, [id])
 
@@ -26,6 +33,23 @@ export default function PostDetail() {
       console.error('获取帖子失败:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!confirm('确定要删除这个帖子吗？')) return
+
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .delete()
+        .eq('id', id)
+
+      if (error) throw error
+      navigate('/')
+    } catch (error) {
+      console.error('删除帖子失败:', error)
+      alert('删除失败：' + error.message)
     }
   }
 
@@ -56,7 +80,17 @@ export default function PostDetail() {
             <Link to={`/profile/${post.user_id}`} className="hover:text-blue-600">
               {post.profiles?.username || '匿名用户'}
             </Link>
-            <span>{new Date(post.created_at).toLocaleString('zh-CN')}</span>
+            <div className="flex items-center space-x-4">
+              <span>{new Date(post.created_at).toLocaleString('zh-CN')}</span>
+              {user && user.id === post.user_id && (
+                <button
+                  onClick={handleDelete}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  删除
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
