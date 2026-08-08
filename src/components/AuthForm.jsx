@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { isEmailAllowed } from '../lib/allowedEmails'
 
@@ -8,6 +9,7 @@ export default function AuthForm({ type = 'login' }) {
   const [username, setUsername] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
+  const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -52,6 +54,7 @@ export default function AuthForm({ type = 'login' }) {
 
         // 注册成功（profile 由数据库触发器自动创建）
         setMessage('注册成功！')
+        setTimeout(() => navigate('/'), 1000)
       } else {
         // 登录
         const { error } = await supabase.auth.signInWithPassword({
@@ -60,6 +63,7 @@ export default function AuthForm({ type = 'login' }) {
         })
 
         if (error) throw error
+        navigate('/')
       }
     } catch (error) {
       setMessage(error.message)
