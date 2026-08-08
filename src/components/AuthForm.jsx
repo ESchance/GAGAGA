@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { isEmailAllowed } from '../lib/allowedEmails'
 
 export default function AuthForm({ type = 'login' }) {
   const [email, setEmail] = useState('')
@@ -15,6 +16,22 @@ export default function AuthForm({ type = 'login' }) {
 
     try {
       if (type === 'register') {
+        // 检查邮箱是否在白名单中
+        if (!isEmailAllowed(email)) {
+          throw new Error('该邮箱未被授权注册，请使用指定的邮箱地址')
+        }
+
+        // 检查该邮箱是否已被注册
+        const { data: existingUser } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('username', username)
+          .single()
+
+        if (existingUser) {
+          throw new Error('该用户名已被使用，请换一个用户名')
+        }
+
         // 注册新用户
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -26,7 +43,12 @@ export default function AuthForm({ type = 'login' }) {
           }
         })
 
-        if (error) throw error
+        if (error) {
+          if (error.message.includes('already registered')) {
+            throw new Error('该邮箱已被注册，请直接登录')
+          }
+          throw error
+        }
 
         // 创建用户资料
         if (data.user) {
@@ -42,7 +64,7 @@ export default function AuthForm({ type = 'login' }) {
           if (profileError) throw profileError
         }
 
-        setMessage('注册成功！请检查你的邮箱进行验证。')
+        setMessage('注册成功！')
       } else {
         // 登录
         const { error } = await supabase.auth.signInWithPassword({
