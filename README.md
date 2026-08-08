@@ -1,31 +1,61 @@
-# 多人实时在线交流论坛
+# 🚀 噶宇宙
 
-一个基于 React + Supabase 的实时论坛/留言板应用。
+<div align="center">
 
-## 功能特点
+![React](https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat&logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=flat&logo=tailwindcss&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-Database-3FCF8E?style=flat&logo=supabase&logoColor=white)
+![Cloudflare](https://img.shields.io/badge/Cloudflare_Pages-Deployment-F48120?style=flat&logo=cloudflare&logoColor=white)
 
-- ✅ 用户注册/登录（邮箱认证）
-- ✅ 发帖和查看帖子列表
-- ✅ 在帖子下发表评论
-- ✅ 新帖子和评论实时自动更新
-- ✅ 个人主页显示用户信息和发布的帖子
-- ✅ 响应式设计，支持移动端
+**一个现代化的多人实时在线交流论坛**
 
-## 技术栈
+[在线体验](https://gagaga-d99.pages.dev) · [报告问题](https://github.com/ESchance/GAGAGA/issues)
 
-- **前端**: React 18 + Vite + Tailwind CSS
-- **后端/数据库**: Supabase（PostgreSQL + Realtime + Auth）
-- **部署**: Cloudflare Pages
+</div>
 
-## 本地开发
+---
 
-### 1. 安装依赖
+## ✨ 功能特点
+
+| 功能 | 描述 |
+|------|------|
+| 🔐 **用户认证** | 邮箱注册/登录，安全可靠 |
+| 📝 **发帖功能** | 支持发布帖子，分享你的想法 |
+| 💬 **评论系统** | 在帖子下发表评论，参与讨论 |
+| ⚡ **实时更新** | 新帖子和评论自动实时显示 |
+| 👤 **个人主页** | 查看用户信息和发布的帖子 |
+| 📱 **响应式设计** | 完美适配手机、平板和电脑 |
+| 🗑️ **删除功能** | 用户可以删除自己发布的帖子 |
+
+---
+
+## 🛠️ 技术栈
+
+```
+前端: React 18 + Vite + Tailwind CSS
+后端: Supabase (PostgreSQL + Realtime + Auth)
+部署: Cloudflare Pages
+```
+
+---
+
+## 🚀 快速开始
+
+### 1. 克隆项目
+
+```bash
+git clone https://github.com/ESchance/GAGAGA.git
+cd GAGAGA
+```
+
+### 2. 安装依赖
 
 ```bash
 npm install
 ```
 
-### 2. 配置环境变量
+### 3. 配置环境变量
 
 复制 `.env.example` 为 `.env`，并填入你的 Supabase 配置：
 
@@ -35,12 +65,12 @@ cp .env.example .env
 
 编辑 `.env` 文件：
 
-```
+```env
 VITE_SUPABASE_URL=你的Supabase项目URL
 VITE_SUPABASE_ANON_KEY=你的Supabase匿名密钥
 ```
 
-### 3. 启动开发服务器
+### 4. 启动开发服务器
 
 ```bash
 npm run dev
@@ -48,82 +78,49 @@ npm run dev
 
 访问 http://localhost:5173
 
-## 部署到 Cloudflare Pages
+---
 
-### 第一步：创建 GitHub 仓库
+## 📦 部署到 Cloudflare Pages
 
-1. 访问 https://github.com/new
-2. 输入仓库名称（例如 `forum-app`）
-3. 点击 "Create repository"
-4. 按照页面提示，将本地代码推送到 GitHub：
+### 步骤 1: 推送代码到 GitHub
 
 ```bash
-cd forum-app
 git init
 git add .
 git commit -m "Initial commit"
-git remote add origin https://github.com/你的用户名/forum-app.git
+git remote add origin https://github.com/你的用户名/GAGAGA.git
 git push -u origin main
 ```
 
-### 第二步：在 Cloudflare Pages 部署
+### 步骤 2: 在 Cloudflare Pages 部署
 
-1. 访问 https://dash.cloudflare.com/
-2. 登录你的 Cloudflare 账号
-3. 点击左侧菜单 "Workers & Pages"
-4. 点击 "Create application"
-5. 选择 "Pages" 标签
-6. 点击 "Connect to Git"
-7. 选择你的 GitHub 账号
-8. 选择刚才创建的 `forum-app` 仓库
-9. 配置构建设置：
-   - **Production branch**: `main`
+1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com/)
+2. 进入 **Workers & Pages** → **Create application** → **Pages**
+3. 点击 **Connect to Git**，选择 GitHub
+4. 选择 `GAGAGA` 仓库
+5. 配置构建设置：
    - **Build command**: `npm run build`
    - **Build output directory**: `dist`
-10. 点击 "Save and Deploy"
-11. 等待部署完成，你会得到一个 `xxx.pages.dev` 的域名
+6. 点击 **Save and Deploy**
 
-### 第三步：配置环境变量（重要！）
+### 步骤 3: 配置环境变量
 
-1. 在 Cloudflare Pages 项目页面，点击 "Settings" 标签
-2. 点击左侧 "Environment variables"
-3. 点击 "Add variable"
-4. 添加以下两个变量：
-   - **Variable name**: `VITE_SUPABASE_URL`
-   - **Value**: 你的 Supabase 项目 URL
-   - 点击 "Add"
-   - **Variable name**: `VITE_SUPABASE_ANON_KEY`
-   - **Value**: 你的 Supabase 匿名密钥
-   - 点击 "Add"
-5. 点击 "Save"
-6. 回到 "Deployments" 标签，点击最新部署旁的 "..." -> "Retry deployment"
+1. 在 Cloudflare Pages 项目页面，进入 **Settings** → **Environment variables**
+2. 添加：
+   - `VITE_SUPABASE_URL` = 你的 Supabase URL
+   - `VITE_SUPABASE_ANON_KEY` = 你的 Supabase 匿名密钥
+3. 保存后重新部署
 
-## Supabase 配置指南
+---
 
-### 1. 创建 Supabase 项目
+## 🗄️ 数据库配置
 
-1. 访问 https://supabase.com/
-2. 点击右上角 "Start your project"
-3. 使用 GitHub 账号登录
-4. 点击 "New project"
-5. 填写项目名称和数据库密码
-6. 选择离你最近的区域
-7. 点击 "Create new project"
+### 创建数据库表
 
-### 2. 获取 API 密钥
-
-1. 在项目仪表板，点击左侧 "Settings"（齿轮图标）
-2. 点击 "API"
-3. 复制以下两个值：
-   - **Project URL**: 类似 `https://xxxxx.supabase.co`
-   - **anon public key**: 类似 `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
-
-### 3. 创建数据库表
-
-在 Supabase 仪表板，点击左侧 "SQL Editor"，然后执行以下 SQL：
+在 Supabase 的 **SQL Editor** 中执行以下 SQL：
 
 ```sql
--- 创建 profiles 表（用户资料）
+-- 用户资料表
 CREATE TABLE profiles (
   id UUID REFERENCES auth.users(id) PRIMARY KEY,
   username TEXT,
@@ -131,7 +128,7 @@ CREATE TABLE profiles (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 创建 posts 表（帖子）
+-- 帖子表
 CREATE TABLE posts (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL,
@@ -141,7 +138,7 @@ CREATE TABLE posts (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 创建 comments 表（评论）
+-- 评论表
 CREATE TABLE comments (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   content TEXT NOT NULL,
@@ -150,49 +147,117 @@ CREATE TABLE comments (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 启用 Realtime
+-- 启用实时更新
 ALTER PUBLICATION supabase_realtime ADD TABLE posts;
 ALTER PUBLICATION supabase_realtime ADD TABLE comments;
 
--- 启用 RLS（行级安全）
+-- 启用行级安全
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
 
--- Profiles 策略：所有人可查看，用户只能编辑自己的
+-- 安全策略
 CREATE POLICY "Profiles are viewable by everyone" ON profiles FOR SELECT USING (true);
 CREATE POLICY "Users can insert own profile" ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
 CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
 
--- Posts 策略：所有人可查看，登录用户可发帖，用户只能删自己的
 CREATE POLICY "Posts are viewable by everyone" ON posts FOR SELECT USING (true);
 CREATE POLICY "Logged in users can insert posts" ON posts FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can delete own posts" ON posts FOR DELETE USING (auth.uid() = user_id);
 
--- Comments 策略：所有人可查看，登录用户可评论，用户只能删自己的
 CREATE POLICY "Comments are viewable by everyone" ON comments FOR SELECT USING (true);
 CREATE POLICY "Logged in users can insert comments" ON comments FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can delete own comments" ON comments FOR DELETE USING (auth.uid() = user_id);
 ```
 
-### 4. 启用邮箱认证
+### 创建邮箱白名单函数
 
-1. 在 Supabase 仪表板，点击左侧 "Authentication"
-2. 点击 "Providers"
-3. 确保 "Email" 已启用
-4. （可选）如果想跳过邮箱验证，在 "Email" 设置中关闭 "Confirm email"
+```sql
+CREATE OR REPLACE FUNCTION get_registered_emails()
+RETURNS TABLE(email TEXT) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT au.email::TEXT
+  FROM auth.users au;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
-## 常见问题
+GRANT EXECUTE ON FUNCTION get_registered_emails() TO anon;
+```
 
-### Q: 注册后收不到验证邮件？
-A: 检查垃圾邮件文件夹。或者在 Supabase 的 Authentication -> Providers -> Email 中关闭 "Confirm email"。
+---
 
-### Q: 评论或帖子不显示？
-A: 检查浏览器控制台（F12）是否有错误。确保 RLS 策略已正确设置。
+## 📁 项目结构
 
-### Q: 实时更新不工作？
-A: 确保在 SQL 中执行了 `ALTER PUBLICATION supabase_realtime ADD TABLE` 语句。
+```
+GAGAGA/
+├── public/                 # 静态资源
+├── src/
+│   ├── components/         # 组件
+│   │   ├── AuthForm.jsx    # 登录/注册表单
+│   │   ├── CommentList.jsx # 评论列表
+│   │   ├── Navbar.jsx      # 导航栏
+│   │   └── PostCard.jsx    # 帖子卡片
+│   ├── pages/              # 页面
+│   │   ├── Home.jsx        # 首页
+│   │   ├── Login.jsx       # 登录页
+│   │   ├── Register.jsx    # 注册页
+│   │   ├── CreatePost.jsx  # 发帖页
+│   │   ├── PostDetail.jsx  # 帖子详情
+│   │   └── Profile.jsx     # 个人主页
+│   ├── lib/
+│   │   ├── supabase.js     # Supabase 配置
+│   │   └── allowedEmails.js # 邮箱白名单
+│   ├── App.jsx             # 路由配置
+│   ├── main.jsx            # 入口文件
+│   └── index.css           # 全局样式
+├── .env.example            # 环境变量模板
+└── package.json
+```
 
-## License
+---
 
-MIT
+## ❓ 常见问题
+
+<details>
+<summary><b>Q: 注册时提示 "email rate limit exceeded"？</b></summary>
+
+这是因为尝试注册次数过多。解决方法：
+1. 在 Supabase → Authentication → Emails 中关闭 "Confirm email"
+2. 等待几分钟后重试
+</details>
+
+<details>
+<summary><b>Q: 评论或帖子不显示？</b></summary>
+
+检查以下几点：
+1. 浏览器控制台（F12）是否有错误
+2. RLS 策略是否正确设置
+3. 数据库表是否创建成功
+</details>
+
+<details>
+<summary><b>Q: 实时更新不工作？</b></summary>
+
+确保执行了以下 SQL：
+```sql
+ALTER PUBLICATION supabase_realtime ADD TABLE posts;
+ALTER PUBLICATION supabase_realtime ADD TABLE comments;
+```
+</details>
+
+---
+
+## 📄 License
+
+[MIT](LICENSE)
+
+---
+
+<div align="center">
+
+**如果这个项目对你有帮助，请给个 ⭐ Star 支持一下！**
+
+Made with ❤️ by [ESchance](https://github.com/ESchance)
+
+</div>
