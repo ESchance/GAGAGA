@@ -50,20 +50,7 @@ export default function AuthForm({ type = 'login' }) {
           throw error
         }
 
-        // 创建用户资料
-        if (data.user) {
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .insert([
-              {
-                id: data.user.id,
-                username: username
-              }
-            ])
-
-          if (profileError) throw profileError
-        }
-
+        // 注册成功（profile 由数据库触发器自动创建）
         setMessage('注册成功！')
       } else {
         // 登录
