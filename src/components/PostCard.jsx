@@ -1,11 +1,28 @@
 import { Link } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { checkIsAdmin, togglePinPost } from '../lib/admin'
 import { RACES } from '../lib/worldbuilding'
 import Avatar from './Avatar'
 
-export default function PostCard({ post, onDelete, onPinChange }) {
+// 格式化时间的纯函数（移到组件外部，避免每次渲染重新创建）
+const formatDate = (dateString) => {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffMs = now - date
+  const diffMins = Math.floor(diffMs / 60000)
+  const diffHours = Math.floor(diffMins / 60)
+  const diffDays = Math.floor(diffHours / 24)
+
+  if (diffMins < 1) return '刚刚'
+  if (diffMins < 60) return `${diffMins}分钟前`
+  if (diffHours < 24) return `${diffHours}小时前`
+  if (diffDays < 7) return `${diffDays}天前`
+
+  return date.toLocaleDateString('zh-CN')
+}
+
+const PostCard = memo(function PostCard({ post, onDelete, onPinChange }) {
   const [user, setUser] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
 
@@ -18,26 +35,9 @@ export default function PostCard({ post, onDelete, onPinChange }) {
     })
   }, [])
 
-  // 格式化时间
-  const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffMs = now - date
-    const diffMins = Math.floor(diffMs / 60000)
-    const diffHours = Math.floor(diffMins / 60)
-    const diffDays = Math.floor(diffHours / 24)
-
-    if (diffMins < 1) return '刚刚'
-    if (diffMins < 60) return `${diffMins}分钟前`
-    if (diffHours < 24) return `${diffHours}小时前`
-    if (diffDays < 7) return `${diffDays}天前`
-
-    return date.toLocaleDateString('zh-CN')
-  }
-
-  const handleDelete = async (e) => {
-    e.preventDefault() // 阻止跳转
-    e.stopPropagation() // 阻止事件冒泡
+  const handleDelete = useCallback(async (e) => {
+    e.preventDefault()
+    e.stopPropagation()
 
     if (!user) return
 
@@ -59,19 +59,18 @@ export default function PostCard({ post, onDelete, onPinChange }) {
       console.error('删除帖子失败:', error)
       alert('删除失败：' + error.message)
     }
-  }
+  }, [user, isAdmin, post.id, post.user_id, onDelete])
 
-  const handlePin = async (e) => {
-    e.preventDefault() // 阻止跳转
-    e.stopPropagation() // 阻止事件冒泡
+  const handlePin = useCallback(async (e) => {
+    e.preventDefault()
+    e.stopPropagation()
 
     const success = await togglePinPost(post.id, post.is_pinned)
     if (success && onPinChange) {
       onPinChange(post.id, !post.is_pinned)
     }
-  }
+  }, [post.id, post.is_pinned, onPinChange])
 
-  // 判断是否可以删除
   const canDelete = user && (user.id === post.user_id || isAdmin)
 
   return (
@@ -153,4 +152,6 @@ export default function PostCard({ post, onDelete, onPinChange }) {
       </Link>
     </div>
   )
-}
+})
+
+export default PostCard
