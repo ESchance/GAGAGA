@@ -104,8 +104,15 @@ export const deleteUser = async (userId) => {
 
     if (profileError) throw profileError
 
-    // 3. 删除 auth.users（需要 service_role 权限，这里只能删除 profiles）
-    // 注意：前端无法直接删除 auth.users，需要通过 Supabase Dashboard 或 Edge Functions
+    // 3. 调用 Edge Function 删除 auth.users
+    const { data, error: fnError } = await supabase.functions.invoke('delete-user', {
+      body: { user_id: userId }
+    })
+
+    if (fnError) {
+      console.error('删除 auth 用户失败:', fnError)
+      // 即使 auth 删除失败，profiles 已删除，用户也无法登录
+    }
 
     return { success: true }
   } catch (error) {
