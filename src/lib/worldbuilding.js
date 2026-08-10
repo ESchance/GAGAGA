@@ -356,14 +356,16 @@ export const toggleLike = async (userId, worldbuildingId) => {
     }
 
     // 重新计算点赞数并更新
-    const { count } = await supabase
+    const { data: allLikes } = await supabase
       .from('worldbuilding_likes')
-      .select('*', { count: 'exact', head: true })
+      .select('id')
       .eq('worldbuilding_id', worldbuildingId)
+
+    const likeCount = allLikes ? allLikes.length : 0
 
     await supabase
       .from('worldbuilding')
-      .update({ likes_count: count || 0 })
+      .update({ likes_count: likeCount })
       .eq('id', worldbuildingId)
 
     return !(existing && existing.length > 0)
