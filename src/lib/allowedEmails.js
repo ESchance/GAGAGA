@@ -1,10 +1,10 @@
-// 预定义的50个邮箱地址（白名单）
+// 预定义的48个邮箱地址（白名单）
 // 只有这些邮箱才能注册
+// 已移除不吉利的邮箱：user04@forum.com、user44@forum.com
 export const allowedEmails = [
   'user01@forum.com',
   'user02@forum.com',
   'user03@forum.com',
-  'user04@forum.com',
   'user05@forum.com',
   'user06@forum.com',
   'user07@forum.com',
@@ -44,7 +44,6 @@ export const allowedEmails = [
   'user41@forum.com',
   'user42@forum.com',
   'user43@forum.com',
-  'user44@forum.com',
   'user45@forum.com',
   'user46@forum.com',
   'user47@forum.com',
