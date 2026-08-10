@@ -15,7 +15,6 @@ export default function PostDetail() {
   const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
-    // 获取当前用户
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       if (session?.user) {
@@ -50,6 +49,8 @@ export default function PostDetail() {
   }
 
   const handleDelete = async () => {
+    if (!post || !user) return
+
     const confirmMessage = isAdmin && user.id !== post.user_id
       ? '你是管理员，确定要删除这个帖子吗？'
       : '确定要删除这个帖子吗？'
@@ -71,14 +72,12 @@ export default function PostDetail() {
   }
 
   const handlePin = async () => {
+    if (!post) return
     const success = await togglePinPost(id, post.is_pinned)
     if (success) {
       setPost({ ...post, is_pinned: !post.is_pinned })
     }
   }
-
-  // 判断是否可以删除
-  const canDelete = user && (user.id === post.user_id || isAdmin)
 
   if (loading) {
     return (
@@ -113,10 +112,7 @@ export default function PostDetail() {
             >
               🔄 重试
             </button>
-            <a
-              href="/"
-              className="inline-flex items-center text-gray-600 hover:text-blue-600"
-            >
+            <a href="/" className="inline-flex items-center text-gray-600 hover:text-blue-600">
               🏠 返回首页
             </a>
           </div>
@@ -136,10 +132,7 @@ export default function PostDetail() {
             <div className="text-6xl mb-4">😕</div>
             <h3 className="text-xl font-semibold text-gray-700 mb-2">帖子不存在</h3>
             <p className="text-gray-500 mb-4">该帖子可能已被删除</p>
-            <a
-              href="/"
-              className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-block"
-            >
+            <a href="/" className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-block">
               🏠 返回首页
             </a>
           </div>
@@ -148,17 +141,17 @@ export default function PostDetail() {
     )
   }
 
+  // post 不为 null，安全访问
+  const canDelete = user && (user.id === post.user_id || isAdmin)
+
   return (
     <div className="page-container py-8">
       <div className="max-w-4xl mx-auto px-4">
-        {/* 返回按钮 */}
         <a href="/" className="inline-flex items-center text-gray-600 hover:text-blue-600 mb-6 transition-colors">
           ← 返回首页
         </a>
 
-        {/* 帖子内容 */}
         <div className={`glass-effect p-8 rounded-2xl shadow-lg mb-6 animate-fade-in-up ${post.is_pinned ? 'ring-2 ring-yellow-400' : ''}`}>
-          {/* 置顶标记 */}
           {post.is_pinned && (
             <div className="flex items-center mb-4 text-yellow-600 text-sm font-medium bg-yellow-50 px-4 py-2 rounded-full inline-flex">
               <span className="mr-2">📌</span>
@@ -198,7 +191,6 @@ export default function PostDetail() {
                 🕐 {new Date(post.created_at).toLocaleString('zh-CN')}
               </span>
 
-              {/* 管理员操作按钮 */}
               {isAdmin && (
                 <button
                   onClick={handlePin}
@@ -212,7 +204,6 @@ export default function PostDetail() {
                 </button>
               )}
 
-              {/* 删除按钮 */}
               {canDelete && (
                 <button
                   onClick={handleDelete}
@@ -225,7 +216,6 @@ export default function PostDetail() {
           </div>
         </div>
 
-        {/* 评论区 */}
         <CommentList postId={id} />
       </div>
     </div>
