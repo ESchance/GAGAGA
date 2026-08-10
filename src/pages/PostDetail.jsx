@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { checkIsAdmin, togglePinPost } from '../lib/admin'
 import CommentList from '../components/CommentList'
 import Avatar from '../components/Avatar'
 
@@ -10,11 +11,15 @@ export default function PostDetail() {
   const [post, setPost] = useState(null)
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
     // 获取当前用户
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
+      if (session?.user) {
+        checkIsAdmin(session.user.id).then(setIsAdmin)
+      }
     })
 
     fetchPost()
@@ -24,7 +29,7 @@ export default function PostDetail() {
     try {
       const { data, error } = await supabase
         .from('posts')
-        .select('*, profiles(username, avatar_url)')
+        .select('*, profiles(username, avatar_url, role)')
         .eq('id', id)
         .single()
 
@@ -38,7 +43,11 @@ export default function PostDetail() {
   }
 
   const handleDelete = async () => {
-    if (!confirm('确定要删除这个帖子吗？')) return
+    const confirmMessage = isAdmin && user.id !== post.user_id
+      ? '你是管理员，确定要删除这个帖子吗？'
+      : '确定要删除这个帖子吗？'
+
+    if (!confirm(confirmMessage)) return
 
     try {
       const { error } = await supabase
@@ -53,6 +62,16 @@ export default function PostDetail() {
       alert('删除失败：' + error.message)
     }
   }
+
+  const handlePin = async () => {
+    const success = await togglePinPost(id, post.is_pinned)
+    if (success) {
+      setPost({ ...post, is_pinned: !post.is_pinned })
+    }
+  }
+
+  // 判断是否可以删除
+  const canDelete = user && (user.id === post.user_id || isAdmin)
 
   if (loading) {
     return (
@@ -87,11 +106,19 @@ export default function PostDetail() {
     <div className="page-container py-8">
       <div className="max-w-4xl mx-auto px-4">
         {/* 帖子内容 */}
-        <div className="glass-effect p-8 rounded-2xl shadow-lg mb-6 animate-fade-in-up">
+        <div className={`glass-effect p-8 rounded-2xl shadow-lg mb-6 animate-fade-in-up ${post.is_pinned ? 'ring-2 ring-yellow-400' : ''}`}>
+          {/* 置顶标记 */}
+          {post.is_pinned && (
+            <div className="flex items-center mb-4 text-yellow-600 text-sm font-medium bg-yellow-50 px-4 py-2 rounded-full inline-flex">
+              <span className="mr-2">📌</span>
+              <span>置顶帖子</span>
+            </div>
+          )}
+
           <h1 className="text-3xl font-bold text-gray-800 mb-4">{post.title}</h1>
           <p className="text-gray-700 whitespace-pre-wrap mb-6 leading-relaxed text-lg">{post.content}</p>
 
-          <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-4 border-t border-gray-200 gap-4">
             <Link
               to={`/profile/${post.user_id}`}
               className="flex items-center space-x-3 hover:bg-gray-100 px-4 py-2 rounded-full transition-colors duration-200"
@@ -100,18 +127,42 @@ export default function PostDetail() {
                 url={post.profiles?.avatar_url}
                 username={post.profiles?.username}
                 size="md"
+                role={post.profiles?.role}
               />
               <div>
-                <span className="font-semibold text-gray-800 block">{post.profiles?.username || '匿名用户'}</span>
+                <div className="flex items-center space-x-2">
+                  <span className="font-semibold text-gray-800">{post.profiles?.username || '匿名用户'}</span>
+                  {post.profiles?.role === 'admin' && (
+                    <span className="text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-full font-medium">
+                      管理员
+                    </span>
+                  )}
+                </div>
                 <span className="text-xs text-gray-500">作者</span>
               </div>
             </Link>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
                 🕐 {new Date(post.created_at).toLocaleString('zh-CN')}
               </span>
-              {user && user.id === post.user_id && (
+
+              {/* 管理员操作按钮 */}
+              {isAdmin && (
+                <button
+                  onClick={handlePin}
+                  className={`px-4 py-2 rounded-full transition-all duration-200 font-medium ${
+                    post.is_pinned
+                      ? 'text-yellow-600 hover:text-white hover:bg-yellow-500 bg-yellow-50'
+                      : 'text-yellow-500 hover:text-white hover:bg-yellow-500'
+                  }`}
+                >
+                  {post.is_pinned ? '📌 取消置顶' : '📌 置顶'}
+                </button>
+              )}
+
+              {/* 删除按钮 */}
+              {canDelete && (
                 <button
                   onClick={handleDelete}
                   className="px-4 py-2 text-red-500 hover:text-white hover:bg-red-500 rounded-full transition-all duration-200 font-medium"

@@ -41,8 +41,9 @@ export default function Profile() {
     try {
       const { data, error } = await supabase
         .from('posts')
-        .select('*, profiles(username, avatar_url)')
+        .select('*, profiles(username, avatar_url, role)')
         .eq('user_id', id)
+        .order('is_pinned', { ascending: false })
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -56,6 +57,12 @@ export default function Profile() {
 
   const handleDeletePost = (postId) => {
     setPosts(posts.filter(post => post.id !== postId))
+  }
+
+  const handlePinChange = (postId, isPinned) => {
+    setPosts(posts.map(post =>
+      post.id === postId ? { ...post, is_pinned: isPinned } : post
+    ))
   }
 
   const handleAvatarUpdate = (newAvatarUrl) => {
@@ -100,9 +107,16 @@ export default function Profile() {
 
             {/* 用户信息 */}
             <div className="text-center sm:text-left flex-1">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                {profile?.username || '匿名用户'}
-              </h1>
+              <div className="flex items-center justify-center sm:justify-start space-x-3 mb-2">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  {profile?.username || '匿名用户'}
+                </h1>
+                {profile?.role === 'admin' && (
+                  <span className="text-sm bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-full font-medium">
+                    👑 管理员
+                  </span>
+                )}
+              </div>
               <div className="flex items-center justify-center sm:justify-start space-x-4 mb-4">
                 <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full text-sm font-medium">
                   📝 {posts.length} 个帖子
@@ -133,7 +147,11 @@ export default function Profile() {
             <div className="space-y-4">
               {posts.map((post, index) => (
                 <div key={post.id} style={{ animationDelay: `${index * 0.1}s` }}>
-                  <PostCard post={post} onDelete={handleDeletePost} />
+                  <PostCard
+                    post={post}
+                    onDelete={handleDeletePost}
+                    onPinChange={handlePinChange}
+                  />
                 </div>
               ))}
             </div>

@@ -36,7 +36,8 @@ export default function Home() {
     try {
       const { data, error } = await supabase
         .from('posts')
-        .select('*, profiles(username, avatar_url)')
+        .select('*, profiles(username, avatar_url, role)')
+        .order('is_pinned', { ascending: false })
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -50,6 +51,12 @@ export default function Home() {
 
   const handleDeletePost = (postId) => {
     setPosts(posts.filter(post => post.id !== postId))
+  }
+
+  const handlePinChange = (postId, isPinned) => {
+    setPosts(posts.map(post =>
+      post.id === postId ? { ...post, is_pinned: isPinned } : post
+    ))
   }
 
   if (loading) {
@@ -89,7 +96,11 @@ export default function Home() {
           <div className="space-y-4">
             {posts.map((post, index) => (
               <div key={post.id} style={{ animationDelay: `${index * 0.1}s` }}>
-                <PostCard post={post} onDelete={handleDeletePost} />
+                <PostCard
+                  post={post}
+                  onDelete={handleDeletePost}
+                  onPinChange={handlePinChange}
+                />
               </div>
             ))}
           </div>

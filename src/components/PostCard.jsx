@@ -1,14 +1,19 @@
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { checkIsAdmin, togglePinPost } from '../lib/admin'
 import Avatar from './Avatar'
 
-export default function PostCard({ post, onDelete }) {
+export default function PostCard({ post, onDelete, onPinChange }) {
   const [user, setUser] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
+      if (session?.user) {
+        checkIsAdmin(session.user.id).then(setIsAdmin)
+      }
     })
   }, [])
 
@@ -33,7 +38,11 @@ export default function PostCard({ post, onDelete }) {
     e.preventDefault() // 阻止跳转
     e.stopPropagation() // 阻止事件冒泡
 
-    if (!confirm('确定要删除这个帖子吗？')) return
+    const confirmMessage = isAdmin && user.id !== post.user_id
+      ? '你是管理员，确定要删除这个帖子吗？'
+      : '确定要删除这个帖子吗？'
+
+    if (!confirm(confirmMessage)) return
 
     try {
       const { error } = await supabase
@@ -49,9 +58,30 @@ export default function PostCard({ post, onDelete }) {
     }
   }
 
+  const handlePin = async (e) => {
+    e.preventDefault() // 阻止跳转
+    e.stopPropagation() // 阻止事件冒泡
+
+    const success = await togglePinPost(post.id, post.is_pinned)
+    if (success && onPinChange) {
+      onPinChange(post.id, !post.is_pinned)
+    }
+  }
+
+  // 判断是否可以删除
+  const canDelete = user && (user.id === post.user_id || isAdmin)
+
   return (
-    <div className="post-card card-hover animate-fade-in-up">
+    <div className={`post-card card-hover animate-fade-in-up ${post.is_pinned ? 'ring-2 ring-yellow-400 bg-yellow-50' : ''}`}>
       <Link to={`/post/${post.id}`} className="block">
+        {/* 置顶标记 */}
+        {post.is_pinned && (
+          <div className="flex items-center mb-2 text-yellow-600 text-sm font-medium">
+            <span className="mr-1">📌</span>
+            <span>置顶</span>
+          </div>
+        )}
+
         <h3 className="text-lg font-semibold text-gray-800 mb-2 hover:text-blue-600 transition-colors duration-200">
           {post.title}
         </h3>
@@ -64,15 +94,39 @@ export default function PostCard({ post, onDelete }) {
               url={post.profiles?.avatar_url}
               username={post.profiles?.username}
               size="sm"
+              role={post.profiles?.role}
             />
             <span className="text-sm font-medium text-gray-700">{post.profiles?.username || '匿名用户'}</span>
+            {post.profiles?.role === 'admin' && (
+              <span className="text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-full font-medium">
+                管理员
+              </span>
+            )}
           </div>
-          <div className="flex items-center space-x-4 text-xs text-gray-500">
-            <span className="flex items-center space-x-1">
+          <div className="flex items-center space-x-2 text-xs">
+            <span className="text-gray-500 flex items-center space-x-1">
               <span>🕐</span>
               <span>{formatDate(post.created_at)}</span>
             </span>
-            {user && user.id === post.user_id && (
+
+            {/* 管理员操作按钮 */}
+            {isAdmin && (
+              <>
+                <button
+                  onClick={handlePin}
+                  className={`px-3 py-1 rounded-full transition-all duration-200 ${
+                    post.is_pinned
+                      ? 'text-yellow-600 hover:text-white hover:bg-yellow-500'
+                      : 'text-yellow-500 hover:text-white hover:bg-yellow-500'
+                  }`}
+                >
+                  {post.is_pinned ? '📌 取消置顶' : '📌 置顶'}
+                </button>
+              </>
+            )}
+
+            {/* 删除按钮（作者或管理员） */}
+            {canDelete && (
               <button
                 onClick={handleDelete}
                 className="px-3 py-1 text-red-500 hover:text-white hover:bg-red-500 rounded-full transition-all duration-200"

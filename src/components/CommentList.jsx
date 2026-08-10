@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { checkIsAdmin, adminDeleteComment } from '../lib/admin'
 import Avatar from './Avatar'
 
 export default function CommentList({ postId }) {
@@ -8,6 +9,7 @@ export default function CommentList({ postId }) {
   const [loading, setLoading] = useState(false)
   const [user, setUser] = useState(null)
   const [currentUserProfile, setCurrentUserProfile] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
     // 获取当前用户
@@ -15,6 +17,7 @@ export default function CommentList({ postId }) {
       setUser(session?.user ?? null)
       if (session?.user) {
         fetchCurrentUserProfile(session.user.id)
+        checkIsAdmin(session.user.id).then(setIsAdmin)
       }
     })
 
@@ -27,13 +30,13 @@ export default function CommentList({ postId }) {
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event: '*',
           schema: 'public',
           table: 'comments',
           filter: `post_id=eq.${postId}`
         },
         (payload) => {
-          // 新评论到来，重新获取列表
+          // 数据变化，重新获取列表
           fetchComments()
         }
       )
@@ -48,7 +51,7 @@ export default function CommentList({ postId }) {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('username, avatar_url')
+        .select('username, avatar_url, role')
         .eq('id', userId)
         .single()
 
@@ -63,7 +66,7 @@ export default function CommentList({ postId }) {
     try {
       const { data, error } = await supabase
         .from('comments')
-        .select('*, profiles(username, avatar_url)')
+        .select('*, profiles(username, avatar_url, role)')
         .eq('post_id', postId)
         .order('created_at', { ascending: true })
 
@@ -99,6 +102,19 @@ export default function CommentList({ postId }) {
     }
   }
 
+  const handleDeleteComment = async (commentId, commentUserId) => {
+    const confirmMessage = isAdmin && user.id !== commentUserId
+      ? '你是管理员，确定要删除这条评论吗？'
+      : '确定要删除这条评论吗？'
+
+    if (!confirm(confirmMessage)) return
+
+    const success = await adminDeleteComment(commentId)
+    if (success) {
+      setComments(comments.filter(c => c.id !== commentId))
+    }
+  }
+
   return (
     <div className="glass-effect p-6 rounded-2xl shadow-lg animate-fade-in-up">
       <h3 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
@@ -113,6 +129,7 @@ export default function CommentList({ postId }) {
               url={currentUserProfile?.avatar_url}
               username={currentUserProfile?.username}
               size="md"
+              role={currentUserProfile?.role}
             />
             <div className="flex-1">
               <textarea
@@ -160,34 +177,56 @@ export default function CommentList({ postId }) {
             <p className="text-gray-500">暂无评论，快来发表第一条评论吧！</p>
           </div>
         ) : (
-          comments.map((comment, index) => (
-            <div
-              key={comment.id}
-              className="p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl animate-fade-in-up"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <div className="flex items-start space-x-4">
-                <Avatar
-                  url={comment.profiles?.avatar_url}
-                  username={comment.profiles?.username}
-                  size="md"
-                />
-                <div className="flex-1">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-semibold text-gray-800">
-                      {comment.profiles?.username || '匿名用户'}
-                    </span>
-                    <span className="text-xs text-gray-500 bg-white px-2 py-1 rounded-full">
-                      🕐 {new Date(comment.created_at).toLocaleString('zh-CN')}
-                    </span>
+          comments.map((comment, index) => {
+            const canDeleteComment = user && (user.id === comment.user_id || isAdmin)
+
+            return (
+              <div
+                key={comment.id}
+                className="p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl animate-fade-in-up"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <div className="flex items-start space-x-4">
+                  <Avatar
+                    url={comment.profiles?.avatar_url}
+                    username={comment.profiles?.username}
+                    size="md"
+                    role={comment.profiles?.role}
+                  />
+                  <div className="flex-1">
+                    <div className="flex justify-between items-center mb-2">
+                      <div className="flex items-center space-x-2">
+                        <span className="font-semibold text-gray-800">
+                          {comment.profiles?.username || '匿名用户'}
+                        </span>
+                        {comment.profiles?.role === 'admin' && (
+                          <span className="text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-full font-medium">
+                            管理员
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs text-gray-500 bg-white px-2 py-1 rounded-full">
+                          🕐 {new Date(comment.created_at).toLocaleString('zh-CN')}
+                        </span>
+                        {canDeleteComment && (
+                          <button
+                            onClick={() => handleDeleteComment(comment.id, comment.user_id)}
+                            className="text-xs text-red-500 hover:text-white hover:bg-red-500 px-2 py-1 rounded-full transition-all duration-200"
+                          >
+                            🗑️ 删除
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                      {comment.content}
+                    </p>
                   </div>
-                  <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-                    {comment.content}
-                  </p>
                 </div>
               </div>
-            </div>
-          ))
+            )
+          })
         )}
       </div>
     </div>
