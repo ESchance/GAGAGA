@@ -56,17 +56,17 @@ export default function Profile() {
   }
 
   const handleDeletePost = (postId) => {
-    setPosts(posts.filter(post => post.id !== postId))
+    setPosts(prev => prev.filter(post => post.id !== postId))
   }
 
   const handlePinChange = (postId, isPinned) => {
-    setPosts(posts.map(post =>
+    setPosts(prev => prev.map(post =>
       post.id === postId ? { ...post, is_pinned: isPinned } : post
     ))
   }
 
   const handleAvatarUpdate = (newAvatarUrl) => {
-    setProfile({ ...profile, avatar_url: newAvatarUrl })
+    setProfile(prev => ({ ...prev, avatar_url: newAvatarUrl }))
   }
 
   if (loading) {

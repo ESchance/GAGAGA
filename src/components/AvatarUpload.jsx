@@ -18,6 +18,10 @@ export default function AvatarUpload({ userId, currentAvatarUrl, onAvatarUpdate 
       const file = event.target.files[0]
       if (!file) return
 
+      if (!userId) {
+        throw new Error('用户未登录，无法上传头像')
+      }
+
       // 检查文件类型
       if (!file.type.startsWith('image/')) {
         throw new Error('请上传图片文件')
@@ -47,7 +51,11 @@ export default function AvatarUpload({ userId, currentAvatarUrl, onAvatarUpdate 
         .from('avatars')
         .getPublicUrl(fileName)
 
-      const newAvatarUrl = data.publicUrl
+      const newAvatarUrl = data?.publicUrl
+
+      if (!newAvatarUrl) {
+        throw new Error('获取头像链接失败')
+      }
 
       // 更新用户资料
       const { error: updateError } = await supabase

@@ -48,8 +48,13 @@ export default function Navbar() {
   }
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
-    navigate('/login')
+    try {
+      await supabase.auth.signOut()
+      navigate('/login')
+    } catch (error) {
+      console.error('退出登录失败:', error)
+      alert('退出失败，请重试')
+    }
   }
 
   return (

@@ -79,7 +79,7 @@ export default function CommentList({ postId }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!newComment.trim()) return
+    if (!newComment.trim() || !user) return
 
     setLoading(true)
     try {
@@ -103,6 +103,8 @@ export default function CommentList({ postId }) {
   }
 
   const handleDeleteComment = async (commentId, commentUserId) => {
+    if (!user) return
+
     const confirmMessage = isAdmin && user.id !== commentUserId
       ? '你是管理员，确定要删除这条评论吗？'
       : '确定要删除这条评论吗？'
@@ -111,7 +113,7 @@ export default function CommentList({ postId }) {
 
     const success = await adminDeleteComment(commentId)
     if (success) {
-      setComments(comments.filter(c => c.id !== commentId))
+      setComments(prev => prev.filter(c => c.id !== commentId))
     }
   }
 

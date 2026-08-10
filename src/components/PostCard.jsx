@@ -38,6 +38,8 @@ export default function PostCard({ post, onDelete, onPinChange }) {
     e.preventDefault() // 阻止跳转
     e.stopPropagation() // 阻止事件冒泡
 
+    if (!user) return
+
     const confirmMessage = isAdmin && user.id !== post.user_id
       ? '你是管理员，确定要删除这个帖子吗？'
       : '确定要删除这个帖子吗？'
