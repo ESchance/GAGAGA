@@ -52,7 +52,7 @@ export default function CommentList({ postId }) {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('username, avatar_url, role')
+        .select('username, avatar_url, role, race_selected')
         .eq('id', userId)
         .single()
 
@@ -125,7 +125,29 @@ export default function CommentList({ postId }) {
       </h3>
 
       {/* 评论输入框 */}
-      {user && currentUserProfile?.race_selected ? (
+      {!user ? (
+        // 未登录
+        <div className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl text-center">
+          <p className="text-gray-600 mb-3">请先登录后再发表评论</p>
+          <a
+            href="/login"
+            className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-block"
+          >
+            👋 登录
+          </a>
+        </div>
+      ) : user && !currentUserProfile?.race_selected ? (
+        // 已登录但未选择种族
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
+          <p className="text-yellow-700 text-sm">
+            ⚠️ 你还没有选择种族，无法发表评论。
+            <a href={`/profile/${user.id}`} className="ml-2 text-yellow-600 underline">
+              去选择种族
+            </a>
+          </p>
+        </div>
+      ) : (
+        // 已登录且已选择种族
         <form onSubmit={handleSubmit} className="mb-6">
           <div className="flex items-start space-x-4">
             <Avatar
@@ -160,28 +182,6 @@ export default function CommentList({ postId }) {
             </div>
           </div>
         </form>
-      ) : (
-        <div className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl text-center">
-          <p className="text-gray-600 mb-3">请先登录后再发表评论</p>
-          <a
-            href="/login"
-            className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-block"
-          >
-            👋 登录
-          </a>
-        </div>
-      )}
-
-      {/* 未选择种族的提示 */}
-      {user && currentUserProfile && !currentUserProfile.race_selected && (
-        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
-          <p className="text-yellow-700 text-sm">
-            ⚠️ 你还没有选择种族，无法发表评论。
-            <a href={`/profile/${user.id}`} className="ml-2 text-yellow-600 underline">
-              去选择种族
-            </a>
-          </p>
-        </div>
       )}
 
       {/* 评论列表 */}
