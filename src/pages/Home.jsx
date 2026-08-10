@@ -36,7 +36,7 @@ export default function Home() {
     try {
       const { data, error } = await supabase
         .from('posts')
-        .select('*, profiles(username)')
+        .select('*, profiles(username, avatar_url)')
         .order('created_at', { ascending: false })
 
       if (error) throw error
