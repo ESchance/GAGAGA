@@ -61,25 +61,6 @@ export default function WorldInfo({ profile, showStory = false, compact = false 
           </div>
         </div>
       )}
-
-      {/* 自定义背景故事 */}
-      {showStory && (
-        <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-2xl p-4 border border-green-100">
-          <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-            <span className="mr-2">✍️</span> 我的故事
-            <span className="ml-2 text-xs text-gray-400 font-normal">（可编辑）</span>
-          </h4>
-          {profile.custom_backstory ? (
-            <div className="bg-white bg-opacity-60 rounded-xl p-4">
-              <p className="text-gray-600 text-sm leading-relaxed">{profile.custom_backstory}</p>
-            </div>
-          ) : (
-            <div className="bg-white bg-opacity-60 rounded-xl p-4 text-center">
-              <p className="text-gray-400 text-sm">还没有添加个人故事</p>
-            </div>
-          )}
-        </div>
-      )}
     </div>
   )
 }
