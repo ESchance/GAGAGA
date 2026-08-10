@@ -333,6 +333,15 @@ export const toggleLike = async (userId, worldbuildingId) => {
       .eq('worldbuilding_id', worldbuildingId)
       .limit(1)
 
+    // 获取当前点赞数
+    const { data: post } = await supabase
+      .from('worldbuilding')
+      .select('likes_count')
+      .eq('id', worldbuildingId)
+      .single()
+
+    const currentCount = post?.likes_count || 0
+
     if (existing && existing.length > 0) {
       // 取消点赞
       const { error } = await supabase
@@ -342,10 +351,10 @@ export const toggleLike = async (userId, worldbuildingId) => {
 
       if (error) throw error
 
-      // 更新点赞数
+      // 更新点赞数（减1，但不能小于0）
       await supabase
         .from('worldbuilding')
-        .update({ likes_count: supabase.rpc('decrement', { x: 1 }) })
+        .update({ likes_count: Math.max(0, currentCount - 1) })
         .eq('id', worldbuildingId)
 
       return false
@@ -362,10 +371,10 @@ export const toggleLike = async (userId, worldbuildingId) => {
 
       if (error) throw error
 
-      // 更新点赞数
+      // 更新点赞数（加1）
       await supabase
         .from('worldbuilding')
-        .update({ likes_count: supabase.rpc('increment', { x: 1 }) })
+        .update({ likes_count: currentCount + 1 })
         .eq('id', worldbuildingId)
 
       return true
