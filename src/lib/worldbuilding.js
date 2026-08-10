@@ -262,10 +262,10 @@ export const getWorldbuildingDetail = async (id) => {
   }
 }
 
-// 删除创作（只有作者可以删除）
-export const deleteWorldbuilding = async (id, userId) => {
+// 删除创作（作者和管理员都可以删除）
+export const deleteWorldbuilding = async (id, userId, isAdmin = false) => {
   try {
-    // 验证是否是作者
+    // 验证权限：作者或管理员
     const { data: post, error: fetchError } = await supabase
       .from('worldbuilding')
       .select('user_id')
@@ -274,8 +274,8 @@ export const deleteWorldbuilding = async (id, userId) => {
 
     if (fetchError) throw fetchError
 
-    if (post.user_id !== userId) {
-      throw new Error('只有作者可以删除自己的创作')
+    if (post.user_id !== userId && !isAdmin) {
+      throw new Error('没有权限删除此创作')
     }
 
     const { error } = await supabase

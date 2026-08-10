@@ -10,6 +10,7 @@ import {
   deleteWorldbuilding,
   RACES
 } from '../lib/worldbuilding'
+import { checkIsAdmin } from '../lib/admin'
 import Avatar from '../components/Avatar'
 
 export default function WorldbuildingDetail() {
@@ -19,6 +20,7 @@ export default function WorldbuildingDetail() {
   const [comments, setComments] = useState([])
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [liked, setLiked] = useState(false)
   const [newComment, setNewComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -30,6 +32,7 @@ export default function WorldbuildingDetail() {
       setUser(session?.user ?? null)
       if (session?.user) {
         checkLiked(session.user.id, id).then(setLiked)
+        checkIsAdmin(session.user.id).then(setIsAdmin)
       }
     })
 
@@ -68,7 +71,7 @@ export default function WorldbuildingDetail() {
     if (!user) return
 
     setDeleting(true)
-    const success = await deleteWorldbuilding(id, user.id)
+    const success = await deleteWorldbuilding(id, user.id, isAdmin)
     setDeleting(false)
 
     if (success) {
@@ -227,14 +230,18 @@ export default function WorldbuildingDetail() {
             </div>
 
             {/* 作者操作按钮 */}
-            {user && user.id === post.user_id && (
+            {user && (user.id === post.user_id || isAdmin) && (
               <div className="flex items-center space-x-3">
-                <button
-                  onClick={() => navigate(`/worldbuilding/${id}/edit`)}
-                  className="px-4 py-2 text-purple-500 hover:text-white hover:bg-purple-500 rounded-full transition-all duration-200 text-sm font-medium"
-                >
-                  ✏️ 编辑
-                </button>
+                {/* 只有作者可以编辑 */}
+                {user.id === post.user_id && (
+                  <button
+                    onClick={() => navigate(`/worldbuilding/${id}/edit`)}
+                    className="px-4 py-2 text-purple-500 hover:text-white hover:bg-purple-500 rounded-full transition-all duration-200 text-sm font-medium"
+                  >
+                    ✏️ 编辑
+                  </button>
+                )}
+                {/* 作者和管理员都可以删除 */}
                 <button
                   onClick={() => setShowDeleteModal(true)}
                   className="px-4 py-2 text-red-500 hover:text-white hover:bg-red-500 rounded-full transition-all duration-200 text-sm font-medium"
