@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { checkIsAdmin, adminDeleteComment } from '../lib/admin'
+import { RACES } from '../lib/worldbuilding'
 import Avatar from './Avatar'
 
 export default function CommentList({ postId }) {
@@ -204,6 +205,11 @@ export default function CommentList({ postId }) {
                         {comment.profiles?.role === 'admin' && (
                           <span className="text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-full font-medium">
                             管理员
+                          </span>
+                        )}
+                        {comment.profiles?.member_code && (
+                          <span className="text-xs text-gray-500">
+                            {RACES[comment.profiles?.race]?.icon || '🧑'} {comment.profiles.member_code}
                           </span>
                         )}
                       </div>

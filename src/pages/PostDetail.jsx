@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { checkIsAdmin, togglePinPost } from '../lib/admin'
+import { RACES } from '../lib/worldbuilding'
 import CommentList from '../components/CommentList'
 import Avatar from '../components/Avatar'
 
@@ -182,7 +183,15 @@ export default function PostDetail() {
                     </span>
                   )}
                 </div>
-                <span className="text-xs text-gray-500">作者</span>
+                {post.profiles?.member_code ? (
+                  <div className="flex items-center space-x-2 text-xs text-gray-500">
+                    <span>{RACES[post.profiles?.race]?.icon || '🧑'}</span>
+                    <span className="font-mono">{post.profiles.member_code}</span>
+                    <span>{RACES[post.profiles?.race]?.name || '人类'}</span>
+                  </div>
+                ) : (
+                  <span className="text-xs text-gray-500">作者</span>
+                )}
               </div>
             </Link>
 

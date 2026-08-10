@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { checkIsAdmin, togglePinPost } from '../lib/admin'
+import { RACES } from '../lib/worldbuilding'
 import Avatar from './Avatar'
 
 export default function PostCard({ post, onDelete, onPinChange }) {
@@ -98,12 +99,23 @@ export default function PostCard({ post, onDelete, onPinChange }) {
               size="sm"
               role={post.profiles?.role}
             />
-            <span className="text-sm font-medium text-gray-700">{post.profiles?.username || '匿名用户'}</span>
-            {post.profiles?.role === 'admin' && (
-              <span className="text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-full font-medium">
-                管理员
-              </span>
-            )}
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium text-gray-700">{post.profiles?.username || '匿名用户'}</span>
+                {post.profiles?.role === 'admin' && (
+                  <span className="text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-full font-medium">
+                    管理员
+                  </span>
+                )}
+              </div>
+              {post.profiles?.member_code && (
+                <div className="flex items-center space-x-2 text-xs text-gray-500">
+                  <span>{RACES[post.profiles?.race]?.icon || '🧑'}</span>
+                  <span className="font-mono">{post.profiles.member_code}</span>
+                  <span>{RACES[post.profiles?.race]?.name || '人类'}</span>
+                </div>
+              )}
+            </div>
           </div>
           <div className="flex items-center space-x-2 text-xs">
             <span className="text-gray-500 flex items-center space-x-1">
