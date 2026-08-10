@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
+import ErrorBoundary from './components/ErrorBoundary'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -15,24 +16,26 @@ import './index.css'
 
 function App() {
   return (
-    <Router>
-      <div className="min-h-screen">
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/create" element={<CreatePost />} />
-          <Route path="/post/:id" element={<PostDetail />} />
-          <Route path="/profile/:id" element={<Profile />} />
-          <Route path="/worldbuilding" element={<Worldbuilding />} />
-          <Route path="/worldbuilding/create" element={<WorldbuildingCreate />} />
-          <Route path="/worldbuilding/:id" element={<WorldbuildingDetail />} />
-          <Route path="/worldbuilding/:id/edit" element={<WorldbuildingEdit />} />
-          <Route path="/admin/users" element={<UserManagement />} />
-        </Routes>
-      </div>
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <div className="min-h-screen">
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/create" element={<CreatePost />} />
+            <Route path="/post/:id" element={<PostDetail />} />
+            <Route path="/profile/:id" element={<Profile />} />
+            <Route path="/worldbuilding" element={<Worldbuilding />} />
+            <Route path="/worldbuilding/create" element={<WorldbuildingCreate />} />
+            <Route path="/worldbuilding/:id" element={<WorldbuildingDetail />} />
+            <Route path="/worldbuilding/:id/edit" element={<WorldbuildingEdit />} />
+            <Route path="/admin/users" element={<UserManagement />} />
+          </Routes>
+        </div>
+      </Router>
+    </ErrorBoundary>
   )
 }
 
