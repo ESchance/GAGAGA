@@ -5,11 +5,20 @@ serve(async (req) => {
   try {
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
     const { user_id } = await req.json()
 
+    // 先删除 profiles（解决外键约束）
+    const { error: profileError } = await supabaseAdmin
+      .from('profiles')
+      .delete()
+      .eq('id', user_id)
+
+    if (profileError) console.log('Profiles delete error:', profileError)
+
+    // 再删除 auth.users
     const { error } = await supabaseAdmin.auth.admin.deleteUser(user_id)
 
     if (error) throw error

@@ -96,23 +96,12 @@ export const deleteUser = async (userId) => {
     await supabase.from('comments').delete().eq('user_id', userId)
     await supabase.from('posts').delete().eq('user_id', userId)
 
-    // 2. 删除 profiles
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .delete()
-      .eq('id', userId)
-
-    if (profileError) throw profileError
-
-    // 3. 调用 Edge Function 删除 auth.users
-    const { data, error: fnError } = await supabase.functions.invoke('delete-user', {
-      body: { user_id: userId }
+    // 2. 调用 SQL 函数删除 profiles 和 auth.users
+    const { data, error } = await supabase.rpc('delete_user', {
+      target_user_id: userId
     })
 
-    if (fnError) {
-      console.error('删除 auth 用户失败:', fnError)
-      // 即使 auth 删除失败，profiles 已删除，用户也无法登录
-    }
+    if (error) throw error
 
     return { success: true }
   } catch (error) {
