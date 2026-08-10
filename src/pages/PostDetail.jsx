@@ -10,6 +10,7 @@ export default function PostDetail() {
   const navigate = useNavigate()
   const [post, setPost] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [user, setUser] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
 
@@ -20,6 +21,8 @@ export default function PostDetail() {
       if (session?.user) {
         checkIsAdmin(session.user.id).then(setIsAdmin)
       }
+    }).catch(err => {
+      console.error('获取会话失败:', err)
     })
 
     fetchPost()
@@ -27,6 +30,9 @@ export default function PostDetail() {
 
   const fetchPost = async () => {
     try {
+      setLoading(true)
+      setError(null)
+
       const { data, error } = await supabase
         .from('posts')
         .select('*, profiles(username, avatar_url, role)')
@@ -37,6 +43,7 @@ export default function PostDetail() {
       setPost(data)
     } catch (error) {
       console.error('获取帖子失败:', error)
+      setError(error.message)
     } finally {
       setLoading(false)
     }
@@ -75,10 +82,44 @@ export default function PostDetail() {
 
   if (loading) {
     return (
-      <div className="page-container flex items-center justify-center">
-        <div className="text-center">
-          <div className="loading-spinner mx-auto mb-4"></div>
-          <p className="text-gray-500">加载中...</p>
+      <div className="page-container py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          <a href="/" className="inline-flex items-center text-gray-600 hover:text-blue-600 mb-6 transition-colors">
+            ← 返回首页
+          </a>
+          <div className="text-center py-16">
+            <div className="loading-spinner mx-auto mb-4"></div>
+            <p className="text-gray-500">加载中...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="page-container py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          <a href="/" className="inline-flex items-center text-gray-600 hover:text-blue-600 mb-6 transition-colors">
+            ← 返回首页
+          </a>
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">❌</div>
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">加载失败</h3>
+            <p className="text-gray-500 mb-4">{error}</p>
+            <button
+              onClick={fetchPost}
+              className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate mr-4"
+            >
+              🔄 重试
+            </button>
+            <a
+              href="/"
+              className="inline-flex items-center text-gray-600 hover:text-blue-600"
+            >
+              🏠 返回首页
+            </a>
+          </div>
         </div>
       </div>
     )
@@ -86,17 +127,22 @@ export default function PostDetail() {
 
   if (!post) {
     return (
-      <div className="page-container flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-6xl mb-4">😕</div>
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">帖子不存在</h3>
-          <p className="text-gray-500 mb-4">该帖子可能已被删除</p>
-          <a
-            href="/"
-            className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-block"
-          >
-            🏠 返回首页
+      <div className="page-container py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          <a href="/" className="inline-flex items-center text-gray-600 hover:text-blue-600 mb-6 transition-colors">
+            ← 返回首页
           </a>
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">😕</div>
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">帖子不存在</h3>
+            <p className="text-gray-500 mb-4">该帖子可能已被删除</p>
+            <a
+              href="/"
+              className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-block"
+            >
+              🏠 返回首页
+            </a>
+          </div>
         </div>
       </div>
     )
@@ -105,6 +151,11 @@ export default function PostDetail() {
   return (
     <div className="page-container py-8">
       <div className="max-w-4xl mx-auto px-4">
+        {/* 返回按钮 */}
+        <a href="/" className="inline-flex items-center text-gray-600 hover:text-blue-600 mb-6 transition-colors">
+          ← 返回首页
+        </a>
+
         {/* 帖子内容 */}
         <div className={`glass-effect p-8 rounded-2xl shadow-lg mb-6 animate-fade-in-up ${post.is_pinned ? 'ring-2 ring-yellow-400' : ''}`}>
           {/* 置顶标记 */}
