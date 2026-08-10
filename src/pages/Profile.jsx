@@ -205,7 +205,7 @@ export default function Profile() {
         {/* 世界观信息 */}
         {worldInfo && (
           <div className="mb-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-            <WorldInfo profile={worldInfo} showStory={isOwnProfile} />
+            <WorldInfo profile={worldInfo} showStory={true} />
           </div>
         )}
 
