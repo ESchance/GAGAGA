@@ -331,14 +331,14 @@ export const toggleLike = async (userId, worldbuildingId) => {
       .select('id')
       .eq('user_id', userId)
       .eq('worldbuilding_id', worldbuildingId)
-      .single()
+      .limit(1)
 
-    if (existing) {
+    if (existing && existing.length > 0) {
       // 取消点赞
       const { error } = await supabase
         .from('worldbuilding_likes')
         .delete()
-        .eq('id', existing.id)
+        .eq('id', existing[0].id)
 
       if (error) throw error
 
@@ -384,12 +384,16 @@ export const checkLiked = async (userId, worldbuildingId) => {
       .select('id')
       .eq('user_id', userId)
       .eq('worldbuilding_id', worldbuildingId)
-      .single()
+      .limit(1)
 
-    if (error && error.code !== 'PGRST116') throw error
-    return !!data
+    if (error) {
+      // 如果是 406 错误或表不存在，返回 false
+      console.warn('检查点赞状态时出错:', error.message)
+      return false
+    }
+    return data && data.length > 0
   } catch (error) {
-    console.error('检查点赞状态失败:', error)
+    console.warn('检查点赞状态失败:', error.message)
     return false
   }
 }
