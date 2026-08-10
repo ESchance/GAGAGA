@@ -111,9 +111,9 @@ export default function AnnouncementBar() {
             {isAdmin && (
               <button
                 onClick={openEditModal}
-                className="flex-shrink-0 ml-4 px-3 py-1 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full text-sm transition-all duration-200"
+                className="flex-shrink-0 ml-4 px-4 py-1.5 bg-white bg-opacity-25 hover:bg-white hover:text-blue-500 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95"
               >
-                ✏️ 编辑
+                ✏️ 编辑公告
               </button>
             )}
           </div>
@@ -122,13 +122,17 @@ export default function AnnouncementBar() {
 
       {/* 编辑弹窗 */}
       {showEditModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full animate-fade-in-up">
-            <div className="p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">
-                📝 编辑公告
+        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full animate-fade-in-up overflow-hidden">
+            {/* 弹窗头部 */}
+            <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-4">
+              <h3 className="text-xl font-bold text-white flex items-center">
+                <span className="mr-2">📝</span> 编辑公告
               </h3>
+            </div>
 
+            {/* 弹窗内容 */}
+            <div className="p-6">
               <textarea
                 value={editContent}
                 onChange={(e) => setEditContent(e.target.value)}
@@ -137,23 +141,33 @@ export default function AnnouncementBar() {
                 placeholder="输入公告内容..."
               />
 
-              <p className="text-xs text-gray-500 mt-2">
-                💡 用 · 分隔不同内容，将自动滚动显示
-              </p>
+              <div className="mt-3 p-3 bg-blue-50 rounded-xl">
+                <p className="text-xs text-blue-600 flex items-center">
+                  <span className="mr-2">💡</span>
+                  用 · 分隔不同内容，将自动滚动显示
+                </p>
+              </div>
 
               <div className="flex justify-end space-x-3 mt-6">
                 <button
                   onClick={() => setShowEditModal(false)}
-                  className="px-5 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-all duration-200"
+                  className="px-6 py-2.5 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-all duration-200 font-medium"
                 >
                   取消
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={saving || !editContent.trim()}
-                  className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate disabled:opacity-50"
+                  className="btn-gradient text-white px-6 py-2.5 rounded-full font-medium btn-animate disabled:opacity-50 hover:shadow-lg"
                 >
-                  {saving ? '保存中...' : '💾 保存'}
+                  {saving ? (
+                    <span className="flex items-center">
+                      <div className="loading-spinner mr-2" style={{ width: '16px', height: '16px', borderWidth: '2px' }}></div>
+                      保存中...
+                    </span>
+                  ) : (
+                    '💾 保存'
+                  )}
                 </button>
               </div>
             </div>
