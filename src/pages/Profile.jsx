@@ -94,6 +94,12 @@ export default function Profile() {
   }
 
   const handleRaceSelect = async (race) => {
+    // 如果是跳过（race 为 null）
+    if (race === null) {
+      setShowRaceSelector(false)
+      return
+    }
+
     const { selectRace } = await import('../lib/worldbuilding')
     const result = await selectRace(currentUser.id, race)
 
@@ -174,16 +180,29 @@ export default function Profile() {
               {worldInfo && (
                 <div className="mb-4">
                   <div className="flex items-center justify-center sm:justify-start space-x-3 text-sm">
-                    {worldInfo.member_code && (
-                      <span className="font-mono text-purple-600 font-bold">{worldInfo.member_code}</span>
-                    )}
-                    <span className="text-gray-600">
-                      {worldInfo.raceInfo?.icon} {worldInfo.raceInfo?.name}
-                    </span>
-                    {worldInfo.title && (
-                      <span className="text-yellow-600">· {worldInfo.title}</span>
+                    {worldInfo.member_code ? (
+                      <>
+                        <span className="font-mono text-purple-600 font-bold">{worldInfo.member_code}</span>
+                        <span className="text-gray-600">
+                          {worldInfo.raceInfo?.icon} {worldInfo.raceInfo?.name}
+                        </span>
+                        {worldInfo.title && (
+                          <span className="text-yellow-600">· {worldInfo.title}</span>
+                        )}
+                      </>
+                    ) : (
+                      <span className="text-gray-400 italic">种族和编号待选择</span>
                     )}
                   </div>
+                  {/* 自己的主页且未选择种族时，显示选择按钮 */}
+                  {isOwnProfile && !worldInfo.member_code && (
+                    <button
+                      onClick={() => setShowRaceSelector(true)}
+                      className="mt-2 text-sm text-blue-500 hover:text-blue-700 underline"
+                    >
+                      选择种族
+                    </button>
+                  )}
                 </div>
               )}
 

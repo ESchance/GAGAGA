@@ -96,11 +96,19 @@ export default function RaceSelector({ onSelect }) {
           </div>
         )}
 
-        {/* 底部提示 */}
+        {/* 底部提示和跳过按钮 */}
         <div className="px-6 pb-6">
-          <p className="text-center text-gray-500 text-xs">
+          <p className="text-center text-gray-500 text-xs mb-4">
             每个种族都有独特的背景故事，选择后将随机获得一个
           </p>
+          <div className="text-center">
+            <button
+              onClick={() => onSelect(null)}
+              className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
+            >
+              跳过，稍后选择
+            </button>
+          </div>
         </div>
       </div>
     </div>
