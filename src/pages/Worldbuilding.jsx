@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { getWorldbuildingList, RACES } from '../lib/worldbuilding'
 import Avatar from '../components/Avatar'
+import { GalaxyIcon, BookIcon, MaskIcon, GlobeIcon, LightbulbIcon, StarIcon } from '../components/Icons'
 
 const TYPE_FILTERS = [
-  { key: null, label: '全部', icon: '🌌' },
-  { key: 'story', label: '故事', icon: '📖' },
-  { key: 'character', label: '角色', icon: '🎭' },
-  { key: 'setting', label: '设定', icon: '🌍' },
-  { key: 'idea', label: '点子', icon: '💡' }
+  { key: null, label: '全部', Icon: GalaxyIcon },
+  { key: 'story', label: '故事', Icon: BookIcon },
+  { key: 'character', label: '角色', Icon: MaskIcon },
+  { key: 'setting', label: '设定', Icon: GlobeIcon },
+  { key: 'idea', label: '点子', Icon: LightbulbIcon }
 ]
 
 export default function Worldbuilding() {
@@ -48,14 +49,14 @@ export default function Worldbuilding() {
     return date.toLocaleDateString('zh-CN')
   }
 
-  const getTypeIcon = (type) => {
+  const getTypeIcon = (type, className = "w-5 h-5") => {
     const icons = {
-      story: '📖',
-      character: '🎭',
-      setting: '🌍',
-      idea: '💡'
+      story: <BookIcon className={className} />,
+      character: <MaskIcon className={className} />,
+      setting: <GlobeIcon className={className} />,
+      idea: <LightbulbIcon className={className} />
     }
-    return icons[type] || '📝'
+    return icons[type] || <StarIcon className={className} />
   }
 
   const getTypeName = (type) => {
@@ -73,9 +74,12 @@ export default function Worldbuilding() {
       <div className="max-w-4xl mx-auto px-4">
         {/* 页面标题 */}
         <div className="text-center mb-8 animate-fade-in-up">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
-            🌌 噶宇宙创作
-          </h1>
+          <div className="flex items-center justify-center space-x-3 mb-2">
+            <GalaxyIcon className="w-10 h-10 text-purple-600" />
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              噶宇宙创作
+            </h1>
+          </div>
           <p className="text-gray-500">在这里创作属于你的噶宇宙故事</p>
         </div>
 
@@ -85,13 +89,14 @@ export default function Worldbuilding() {
             <button
               key={filter.key || 'all'}
               onClick={() => setActiveFilter(filter.key)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+              className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                 activeFilter === filter.key
                   ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg'
                   : 'bg-white text-gray-600 hover:bg-gray-100'
               }`}
             >
-              {filter.icon} {filter.label}
+              <filter.Icon className="w-4 h-4" />
+              <span>{filter.label}</span>
             </button>
           ))}
         </div>
@@ -131,7 +136,7 @@ export default function Worldbuilding() {
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center space-x-2">
-                    <span className="text-2xl">{getTypeIcon(post.type)}</span>
+                    <div className="text-purple-600">{getTypeIcon(post.type, "w-6 h-6")}</div>
                     <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
                       {getTypeName(post.type)}
                     </span>
