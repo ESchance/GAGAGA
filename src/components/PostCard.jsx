@@ -50,31 +50,34 @@ export default function PostCard({ post, onDelete }) {
   }
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+    <div className="post-card card-hover animate-fade-in-up">
       <Link to={`/post/${post.id}`} className="block">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2 hover:text-blue-600">
+        <h3 className="text-lg font-semibold text-gray-800 mb-2 hover:text-blue-600 transition-colors duration-200">
           {post.title}
         </h3>
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+        <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
           {post.content}
         </p>
-        <div className="flex justify-between items-center text-xs text-gray-500">
-          <div className="flex items-center space-x-2">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-3">
             <Avatar
               url={post.profiles?.avatar_url}
               username={post.profiles?.username}
               size="sm"
             />
-            <span>{post.profiles?.username || '匿名用户'}</span>
+            <span className="text-sm font-medium text-gray-700">{post.profiles?.username || '匿名用户'}</span>
           </div>
-          <div className="flex items-center space-x-3">
-            <span>{formatDate(post.created_at)}</span>
+          <div className="flex items-center space-x-4 text-xs text-gray-500">
+            <span className="flex items-center space-x-1">
+              <span>🕐</span>
+              <span>{formatDate(post.created_at)}</span>
+            </span>
             {user && user.id === post.user_id && (
               <button
                 onClick={handleDelete}
-                className="text-red-500 hover:text-red-700"
+                className="px-3 py-1 text-red-500 hover:text-white hover:bg-red-500 rounded-full transition-all duration-200"
               >
-                删除
+                🗑️ 删除
               </button>
             )}
           </div>

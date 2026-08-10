@@ -15,32 +15,32 @@ export default function Avatar({ url, username, size = 'md' }) {
     return '?'
   }
 
-  // 根据用户名生成随机颜色
-  const getColor = () => {
-    const colors = [
-      'bg-blue-500',
-      'bg-green-500',
-      'bg-purple-500',
-      'bg-pink-500',
-      'bg-indigo-500',
-      'bg-yellow-500',
-      'bg-red-500',
-      'bg-teal-500'
+  // 根据用户名生成渐变颜色
+  const getGradient = () => {
+    const gradients = [
+      'from-blue-500 to-purple-500',
+      'from-green-500 to-teal-500',
+      'from-purple-500 to-pink-500',
+      'from-pink-500 to-red-500',
+      'from-indigo-500 to-blue-500',
+      'from-yellow-500 to-orange-500',
+      'from-red-500 to-pink-500',
+      'from-teal-500 to-cyan-500'
     ]
 
-    if (!username) return colors[0]
+    if (!username) return gradients[0]
 
-    // 根据用户名生成确定的颜色
+    // 根据用户名生成确定的渐变
     let hash = 0
     for (let i = 0; i < username.length; i++) {
       hash = username.charCodeAt(i) + ((hash << 5) - hash)
     }
-    const index = Math.abs(hash) % colors.length
-    return colors[index]
+    const index = Math.abs(hash) % gradients.length
+    return gradients[index]
   }
 
   return (
-    <div className={`${sizeClasses[size]} rounded-full overflow-hidden flex-shrink-0`}>
+    <div className={`${sizeClasses[size]} rounded-full overflow-hidden flex-shrink-0 shadow-lg`}>
       {url ? (
         <img
           src={url}
@@ -48,7 +48,7 @@ export default function Avatar({ url, username, size = 'md' }) {
           className="w-full h-full object-cover"
         />
       ) : (
-        <div className={`w-full h-full ${getColor()} flex items-center justify-center text-white font-bold`}>
+        <div className={`w-full h-full bg-gradient-to-br ${getGradient()} flex items-center justify-center text-white font-bold shadow-inner`}>
           {getInitial()}
         </div>
       )}

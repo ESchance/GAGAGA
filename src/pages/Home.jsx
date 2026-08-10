@@ -54,25 +54,43 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-500">加载中...</div>
+      <div className="page-container flex items-center justify-center">
+        <div className="text-center">
+          <div className="loading-spinner mx-auto mb-4"></div>
+          <p className="text-gray-500">加载中...</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="page-container py-8">
       <div className="max-w-4xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">最新帖子</h1>
+        <div className="text-center mb-8 animate-fade-in-up">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            🌟 最新帖子
+          </h1>
+          <p className="text-gray-500">发现精彩内容，参与讨论</p>
+        </div>
 
         {posts.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
-            还没有帖子，快来发第一个帖子吧！
+          <div className="text-center py-16 animate-fade-in-up">
+            <div className="empty-state-icon mb-4">📝</div>
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">还没有帖子</h3>
+            <p className="text-gray-500 mb-6">快来发第一个帖子吧！</p>
+            <a
+              href="/create"
+              className="btn-gradient text-white px-6 py-3 rounded-full font-medium btn-animate inline-block"
+            >
+              ✏️ 发帖
+            </a>
           </div>
         ) : (
           <div className="space-y-4">
-            {posts.map((post) => (
-              <PostCard key={post.id} post={post} onDelete={handleDeletePost} />
+            {posts.map((post, index) => (
+              <div key={post.id} style={{ animationDelay: `${index * 0.1}s` }}>
+                <PostCard post={post} onDelete={handleDeletePost} />
+              </div>
             ))}
           </div>
         )}

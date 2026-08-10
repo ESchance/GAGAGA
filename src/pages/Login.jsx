@@ -3,12 +3,12 @@ import AuthForm from '../components/AuthForm'
 
 export default function Login() {
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
+    <div className="page-container py-12 px-4">
       <AuthForm type="login" />
 
-      <p className="text-center mt-4 text-gray-600">
+      <p className="text-center mt-6 text-gray-600 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
         还没有账号？{' '}
-        <Link to="/register" className="text-blue-500 hover:underline">
+        <Link to="/register" className="font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-purple-600 hover:to-blue-600 transition-all duration-300">
           点击注册
         </Link>
       </p>

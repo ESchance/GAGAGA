@@ -75,7 +75,7 @@ export default function AvatarUpload({ userId, currentAvatarUrl, onAvatarUpdate 
     <div className="flex flex-col items-center">
       {/* 头像显示 */}
       <div className="relative group">
-        <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 border-4 border-white shadow-lg">
+        <div className="w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-purple-500 border-4 border-white shadow-xl">
           {avatarUrl ? (
             <img
               src={avatarUrl}
@@ -83,17 +83,26 @@ export default function AvatarUpload({ userId, currentAvatarUrl, onAvatarUpdate 
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400 text-4xl">
+            <div className="w-full h-full flex items-center justify-center text-white text-4xl">
               👤
             </div>
           )}
         </div>
 
         {/* 上传按钮覆盖层 */}
-        <label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-          <span className="text-white text-sm font-medium">
-            {uploading ? '上传中...' : '更换头像'}
-          </span>
+        <label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer">
+          <div className="text-center">
+            <span className="text-white text-sm font-medium block">
+              {uploading ? (
+                <span className="flex items-center justify-center">
+                  <div className="loading-spinner mr-2" style={{ width: '16px', height: '16px', borderWidth: '2px' }}></div>
+                  上传中...
+                </span>
+              ) : (
+                '📷 更换头像'
+              )}
+            </span>
+          </div>
           <input
             type="file"
             accept="image/*"
@@ -105,15 +114,20 @@ export default function AvatarUpload({ userId, currentAvatarUrl, onAvatarUpdate 
       </div>
 
       {/* 提示信息 */}
-      <p className="mt-2 text-xs text-gray-500">
-        支持 JPG、PNG，最大 2MB
+      <p className="mt-3 text-xs text-gray-500 flex items-center">
+        <span className="mr-1">💡</span> 支持 JPG、PNG，最大 2MB
       </p>
 
       {/* 消息提示 */}
       {message && (
-        <p className={`mt-2 text-sm ${message.includes('成功') ? 'text-green-500' : 'text-red-500'}`}>
+        <div className={`mt-3 px-4 py-2 rounded-full text-sm font-medium flex items-center animate-fade-in-up ${
+          message.includes('成功')
+            ? 'bg-green-100 text-green-700'
+            : 'bg-red-100 text-red-700'
+        }`}>
+          <span className="mr-2">{message.includes('成功') ? '✅' : '❌'}</span>
           {message}
-        </p>
+        </div>
       )}
     </div>
   )

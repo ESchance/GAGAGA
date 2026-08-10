@@ -24,37 +24,46 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
+    <div className="page-container py-12 px-4">
       <AuthForm type="register" />
 
-      <div className="max-w-md mx-auto mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-        <h3 className="text-sm font-semibold text-blue-800 mb-2">
-          📧 可用的注册邮箱：
+      <div className="max-w-md mx-auto mt-6 glass-effect p-6 rounded-2xl shadow-lg animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+        <h3 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+          📧 可用的注册邮箱
         </h3>
-        <div className="max-h-40 overflow-y-auto text-xs">
+        <div className="max-h-60 overflow-y-auto space-y-2 pr-2">
           {allowedEmails.map((email, index) => {
             const isRegistered = registeredEmails.includes(email)
             return (
               <div
                 key={index}
-                className={`py-1 border-b border-blue-100 last:border-0 ${
-                  isRegistered ? 'text-red-500 line-through' : 'text-blue-700'
+                className={`flex items-center justify-between p-3 rounded-xl transition-all duration-200 ${
+                  isRegistered
+                    ? 'bg-red-50 text-red-500 line-through'
+                    : 'bg-gradient-to-r from-blue-50 to-purple-50 text-gray-700 hover:from-blue-100 hover:to-purple-100'
                 }`}
               >
-                {email}
-                {isRegistered && ' (已注册)'}
+                <span className="text-sm font-medium">{email}</span>
+                {isRegistered && (
+                  <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">
+                    已注册
+                  </span>
+                )}
               </div>
             )
           })}
         </div>
-        <p className="text-xs text-blue-600 mt-2">
-          红色删除线表示已注册，密码需包含大小写字母和数字
-        </p>
+        <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl">
+          <p className="text-xs text-gray-600 flex items-center">
+            <span className="mr-2">💡</span>
+            红色删除线表示已注册，密码需包含大小写字母和数字
+          </p>
+        </div>
       </div>
 
-      <p className="text-center mt-4 text-gray-600">
+      <p className="text-center mt-6 text-gray-600 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
         已有账号？{' '}
-        <Link to="/login" className="text-blue-500 hover:underline">
+        <Link to="/login" className="font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-purple-600 hover:to-blue-600 transition-all duration-300">
           点击登录
         </Link>
       </p>

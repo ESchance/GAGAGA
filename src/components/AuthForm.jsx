@@ -131,31 +131,36 @@ export default function AuthForm({ type = 'login' }) {
   const passwordStrength = getPasswordStrength(password)
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-center">
-        {type === 'register' ? '注册' : '登录'}
-      </h2>
+    <div className="max-w-md mx-auto mt-10 p-8 glass-effect rounded-2xl shadow-xl animate-fade-in-up">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          {type === 'register' ? '🚀 注册' : '👋 登录'}
+        </h2>
+        <p className="text-gray-500 mt-2">
+          {type === 'register' ? '加入噶宇宙，开始你的旅程' : '欢迎回来！'}
+        </p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         {type === 'register' && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              用户名
+          <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              👤 用户名
             </label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl input-animate focus:border-blue-500 focus:outline-none"
               placeholder="请输入用户名"
               required
             />
           </div>
         )}
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            邮箱
+        <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            📧 邮箱
           </label>
           <input
             type="email"
@@ -165,61 +170,65 @@ export default function AuthForm({ type = 'login' }) {
               setEmailRegistered(false)
             }}
             onBlur={() => checkEmailRegistered(email)}
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+            className={`w-full px-4 py-3 border-2 rounded-xl input-animate focus:outline-none ${
               emailRegistered
-                ? 'border-red-500 focus:ring-red-500'
-                : 'border-gray-300 focus:ring-blue-500'
+                ? 'border-red-500 focus:border-red-500'
+                : 'border-gray-200 focus:border-blue-500'
             }`}
             placeholder="请输入邮箱"
             required
           />
           {emailRegistered && (
-            <p className="mt-1 text-sm text-red-500 line-through">
-              该邮箱已注册，请直接登录
+            <p className="mt-2 text-sm text-red-500 line-through flex items-center">
+              <span className="mr-1">⚠️</span> 该邮箱已注册，请直接登录
             </p>
           )}
           {type === 'register' && !emailRegistered && (
-            <p className="mt-1 text-xs text-gray-500">
-              只能使用指定的邮箱注册
+            <p className="mt-2 text-xs text-gray-500 flex items-center">
+              <span className="mr-1">💡</span> 只能使用指定的邮箱注册
             </p>
           )}
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            密码
+        <div className="animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            🔒 密码
           </label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl input-animate focus:border-blue-500 focus:outline-none"
             placeholder="请输入密码"
             required
             minLength={6}
           />
           {type === 'register' && password && (
-            <div className="mt-2">
-              <p className={`text-sm ${passwordStrength.color}`}>
+            <div className="mt-3 p-3 bg-gray-50 rounded-xl">
+              <p className={`text-sm font-medium ${passwordStrength.color} mb-2`}>
                 {passwordStrength.text}
               </p>
-              <div className="flex gap-2 mt-1">
-                <div className={`h-1 flex-1 rounded ${passwordStrength.level >= 1 ? 'bg-red-500' : 'bg-gray-200'}`}></div>
-                <div className={`h-1 flex-1 rounded ${passwordStrength.level >= 2 ? 'bg-yellow-500' : 'bg-gray-200'}`}></div>
-                <div className={`h-1 flex-1 rounded ${passwordStrength.level >= 3 ? 'bg-green-500' : 'bg-gray-200'}`}></div>
+              <div className="flex gap-2 mb-3">
+                <div className={`password-strength flex-1 ${passwordStrength.level >= 1 ? 'bg-red-500' : 'bg-gray-200'}`}></div>
+                <div className={`password-strength flex-1 ${passwordStrength.level >= 2 ? 'bg-yellow-500' : 'bg-gray-200'}`}></div>
+                <div className={`password-strength flex-1 ${passwordStrength.level >= 3 ? 'bg-green-500' : 'bg-gray-200'}`}></div>
               </div>
-              <ul className="mt-2 text-xs text-gray-500 space-y-1">
-                <li className={/[A-Z]/.test(password) ? 'text-green-500' : ''}>
-                  {/[A-Z]/.test(password) ? '✓' : '○'} 包含大写字母
+              <ul className="text-xs text-gray-600 space-y-1">
+                <li className={`flex items-center ${/[A-Z]/.test(password) ? 'text-green-600' : ''}`}>
+                  <span className="mr-2">{/[A-Z]/.test(password) ? '✅' : '⬜'}</span>
+                  包含大写字母
                 </li>
-                <li className={/[a-z]/.test(password) ? 'text-green-500' : ''}>
-                  {/[a-z]/.test(password) ? '✓' : '○'} 包含小写字母
+                <li className={`flex items-center ${/[a-z]/.test(password) ? 'text-green-600' : ''}`}>
+                  <span className="mr-2">{/[a-z]/.test(password) ? '✅' : '⬜'}</span>
+                  包含小写字母
                 </li>
-                <li className={/[0-9]/.test(password) ? 'text-green-500' : ''}>
-                  {/[0-9]/.test(password) ? '✓' : '○'} 包含数字
+                <li className={`flex items-center ${/[0-9]/.test(password) ? 'text-green-600' : ''}`}>
+                  <span className="mr-2">{/[0-9]/.test(password) ? '✅' : '⬜'}</span>
+                  包含数字
                 </li>
-                <li className={password.length >= 6 ? 'text-green-500' : ''}>
-                  {password.length >= 6 ? '✓' : '○'} 至少6位
+                <li className={`flex items-center ${password.length >= 6 ? 'text-green-600' : ''}`}>
+                  <span className="mr-2">{password.length >= 6 ? '✅' : '⬜'}</span>
+                  至少6位
                 </li>
               </ul>
             </div>
@@ -229,14 +238,26 @@ export default function AuthForm({ type = 'login' }) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 disabled:opacity-50"
+          className="w-full btn-gradient text-white py-3 px-4 rounded-xl font-medium btn-animate disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? '处理中...' : (type === 'register' ? '注册' : '登录')}
+          {loading ? (
+            <span className="flex items-center justify-center">
+              <div className="loading-spinner mr-2" style={{ width: '20px', height: '20px', borderWidth: '2px' }}></div>
+              处理中...
+            </span>
+          ) : (
+            type === 'register' ? '🚀 注册' : '👋 登录'
+          )}
         </button>
       </form>
 
       {message && (
-        <div className={`mt-4 p-3 rounded-md ${message.includes('成功') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+        <div className={`mt-6 p-4 rounded-xl flex items-center animate-fade-in-up ${
+          message.includes('成功')
+            ? 'bg-green-50 text-green-700 border border-green-200'
+            : 'bg-red-50 text-red-700 border border-red-200'
+        }`}>
+          <span className="mr-2">{message.includes('成功') ? '✅' : '❌'}</span>
           {message}
         </div>
       )}

@@ -64,8 +64,11 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-500">加载中...</div>
+      <div className="page-container flex items-center justify-center">
+        <div className="text-center">
+          <div className="loading-spinner mx-auto mb-4"></div>
+          <p className="text-gray-500">加载中...</p>
+        </div>
       </div>
     )
   }
@@ -73,37 +76,41 @@ export default function Profile() {
   const isOwnProfile = currentUser && currentUser.id === id
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="page-container py-8">
       <div className="max-w-4xl mx-auto px-4">
-        {/* 用户信息 */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 mb-6">
-          <div className="flex flex-col sm:flex-row items-center gap-6">
+        {/* 用户信息卡片 */}
+        <div className="glass-effect p-8 rounded-2xl shadow-lg mb-8 animate-fade-in-up">
+          <div className="flex flex-col sm:flex-row items-center gap-8">
             {/* 头像 */}
-            {isOwnProfile ? (
-              <AvatarUpload
-                userId={id}
-                currentAvatarUrl={profile?.avatar_url}
-                onAvatarUpdate={handleAvatarUpdate}
-              />
-            ) : (
-              <Avatar
-                url={profile?.avatar_url}
-                username={profile?.username}
-                size="xl"
-              />
-            )}
+            <div className="relative">
+              {isOwnProfile ? (
+                <AvatarUpload
+                  userId={id}
+                  currentAvatarUrl={profile?.avatar_url}
+                  onAvatarUpdate={handleAvatarUpdate}
+                />
+              ) : (
+                <Avatar
+                  url={profile?.avatar_url}
+                  username={profile?.username}
+                  size="xl"
+                />
+              )}
+            </div>
 
             {/* 用户信息 */}
-            <div className="text-center sm:text-left">
-              <h1 className="text-2xl font-bold text-gray-800 mb-2">
+            <div className="text-center sm:text-left flex-1">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
                 {profile?.username || '匿名用户'}
               </h1>
-              <p className="text-gray-500">
-                发布了 {posts.length} 个帖子
-              </p>
+              <div className="flex items-center justify-center sm:justify-start space-x-4 mb-4">
+                <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+                  📝 {posts.length} 个帖子
+                </div>
+              </div>
               {isOwnProfile && (
-                <p className="text-sm text-blue-500 mt-2">
-                  点击头像可以更换
+                <p className="text-sm text-gray-500 flex items-center justify-center sm:justify-start">
+                  <span className="mr-2">💡</span> 点击头像可以更换
                 </p>
               )}
             </div>
@@ -111,18 +118,27 @@ export default function Profile() {
         </div>
 
         {/* 用户帖子列表 */}
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">发布的帖子</h2>
-        {posts.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
-            还没有发布任何帖子
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {posts.map((post) => (
-              <PostCard key={post.id} post={post} onDelete={handleDeletePost} />
-            ))}
-          </div>
-        )}
+        <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
+            📚 发布的帖子
+          </h2>
+
+          {posts.length === 0 ? (
+            <div className="text-center py-12 glass-effect rounded-2xl">
+              <div className="text-5xl mb-4">📝</div>
+              <h3 className="text-xl font-semibold text-gray-700 mb-2">还没有帖子</h3>
+              <p className="text-gray-500">去发布第一个帖子吧！</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {posts.map((post, index) => (
+                <div key={post.id} style={{ animationDelay: `${index * 0.1}s` }}>
+                  <PostCard post={post} onDelete={handleDeletePost} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

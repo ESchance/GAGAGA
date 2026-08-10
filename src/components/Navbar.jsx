@@ -53,11 +53,11 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-white shadow-sm">
+    <nav className="navbar sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
-          <Link to="/" className="text-xl font-bold text-blue-600">
-            噶宇宙
+          <Link to="/" className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-purple-600 hover:to-blue-600 transition-all duration-300">
+            🚀 噶宇宙
           </Link>
 
           <div className="flex items-center space-x-4">
@@ -65,24 +65,24 @@ export default function Navbar() {
               <>
                 <Link
                   to="/create"
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                  className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate"
                 >
-                  发帖
+                  ✏️ 发帖
                 </Link>
                 <Link
                   to={`/profile/${user.id}`}
-                  className="flex items-center space-x-2 text-gray-700 hover:text-blue-600"
+                  className="flex items-center space-x-2 px-3 py-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
                 >
                   <Avatar
                     url={profile?.avatar_url}
                     username={profile?.username}
                     size="sm"
                   />
-                  <span className="hidden sm:inline">{profile?.username || '我的主页'}</span>
+                  <span className="hidden sm:inline text-gray-700 font-medium">{profile?.username || '我的主页'}</span>
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="text-gray-500 hover:text-red-500"
+                  className="px-4 py-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-full transition-all duration-200"
                 >
                   退出
                 </button>
@@ -91,13 +91,13 @@ export default function Navbar() {
               <>
                 <Link
                   to="/login"
-                  className="text-gray-700 hover:text-blue-600"
+                  className="px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all duration-200 font-medium"
                 >
                   登录
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                  className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate"
                 >
                   注册
                 </Link>

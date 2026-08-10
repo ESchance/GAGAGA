@@ -100,15 +100,15 @@ export default function CommentList({ postId }) {
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">
-        评论 ({comments.length})
+    <div className="glass-effect p-6 rounded-2xl shadow-lg animate-fade-in-up">
+      <h3 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
+        💬 评论 ({comments.length})
       </h3>
 
       {/* 评论输入框 */}
       {user ? (
         <form onSubmit={handleSubmit} className="mb-6">
-          <div className="flex items-start space-x-3">
+          <div className="flex items-start space-x-4">
             <Avatar
               url={currentUserProfile?.avatar_url}
               username={currentUserProfile?.username}
@@ -119,54 +119,69 @@ export default function CommentList({ postId }) {
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 comment-input focus:outline-none"
                 placeholder="写下你的评论..."
                 required
               />
               <button
                 type="submit"
                 disabled={loading || !newComment.trim()}
-                className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 disabled:opacity-50"
+                className="mt-3 btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? '发送中...' : '发表评论'}
+                {loading ? (
+                  <span className="flex items-center">
+                    <div className="loading-spinner mr-2" style={{ width: '16px', height: '16px', borderWidth: '2px' }}></div>
+                    发送中...
+                  </span>
+                ) : (
+                  '✨ 发表评论'
+                )}
               </button>
             </div>
           </div>
         </form>
       ) : (
-        <div className="mb-6 p-4 bg-gray-50 rounded-md text-center text-gray-500">
-          请先<a href="/login" className="text-blue-500 hover:underline">登录</a>后再发表评论
+        <div className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl text-center">
+          <p className="text-gray-600 mb-3">请先登录后再发表评论</p>
+          <a
+            href="/login"
+            className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-block"
+          >
+            👋 登录
+          </a>
         </div>
       )}
 
       {/* 评论列表 */}
       <div className="space-y-4">
         {comments.length === 0 ? (
-          <div className="text-center py-6 text-gray-500">
-            暂无评论，快来发表第一条评论吧！
+          <div className="text-center py-8">
+            <div className="text-4xl mb-3">💭</div>
+            <p className="text-gray-500">暂无评论，快来发表第一条评论吧！</p>
           </div>
         ) : (
-          comments.map((comment) => (
+          comments.map((comment, index) => (
             <div
               key={comment.id}
-              className="p-4 bg-gray-50 rounded-lg"
+              className="p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl animate-fade-in-up"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="flex items-start space-x-3">
+              <div className="flex items-start space-x-4">
                 <Avatar
                   url={comment.profiles?.avatar_url}
                   username={comment.profiles?.username}
                   size="md"
                 />
                 <div className="flex-1">
-                  <div className="flex justify-between items-start mb-1">
-                    <span className="font-medium text-gray-800">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-semibold text-gray-800">
                       {comment.profiles?.username || '匿名用户'}
                     </span>
-                    <span className="text-xs text-gray-500">
-                      {new Date(comment.created_at).toLocaleString('zh-CN')}
+                    <span className="text-xs text-gray-500 bg-white px-2 py-1 rounded-full">
+                      🕐 {new Date(comment.created_at).toLocaleString('zh-CN')}
                     </span>
                   </div>
-                  <p className="text-gray-600 whitespace-pre-wrap">
+                  <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
                     {comment.content}
                   </p>
                 </div>
