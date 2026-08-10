@@ -4,7 +4,7 @@ import { checkIsAdmin, adminDeleteComment } from '../lib/admin'
 import { RACES } from '../lib/worldbuilding'
 import Avatar from './Avatar'
 
-export default function CommentList({ postId }) {
+export default function CommentList({ postId, requireRace = false }) {
   const [comments, setComments] = useState([])
   const [newComment, setNewComment] = useState('')
   const [loading, setLoading] = useState(false)
@@ -136,8 +136,8 @@ export default function CommentList({ postId }) {
             👋 登录
           </a>
         </div>
-      ) : user && !currentUserProfile?.race_selected ? (
-        // 已登录但未选择种族
+      ) : requireRace && !currentUserProfile?.race_selected ? (
+        // 需要种族选择但未选择（仅嘎宇宙创作）
         <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
           <p className="text-yellow-700 text-sm">
             ⚠️ 你还没有选择种族，无法发表评论。
@@ -147,7 +147,7 @@ export default function CommentList({ postId }) {
           </p>
         </div>
       ) : (
-        // 已登录且已选择种族
+        // 已登录且符合条件
         <form onSubmit={handleSubmit} className="mb-6">
           <div className="flex items-start space-x-4">
             <Avatar

@@ -20,6 +20,7 @@ export default function WorldbuildingDetail() {
   const [comments, setComments] = useState([])
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
+  const [userProfile, setUserProfile] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const [liked, setLiked] = useState(false)
   const [newComment, setNewComment] = useState('')
@@ -33,6 +34,7 @@ export default function WorldbuildingDetail() {
       if (session?.user) {
         checkLiked(session.user.id, id).then(setLiked)
         checkIsAdmin(session.user.id).then(setIsAdmin)
+        fetchUserProfile(session.user.id)
       }
     })
 
@@ -49,6 +51,21 @@ export default function WorldbuildingDetail() {
   const fetchComments = async () => {
     const data = await getWorldbuildingComments(id)
     setComments(data)
+  }
+
+  const fetchUserProfile = async (userId) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username, avatar_url, role, race_selected')
+        .eq('id', userId)
+        .single()
+
+      if (error) throw error
+      setUserProfile(data)
+    } catch (error) {
+      console.error('获取用户资料失败:', error)
+    }
   }
 
   const handleLike = async () => {
@@ -263,7 +280,26 @@ export default function WorldbuildingDetail() {
           </h3>
 
           {/* 评论输入框 */}
-          {user ? (
+          {!user ? (
+            <div className="mb-6 p-6 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl text-center">
+              <p className="text-gray-600 mb-3">请先登录后再发表评论</p>
+              <button
+                onClick={() => navigate('/login')}
+                className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate"
+              >
+                👋 登录
+              </button>
+            </div>
+          ) : !userProfile?.race_selected ? (
+            <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
+              <p className="text-yellow-700 text-sm">
+                ⚠️ 你还没有选择种族，无法发表评论。
+                <a href={`/profile/${user.id}`} className="ml-2 text-yellow-600 underline">
+                  去选择种族
+                </a>
+              </p>
+            </div>
+          ) : (
             <form onSubmit={handleComment} className="mb-6">
               <textarea
                 value={newComment}
@@ -283,16 +319,6 @@ export default function WorldbuildingDetail() {
                 </button>
               </div>
             </form>
-          ) : (
-            <div className="mb-6 p-6 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl text-center">
-              <p className="text-gray-600 mb-3">请先登录后再发表评论</p>
-              <button
-                onClick={() => navigate('/login')}
-                className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate"
-              >
-                👋 登录
-              </button>
-            </div>
           )}
 
           {/* 评论列表 */}
