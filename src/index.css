@@ -253,3 +253,19 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #a1a1a1;
 }
+
+/* 公告滚动动画 */
+@keyframes announcement-scroll {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.announcement-scroll {
+  animation: announcement-scroll 30s linear infinite;
+  will-change: transform;
+  display: inline-block;
+}

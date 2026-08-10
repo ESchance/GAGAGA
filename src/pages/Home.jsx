@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import PostCard from '../components/PostCard'
+import AnnouncementBar from '../components/AnnouncementBar'
 
 export default function Home() {
   const [posts, setPosts] = useState([])
@@ -71,40 +72,45 @@ export default function Home() {
   }
 
   return (
-    <div className="page-container py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="text-center mb-8 animate-fade-in-up">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-            🌟 最新帖子
-          </h1>
-          <p className="text-gray-500">发现精彩内容，参与讨论</p>
-        </div>
+    <div className="page-container">
+      {/* 公告栏 */}
+      <AnnouncementBar />
 
-        {posts.length === 0 ? (
-          <div className="text-center py-16 animate-fade-in-up">
-            <div className="empty-state-icon mb-4">📝</div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">还没有帖子</h3>
-            <p className="text-gray-500 mb-6">快来发第一个帖子吧！</p>
-            <a
-              href="/create"
-              className="btn-gradient text-white px-6 py-3 rounded-full font-medium btn-animate inline-block"
-            >
-              ✏️ 发帖
-            </a>
+      <div className="py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center mb-8 animate-fade-in-up">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+              🌟 最新帖子
+            </h1>
+            <p className="text-gray-500">发现精彩内容，参与讨论</p>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {posts.map((post, index) => (
-              <div key={post.id} style={{ animationDelay: `${index * 0.1}s` }}>
-                <PostCard
-                  post={post}
-                  onDelete={handleDeletePost}
-                  onPinChange={handlePinChange}
-                />
-              </div>
-            ))}
-          </div>
-        )}
+
+          {posts.length === 0 ? (
+            <div className="text-center py-16 animate-fade-in-up">
+              <div className="empty-state-icon mb-4">📝</div>
+              <h3 className="text-xl font-semibold text-gray-700 mb-2">还没有帖子</h3>
+              <p className="text-gray-500 mb-6">快来发第一个帖子吧！</p>
+              <a
+                href="/create"
+                className="btn-gradient text-white px-6 py-3 rounded-full font-medium btn-animate inline-block"
+              >
+                ✏️ 发帖
+              </a>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {posts.map((post, index) => (
+                <div key={post.id} style={{ animationDelay: `${index * 0.1}s` }}>
+                  <PostCard
+                    post={post}
+                    onDelete={handleDeletePost}
+                    onPinChange={handlePinChange}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
