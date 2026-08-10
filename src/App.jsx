@@ -10,6 +10,7 @@ import Worldbuilding from './pages/Worldbuilding'
 import WorldbuildingCreate from './pages/WorldbuildingCreate'
 import WorldbuildingDetail from './pages/WorldbuildingDetail'
 import WorldbuildingEdit from './pages/WorldbuildingEdit'
+import UserManagement from './pages/UserManagement'
 import './index.css'
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <Route path="/worldbuilding/create" element={<WorldbuildingCreate />} />
           <Route path="/worldbuilding/:id" element={<WorldbuildingDetail />} />
           <Route path="/worldbuilding/:id/edit" element={<WorldbuildingEdit />} />
+          <Route path="/admin/users" element={<UserManagement />} />
         </Routes>
       </div>
     </Router>

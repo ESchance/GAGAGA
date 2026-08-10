@@ -1,11 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { checkIsSuperAdmin } from '../lib/admin'
 import { useEffect, useState } from 'react'
 import Avatar from './Avatar'
 
 export default function Navbar() {
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -14,6 +16,7 @@ export default function Navbar() {
       setUser(session?.user ?? null)
       if (session?.user) {
         fetchProfile(session.user.id)
+        checkIsSuperAdmin(session.user.id).then(setIsSuperAdmin)
       }
     })
 
@@ -23,8 +26,10 @@ export default function Navbar() {
         setUser(session?.user ?? null)
         if (session?.user) {
           fetchProfile(session.user.id)
+          checkIsSuperAdmin(session.user.id).then(setIsSuperAdmin)
         } else {
           setProfile(null)
+          setIsSuperAdmin(false)
         }
       }
     )
@@ -80,6 +85,14 @@ export default function Navbar() {
                 >
                   ✏️ 发帖
                 </Link>
+                {isSuperAdmin && (
+                  <Link
+                    to="/admin/users"
+                    className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-2 rounded-full transition-all duration-200 font-medium text-sm hidden sm:inline-block"
+                  >
+                    👥 用户管理
+                  </Link>
+                )}
                 <Link
                   to={`/profile/${user.id}`}
                   className="flex items-center space-x-2 px-3 py-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
