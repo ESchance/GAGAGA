@@ -88,7 +88,10 @@ export const toggleAdmin = async (userId, currentRole) => {
 // 删除用户（仅超级管理员可用）
 export const deleteUser = async (userId) => {
   try {
+    console.log('开始删除用户:', userId)
+
     // 1. 删除所有关联数据
+    console.log('删除关联数据...')
     await supabase.from('worldbuilding_comments').delete().eq('user_id', userId)
     await supabase.from('worldbuilding_likes').delete().eq('user_id', userId)
     await supabase.from('worldbuilding').delete().eq('user_id', userId)
@@ -97,12 +100,19 @@ export const deleteUser = async (userId) => {
     await supabase.from('posts').delete().eq('user_id', userId)
 
     // 2. 调用 SQL 函数删除 profiles 和 auth.users
+    console.log('调用 delete_user 函数...')
     const { data, error } = await supabase.rpc('delete_user', {
       target_user_id: userId
     })
 
-    if (error) throw error
+    console.log('RPC 结果:', { data, error })
 
+    if (error) {
+      console.error('RPC 错误:', error)
+      throw error
+    }
+
+    console.log('删除成功')
     return { success: true }
   } catch (error) {
     console.error('删除用户失败:', error)
