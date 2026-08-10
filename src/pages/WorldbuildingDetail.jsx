@@ -7,6 +7,7 @@ import {
   addWorldbuildingComment,
   toggleLike,
   checkLiked,
+  deleteWorldbuilding,
   RACES
 } from '../lib/worldbuilding'
 import Avatar from '../components/Avatar'
@@ -21,6 +22,8 @@ export default function WorldbuildingDetail() {
   const [liked, setLiked] = useState(false)
   const [newComment, setNewComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -59,6 +62,21 @@ export default function WorldbuildingDetail() {
         likes_count: prev.likes_count + (result ? 1 : -1)
       }))
     }
+  }
+
+  const handleDelete = async () => {
+    if (!user) return
+
+    setDeleting(true)
+    const success = await deleteWorldbuilding(id, user.id)
+    setDeleting(false)
+
+    if (success) {
+      navigate('/worldbuilding')
+    } else {
+      alert('删除失败，请重试')
+    }
+    setShowDeleteModal(false)
   }
 
   const handleComment = async (e) => {
@@ -188,23 +206,43 @@ export default function WorldbuildingDetail() {
           </div>
 
           {/* 操作栏 */}
-          <div className="flex items-center space-x-6 pt-4 border-t border-gray-200">
-            <button
-              onClick={handleLike}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-200 ${
-                liked
-                  ? 'bg-red-50 text-red-500'
-                  : 'text-gray-500 hover:bg-gray-100'
-              }`}
-            >
-              <span>{liked ? '❤️' : '🤍'}</span>
-              <span>{post.likes_count || 0}</span>
-            </button>
+          <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+            <div className="flex items-center space-x-6">
+              <button
+                onClick={handleLike}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-200 ${
+                  liked
+                    ? 'bg-red-50 text-red-500'
+                    : 'text-gray-500 hover:bg-gray-100'
+                }`}
+              >
+                <span>{liked ? '❤️' : '🤍'}</span>
+                <span>{post.likes_count || 0}</span>
+              </button>
 
-            <div className="flex items-center space-x-2 text-gray-500">
-              <span>💬</span>
-              <span>{comments.length}</span>
+              <div className="flex items-center space-x-2 text-gray-500">
+                <span>💬</span>
+                <span>{comments.length}</span>
+              </div>
             </div>
+
+            {/* 作者操作按钮 */}
+            {user && user.id === post.user_id && (
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => navigate(`/worldbuilding/${id}/edit`)}
+                  className="px-4 py-2 text-purple-500 hover:text-white hover:bg-purple-500 rounded-full transition-all duration-200 text-sm font-medium"
+                >
+                  ✏️ 编辑
+                </button>
+                <button
+                  onClick={() => setShowDeleteModal(true)}
+                  className="px-4 py-2 text-red-500 hover:text-white hover:bg-red-500 rounded-full transition-all duration-200 text-sm font-medium"
+                >
+                  🗑️ 删除
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -293,6 +331,38 @@ export default function WorldbuildingDetail() {
           </div>
         </div>
       </div>
+
+      {/* 删除确认弹窗 */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full animate-fade-in-up">
+            <div className="p-6">
+              <div className="text-center mb-6">
+                <div className="text-5xl mb-4">⚠️</div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">确认删除</h3>
+                <p className="text-gray-500">确定要删除这个创作吗？此操作不可撤销。</p>
+              </div>
+
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  disabled={deleting}
+                  className="flex-1 px-6 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-all duration-200 font-medium"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className="flex-1 px-6 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-all duration-200 disabled:opacity-50"
+                >
+                  {deleting ? '删除中...' : '🗑️ 确认删除'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -262,6 +262,66 @@ export const getWorldbuildingDetail = async (id) => {
   }
 }
 
+// 删除创作（只有作者可以删除）
+export const deleteWorldbuilding = async (id, userId) => {
+  try {
+    // 验证是否是作者
+    const { data: post, error: fetchError } = await supabase
+      .from('worldbuilding')
+      .select('user_id')
+      .eq('id', id)
+      .single()
+
+    if (fetchError) throw fetchError
+
+    if (post.user_id !== userId) {
+      throw new Error('只有作者可以删除自己的创作')
+    }
+
+    const { error } = await supabase
+      .from('worldbuilding')
+      .delete()
+      .eq('id', id)
+
+    if (error) throw error
+    return true
+  } catch (error) {
+    console.error('删除创作失败:', error)
+    return false
+  }
+}
+
+// 更新创作（只有作者可以更新）
+export const updateWorldbuilding = async (id, userId, type, title, content) => {
+  try {
+    // 验证是否是作者
+    const { data: post, error: fetchError } = await supabase
+      .from('worldbuilding')
+      .select('user_id')
+      .eq('id', id)
+      .single()
+
+    if (fetchError) throw fetchError
+
+    if (post.user_id !== userId) {
+      throw new Error('只有作者可以编辑自己的创作')
+    }
+
+    const { data, error } = await supabase
+      .from('worldbuilding')
+      .update({ type, title, content, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('更新创作失败:', error)
+    return null
+  }
+}
+
 // 点赞/取消点赞
 export const toggleLike = async (userId, worldbuildingId) => {
   try {
