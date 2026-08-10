@@ -92,28 +92,28 @@ export default function AnnouncementBar() {
   return (
     <>
       {/* 公告栏 */}
-      <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 overflow-hidden relative">
+      <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2.5 overflow-hidden relative">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex items-center">
-            {/* 固定的标题 */}
-            <div className="flex-shrink-0 font-bold mr-4 bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">
-              📢 公告
+            {/* 固定的标题 - 极简风格 */}
+            <div className="flex-shrink-0 font-medium mr-3 text-sm opacity-90">
+              📢
             </div>
 
             {/* 滚动内容 */}
             <div className="overflow-hidden flex-1 relative">
-              <div className="announcement-scroll whitespace-nowrap text-sm">
+              <div className="announcement-scroll whitespace-nowrap text-sm opacity-95">
                 {announcement.content}
               </div>
             </div>
 
-            {/* 管理员编辑按钮 */}
+            {/* 管理员编辑按钮 - 柔和样式 */}
             {isAdmin && (
               <button
                 onClick={openEditModal}
-                className="flex-shrink-0 ml-4 px-4 py-1.5 bg-white bg-opacity-25 hover:bg-white hover:text-blue-500 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95"
+                className="flex-shrink-0 ml-3 px-3 py-1 text-white text-opacity-80 hover:text-opacity-100 hover:bg-white hover:bg-opacity-20 rounded-full text-xs transition-all duration-300"
               >
-                ✏️ 编辑公告
+                ✏️ 编辑
               </button>
             )}
           </div>
