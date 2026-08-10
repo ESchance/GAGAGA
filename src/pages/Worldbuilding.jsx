@@ -77,10 +77,10 @@ export default function Worldbuilding() {
           <div className="flex items-center justify-center space-x-3 mb-2">
             <GalaxyIcon className="w-10 h-10 text-purple-600" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              噶宇宙创作
+              嘎宇宙创作
             </h1>
           </div>
-          <p className="text-gray-500">在这里创作属于你的噶宇宙故事</p>
+          <p className="text-gray-500">在这里创作属于你的嘎宇宙故事</p>
         </div>
 
         {/* 类型筛选 */}

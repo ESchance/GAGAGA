@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 import { createWorldbuilding, checkRaceSelected } from '../lib/worldbuilding'
 
 const TYPE_OPTIONS = [
-  { value: 'story', label: '📖 故事', description: '创作噶宇宙中的故事' },
+  { value: 'story', label: '📖 故事', description: '创作嘎宇宙中的故事' },
   { value: 'character', label: '🎭 角色', description: '设定你的角色背景' },
   { value: 'setting', label: '🌍 设定', description: '补充世界观设定' },
   { value: 'idea', label: '💡 点子', description: '提出新的创意想法' }
@@ -74,7 +74,7 @@ export default function WorldbuildingCreate() {
             <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
               ✏️ 创作新内容
             </h2>
-            <p className="text-gray-500 mt-2">在噶宇宙中留下你的印记</p>
+            <p className="text-gray-500 mt-2">在嘎宇宙中留下你的印记</p>
           </div>
 
           {!raceSelected ? (
@@ -149,9 +149,9 @@ export default function WorldbuildingCreate() {
               <div className="bg-purple-50 rounded-xl p-4">
                 <h4 className="text-sm font-semibold text-purple-800 mb-2">💡 创作提示</h4>
                 <ul className="text-xs text-purple-600 space-y-1">
-                  <li>• 故事类：可以描写你在噶宇宙中的冒险经历</li>
+                  <li>• 故事类：可以描写你在嘎宇宙中的冒险经历</li>
                   <li>• 角色类：可以设定你角色的背景故事和性格</li>
-                  <li>• 设定类：可以补充噶宇宙的世界观设定</li>
+                  <li>• 设定类：可以补充嘎宇宙的世界观设定</li>
                   <li>• 点子类：可以提出新的创意和想法</li>
                 </ul>
               </div>

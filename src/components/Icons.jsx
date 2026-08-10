@@ -1,4 +1,4 @@
-// 噶宇宙 SVG 图标
+// 嘎宇宙 SVG 图标
 export const GalaxyIcon = ({ className = "w-6 h-6" }) => (
   <svg
     className={className}

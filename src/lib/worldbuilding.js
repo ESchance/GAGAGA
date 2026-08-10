@@ -197,7 +197,7 @@ export const updateCustomBackstory = async (userId, backstory) => {
   }
 }
 
-// 创建噶宇宙创作
+// 创建嘎宇宙创作
 export const createWorldbuilding = async (userId, type, title, content) => {
   try {
     const { data, error } = await supabase
@@ -221,7 +221,7 @@ export const createWorldbuilding = async (userId, type, title, content) => {
   }
 }
 
-// 获取噶宇宙创作列表
+// 获取嘎宇宙创作列表
 export const getWorldbuildingList = async (type = null, page = 1, limit = 10) => {
   try {
     let query = supabase

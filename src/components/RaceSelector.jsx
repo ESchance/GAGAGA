@@ -25,7 +25,7 @@ export default function RaceSelector({ onSelect }) {
         {/* 头部 */}
         <div className="text-center py-8 px-6">
           <div className="text-6xl mb-4">🌌</div>
-          <h2 className="text-3xl font-bold text-white mb-2">欢迎来到噶宇宙</h2>
+          <h2 className="text-3xl font-bold text-white mb-2">欢迎来到嘎宇宙</h2>
           <p className="text-purple-200 text-sm">在开始你的旅程之前，请选择你的种族</p>
           <p className="text-yellow-400 text-xs mt-2">⚠️ 种族选择后不可更改，请慎重选择</p>
         </div>

@@ -137,7 +137,7 @@ export default function AuthForm({ type = 'login' }) {
           {type === 'register' ? '🚀 注册' : '👋 登录'}
         </h2>
         <p className="text-gray-500 mt-2">
-          {type === 'register' ? '加入噶宇宙，开始你的旅程' : '欢迎回来！'}
+          {type === 'register' ? '加入嘎宇宙，开始你的旅程' : '欢迎回来！'}
         </p>
       </div>
 

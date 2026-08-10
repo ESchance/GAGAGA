@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 import { getWorldbuildingDetail, updateWorldbuilding } from '../lib/worldbuilding'
 
 const TYPE_OPTIONS = [
-  { value: 'story', label: '📖 故事', description: '创作噶宇宙中的故事' },
+  { value: 'story', label: '📖 故事', description: '创作嘎宇宙中的故事' },
   { value: 'character', label: '🎭 角色', description: '设定你的角色背景' },
   { value: 'setting', label: '🌍 设定', description: '补充世界观设定' },
   { value: 'idea', label: '💡 点子', description: '提出新的创意想法' }
@@ -142,7 +142,7 @@ export default function WorldbuildingEdit() {
             <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
               ✏️ 编辑创作
             </h2>
-            <p className="text-gray-500 mt-2">修改你的噶宇宙创作</p>
+            <p className="text-gray-500 mt-2">修改你的嘎宇宙创作</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
