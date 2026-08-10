@@ -69,6 +69,12 @@ export default function Navbar() {
             {user ? (
               <>
                 <Link
+                  to="/worldbuilding"
+                  className="text-purple-600 hover:text-purple-800 hover:bg-purple-50 px-3 py-2 rounded-full transition-all duration-200 font-medium text-sm hidden sm:inline-block"
+                >
+                  🌌 创作
+                </Link>
+                <Link
                   to="/create"
                   className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate"
                 >
