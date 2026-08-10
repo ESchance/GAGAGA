@@ -1,26 +1,51 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useEffect, useState } from 'react'
+import Avatar from './Avatar'
 
 export default function Navbar() {
   const [user, setUser] = useState(null)
+  const [profile, setProfile] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
     // 获取当前用户
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
+      if (session?.user) {
+        fetchProfile(session.user.id)
+      }
     })
 
     // 监听登录状态变化
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setUser(session?.user ?? null)
+        if (session?.user) {
+          fetchProfile(session.user.id)
+        } else {
+          setProfile(null)
+        }
       }
     )
 
     return () => subscription.unsubscribe()
   }, [])
+
+  const fetchProfile = async (userId) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username, avatar_url')
+        .eq('id', userId)
+        .single()
+
+      if (error) throw error
+      setProfile(data)
+    } catch (error) {
+      console.error('获取用户资料失败:', error)
+    }
+  }
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -46,9 +71,14 @@ export default function Navbar() {
                 </Link>
                 <Link
                   to={`/profile/${user.id}`}
-                  className="text-gray-700 hover:text-blue-600"
+                  className="flex items-center space-x-2 text-gray-700 hover:text-blue-600"
                 >
-                  我的主页
+                  <Avatar
+                    url={profile?.avatar_url}
+                    username={profile?.username}
+                    size="sm"
+                  />
+                  <span className="hidden sm:inline">{profile?.username || '我的主页'}</span>
                 </Link>
                 <button
                   onClick={handleLogout}

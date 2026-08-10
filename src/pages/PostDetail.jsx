@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import CommentList from '../components/CommentList'
+import Avatar from '../components/Avatar'
 
 export default function PostDetail() {
   const { id } = useParams()
@@ -23,7 +24,7 @@ export default function PostDetail() {
     try {
       const { data, error } = await supabase
         .from('posts')
-        .select('*, profiles(username)')
+        .select('*, profiles(username, avatar_url)')
         .eq('id', id)
         .single()
 
@@ -77,8 +78,13 @@ export default function PostDetail() {
           <h1 className="text-2xl font-bold text-gray-800 mb-4">{post.title}</h1>
           <p className="text-gray-600 whitespace-pre-wrap mb-4">{post.content}</p>
           <div className="flex justify-between items-center text-sm text-gray-500">
-            <Link to={`/profile/${post.user_id}`} className="hover:text-blue-600">
-              {post.profiles?.username || '匿名用户'}
+            <Link to={`/profile/${post.user_id}`} className="flex items-center space-x-2 hover:text-blue-600">
+              <Avatar
+                url={post.profiles?.avatar_url}
+                username={post.profiles?.username}
+                size="sm"
+              />
+              <span>{post.profiles?.username || '匿名用户'}</span>
             </Link>
             <div className="flex items-center space-x-4">
               <span>{new Date(post.created_at).toLocaleString('zh-CN')}</span>

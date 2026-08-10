@@ -1,16 +1,21 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import Avatar from './Avatar'
 
 export default function CommentList({ postId }) {
   const [comments, setComments] = useState([])
   const [newComment, setNewComment] = useState('')
   const [loading, setLoading] = useState(false)
   const [user, setUser] = useState(null)
+  const [currentUserProfile, setCurrentUserProfile] = useState(null)
 
   useEffect(() => {
     // 获取当前用户
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
+      if (session?.user) {
+        fetchCurrentUserProfile(session.user.id)
+      }
     })
 
     // 获取评论列表
@@ -39,11 +44,26 @@ export default function CommentList({ postId }) {
     }
   }, [postId])
 
+  const fetchCurrentUserProfile = async (userId) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username, avatar_url')
+        .eq('id', userId)
+        .single()
+
+      if (error) throw error
+      setCurrentUserProfile(data)
+    } catch (error) {
+      console.error('获取用户资料失败:', error)
+    }
+  }
+
   const fetchComments = async () => {
     try {
       const { data, error } = await supabase
         .from('comments')
-        .select('*, profiles(username)')
+        .select('*, profiles(username, avatar_url)')
         .eq('post_id', postId)
         .order('created_at', { ascending: true })
 
@@ -88,21 +108,30 @@ export default function CommentList({ postId }) {
       {/* 评论输入框 */}
       {user ? (
         <form onSubmit={handleSubmit} className="mb-6">
-          <textarea
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="写下你的评论..."
-            required
-          />
-          <button
-            type="submit"
-            disabled={loading || !newComment.trim()}
-            className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 disabled:opacity-50"
-          >
-            {loading ? '发送中...' : '发表评论'}
-          </button>
+          <div className="flex items-start space-x-3">
+            <Avatar
+              url={currentUserProfile?.avatar_url}
+              username={currentUserProfile?.username}
+              size="md"
+            />
+            <div className="flex-1">
+              <textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="写下你的评论..."
+                required
+              />
+              <button
+                type="submit"
+                disabled={loading || !newComment.trim()}
+                className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 disabled:opacity-50"
+              >
+                {loading ? '发送中...' : '发表评论'}
+              </button>
+            </div>
+          </div>
         </form>
       ) : (
         <div className="mb-6 p-4 bg-gray-50 rounded-md text-center text-gray-500">
@@ -122,17 +151,26 @@ export default function CommentList({ postId }) {
               key={comment.id}
               className="p-4 bg-gray-50 rounded-lg"
             >
-              <div className="flex justify-between items-start mb-2">
-                <span className="font-medium text-gray-800">
-                  {comment.profiles?.username || '匿名用户'}
-                </span>
-                <span className="text-xs text-gray-500">
-                  {new Date(comment.created_at).toLocaleString('zh-CN')}
-                </span>
+              <div className="flex items-start space-x-3">
+                <Avatar
+                  url={comment.profiles?.avatar_url}
+                  username={comment.profiles?.username}
+                  size="md"
+                />
+                <div className="flex-1">
+                  <div className="flex justify-between items-start mb-1">
+                    <span className="font-medium text-gray-800">
+                      {comment.profiles?.username || '匿名用户'}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {new Date(comment.created_at).toLocaleString('zh-CN')}
+                    </span>
+                  </div>
+                  <p className="text-gray-600 whitespace-pre-wrap">
+                    {comment.content}
+                  </p>
+                </div>
               </div>
-              <p className="text-gray-600 whitespace-pre-wrap">
-                {comment.content}
-              </p>
             </div>
           ))
         )}

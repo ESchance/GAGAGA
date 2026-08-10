@@ -2,14 +2,22 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import PostCard from '../components/PostCard'
+import Avatar from '../components/Avatar'
+import AvatarUpload from '../components/AvatarUpload'
 
 export default function Profile() {
   const { id } = useParams()
   const [profile, setProfile] = useState(null)
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [currentUser, setCurrentUser] = useState(null)
 
   useEffect(() => {
+    // 获取当前登录用户
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setCurrentUser(session?.user ?? null)
+    })
+
     fetchProfile()
     fetchUserPosts()
   }, [id])
@@ -33,7 +41,7 @@ export default function Profile() {
     try {
       const { data, error } = await supabase
         .from('posts')
-        .select('*, profiles(username)')
+        .select('*, profiles(username, avatar_url)')
         .eq('user_id', id)
         .order('created_at', { ascending: false })
 
@@ -50,6 +58,10 @@ export default function Profile() {
     setPosts(posts.filter(post => post.id !== postId))
   }
 
+  const handleAvatarUpdate = (newAvatarUrl) => {
+    setProfile({ ...profile, avatar_url: newAvatarUrl })
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -58,17 +70,44 @@ export default function Profile() {
     )
   }
 
+  const isOwnProfile = currentUser && currentUser.id === id
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
         {/* 用户信息 */}
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 mb-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">
-            {profile?.username || '匿名用户'}
-          </h1>
-          <p className="text-gray-500">
-            发布了 {posts.length} 个帖子
-          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-6">
+            {/* 头像 */}
+            {isOwnProfile ? (
+              <AvatarUpload
+                userId={id}
+                currentAvatarUrl={profile?.avatar_url}
+                onAvatarUpdate={handleAvatarUpdate}
+              />
+            ) : (
+              <Avatar
+                url={profile?.avatar_url}
+                username={profile?.username}
+                size="xl"
+              />
+            )}
+
+            {/* 用户信息 */}
+            <div className="text-center sm:text-left">
+              <h1 className="text-2xl font-bold text-gray-800 mb-2">
+                {profile?.username || '匿名用户'}
+              </h1>
+              <p className="text-gray-500">
+                发布了 {posts.length} 个帖子
+              </p>
+              {isOwnProfile && (
+                <p className="text-sm text-blue-500 mt-2">
+                  点击头像可以更换
+                </p>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* 用户帖子列表 */}

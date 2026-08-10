@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import Avatar from './Avatar'
 
 export default function PostCard({ post, onDelete }) {
   const [user, setUser] = useState(null)
@@ -58,7 +59,14 @@ export default function PostCard({ post, onDelete }) {
           {post.content}
         </p>
         <div className="flex justify-between items-center text-xs text-gray-500">
-          <span>{post.profiles?.username || '匿名用户'}</span>
+          <div className="flex items-center space-x-2">
+            <Avatar
+              url={post.profiles?.avatar_url}
+              username={post.profiles?.username}
+              size="sm"
+            />
+            <span>{post.profiles?.username || '匿名用户'}</span>
+          </div>
           <div className="flex items-center space-x-3">
             <span>{formatDate(post.created_at)}</span>
             {user && user.id === post.user_id && (
