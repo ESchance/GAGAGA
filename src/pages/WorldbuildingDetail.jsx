@@ -60,11 +60,13 @@ export default function WorldbuildingDetail() {
     const result = await toggleLike(user.id, id)
     if (result !== null) {
       setLiked(result)
-      // 重新获取帖子详情以获取正确的 likes_count
-      const updatedPost = await getWorldbuildingDetail(id)
-      if (updatedPost) {
-        setPost(updatedPost)
-      }
+      // 等待数据库更新后再获取最新数据
+      setTimeout(async () => {
+        const updatedPost = await getWorldbuildingDetail(id)
+        if (updatedPost) {
+          setPost(updatedPost)
+        }
+      }, 200)
     }
   }
 
