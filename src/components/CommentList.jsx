@@ -125,7 +125,7 @@ export default function CommentList({ postId }) {
       </h3>
 
       {/* 评论输入框 */}
-      {user ? (
+      {user && currentUserProfile?.race_selected ? (
         <form onSubmit={handleSubmit} className="mb-6">
           <div className="flex items-start space-x-4">
             <Avatar
@@ -169,6 +169,18 @@ export default function CommentList({ postId }) {
           >
             👋 登录
           </a>
+        </div>
+      )}
+
+      {/* 未选择种族的提示 */}
+      {user && currentUserProfile && !currentUserProfile.race_selected && (
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
+          <p className="text-yellow-700 text-sm">
+            ⚠️ 你还没有选择种族，无法发表评论。
+            <a href={`/profile/${user.id}`} className="ml-2 text-yellow-600 underline">
+              去选择种族
+            </a>
+          </p>
         </div>
       )}
 

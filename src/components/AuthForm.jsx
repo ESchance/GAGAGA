@@ -110,7 +110,8 @@ export default function AuthForm({ type = 'login' }) {
 
         // 注册成功（profile 由数据库触发器自动创建）
         setMessage('注册成功！')
-        setTimeout(() => navigate('/'), 1000)
+        // 跳转到个人主页，会自动弹出种族选择
+        setTimeout(() => navigate(`/profile/${data.user.id}`), 1000)
       } else {
         // 登录
         const { error } = await supabase.auth.signInWithPassword({

@@ -81,8 +81,8 @@ export const getUserWorldInfo = async (userId) => {
 
     return {
       ...profile,
-      raceInfo: RACES[profile.race] || RACES.human,
-      titleInfo: RACE_TITLES[profile.race] || RACE_TITLES.human,
+      raceInfo: profile.race ? RACES[profile.race] : null,
+      titleInfo: profile.race ? RACE_TITLES[profile.race] : null,
       defaultStory
     }
   } catch (error) {
