@@ -97,6 +97,8 @@ export default function Profile() {
     // 如果是跳过（race 为 null）
     if (race === null) {
       setShowRaceSelector(false)
+      // 跳转到首页
+      navigate('/')
       return
     }
 
@@ -105,9 +107,8 @@ export default function Profile() {
 
     if (result.success) {
       setShowRaceSelector(false)
-      // 重新获取数据
-      await fetchProfile()
-      await fetchWorldInfo()
+      // 跳转到首页
+      navigate('/')
     } else {
       alert('选择种族失败：' + result.error)
     }
