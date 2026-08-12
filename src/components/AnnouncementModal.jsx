@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useLocation } from 'react-router-dom'
 
 const ANNOUNCEMENT_KEY = 'gagaga_announcement_dismissed'
-const ANNOUNCEMENT_VERSION = '1.2'
+const ANNOUNCEMENT_VERSION = '1.3'
 
 const announcementContent = {
   version: ANNOUNCEMENT_VERSION,
@@ -12,14 +12,14 @@ const announcementContent = {
       icon: '🎉',
       title: '最新更新',
       items: [
+        '全面优化移动端和PC端视觉体验',
+        '新增动态渐变背景效果',
+        '优化动画效果，更加丝滑',
         '新增用户管理功能',
         '新增嘎宇宙种族系统和编号',
         '新增嘎宇宙创作板块',
-        '优化移动端体验',
         '修复点赞计数问题',
-        '修复删除用户问题',
-        '优化开屏公告逻辑',
-        '修复种族选择后跳转问题'
+        '修复删除用户问题'
       ]
     },
     {
@@ -28,7 +28,8 @@ const announcementContent = {
       items: [
         '注册后可选择种族，获得唯一编号',
         '嘎宇宙创作需要选择种族才能参与',
-        '首页发帖无需选择种族'
+        '首页发帖无需选择种族',
+        '所有用户可查看嘎宇宙住户'
       ]
     },
     {
