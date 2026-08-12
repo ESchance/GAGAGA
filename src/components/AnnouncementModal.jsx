@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 
 const ANNOUNCEMENT_KEY = 'gagaga_announcement_dismissed'
-const ANNOUNCEMENT_VERSION = '1.1'
+const ANNOUNCEMENT_VERSION = '1.2'
 
 const announcementContent = {
   version: ANNOUNCEMENT_VERSION,
