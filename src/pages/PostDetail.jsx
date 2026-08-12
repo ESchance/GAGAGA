@@ -178,9 +178,12 @@ export default function PostDetail() {
                 <div className="flex items-center space-x-2">
                   <span className="font-semibold text-gray-800">{post.profiles?.username || '匿名用户'}</span>
                   {post.profiles?.role === 'admin' && (
-                    <span className="text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-full font-medium">
+                    <span className="hidden sm:inline text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-full font-medium">
                       管理员
                     </span>
+                  )}
+                  {post.profiles?.role === 'admin' && (
+                    <span className="sm:hidden text-xs" title="管理员">👑</span>
                   )}
                 </div>
                 {post.profiles?.member_code ? (

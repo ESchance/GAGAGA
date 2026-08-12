@@ -215,9 +215,12 @@ export default function CommentList({ postId, requireRace = false }) {
                           {comment.profiles?.username || '匿名用户'}
                         </span>
                         {comment.profiles?.role === 'admin' && (
-                          <span className="text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-full font-medium">
+                          <span className="hidden sm:inline text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-full font-medium">
                             管理员
                           </span>
+                        )}
+                        {comment.profiles?.role === 'admin' && (
+                          <span className="sm:hidden text-xs" title="管理员">👑</span>
                         )}
                         {comment.profiles?.member_code && (
                           <span className="text-xs text-gray-500">

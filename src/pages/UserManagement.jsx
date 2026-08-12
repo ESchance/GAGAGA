@@ -24,14 +24,13 @@ export default function UserManagement() {
       }
       setUser(session.user)
 
+      // 检查是否是超级管理员
       checkIsSuperAdmin(session.user.id).then((isAdmin) => {
-        if (!isAdmin) {
-          navigate('/')
-          return
-        }
         setIsSuperAdmin(isAdmin)
-        fetchUsers()
       })
+
+      // 所有登录用户都可以访问，获取用户列表
+      fetchUsers()
     })
   }, [navigate])
 
@@ -89,6 +88,11 @@ export default function UserManagement() {
   )
 
   const getRoleDisplay = (role) => {
+    // 如果不是超级管理员视角，不显示超级管理员的特殊标识
+    if (!isSuperAdmin && role === 'superadmin') {
+      return { text: '普通用户', color: 'text-gray-600 bg-gray-50' }
+    }
+
     switch (role) {
       case 'superadmin': return { text: '超级管理员', color: 'text-red-600 bg-red-50' }
       case 'admin': return { text: '管理员', color: 'text-yellow-600 bg-yellow-50' }
@@ -121,9 +125,12 @@ export default function UserManagement() {
         {/* 页面标题 */}
         <div className="mb-6 animate-fade-in-up">
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            👥 用户管理
+            {isSuperAdmin ? '👥 用户管理' : '🏠 嘎宇宙住户'}
           </h1>
           <p className="text-gray-500 mt-1">共 {users.length} 位用户</p>
+          {!isSuperAdmin && (
+            <p className="text-sm text-gray-400 mt-1">你只能查看用户列表，无法进行管理操作</p>
+          )}
         </div>
 
         {/* 搜索框 */}
@@ -168,7 +175,8 @@ export default function UserManagement() {
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${roleDisplay.color}`}>{roleDisplay.text}</span>
                   </div>
                   <div className="col-span-4 text-right">
-                    {userData.role !== 'superadmin' && !isCurrentUser && (
+                    {/* 只有超级管理员才能看到操作按钮 */}
+                    {isSuperAdmin && userData.role !== 'superadmin' && !isCurrentUser && (
                       <div className="flex justify-end space-x-2">
                         <button onClick={() => handleToggleAdmin(userData.id, userData.role)} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${userData.role === 'admin' ? 'text-orange-600 hover:bg-orange-50' : 'text-blue-600 hover:bg-blue-50'}`}>
                           {userData.role === 'admin' ? '撤销管理' : '设为管理员'}
@@ -176,7 +184,7 @@ export default function UserManagement() {
                         <button onClick={() => handleDeleteClick(userData)} className="px-3 py-1 text-red-500 hover:bg-red-50 rounded-full text-xs font-medium transition-colors">删除</button>
                       </div>
                     )}
-                    {(userData.role === 'superadmin' || isCurrentUser) && <span className="text-xs text-gray-400">-</span>}
+                    {(userData.role === 'superadmin' || isCurrentUser || !isSuperAdmin) && <span className="text-xs text-gray-400">-</span>}
                   </div>
                 </div>
               )
@@ -206,7 +214,8 @@ export default function UserManagement() {
                     </div>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${roleDisplay.color}`}>{roleDisplay.text}</span>
                   </div>
-                  {userData.role !== 'superadmin' && !isCurrentUser && (
+                  {/* 只有超级管理员才能看到操作按钮 */}
+                  {isSuperAdmin && userData.role !== 'superadmin' && !isCurrentUser && (
                     <div className="flex space-x-2 pt-2 border-t border-gray-100">
                       <button onClick={() => handleToggleAdmin(userData.id, userData.role)} className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${userData.role === 'admin' ? 'text-orange-600 bg-orange-50 hover:bg-orange-100' : 'text-blue-600 bg-blue-50 hover:bg-blue-100'}`}>
                         {userData.role === 'admin' ? '撤销管理' : '设为管理员'}

@@ -21,7 +21,7 @@ const announcementContent = {
     },
     {
       icon: '📖',
-      title: '使用说明',
+      title: '功能说明',
       items: [
         '注册后可选择种族，获得唯一编号',
         '嘎宇宙创作需要选择种族才能参与',

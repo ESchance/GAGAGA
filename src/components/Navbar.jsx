@@ -91,14 +91,12 @@ export default function Navbar() {
                 >
                   ✏️ 发帖
                 </Link>
-                {isSuperAdmin && (
-                  <Link
-                    to="/admin/users"
-                    className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-2 rounded-full transition-all duration-200 font-medium text-sm"
-                  >
-                    👥 用户管理
-                  </Link>
-                )}
+                <Link
+                  to="/admin/users"
+                  className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-2 rounded-full transition-all duration-200 font-medium text-sm"
+                >
+                  {isSuperAdmin ? '👥 用户管理' : '🏠 嘎宇宙住户'}
+                </Link>
                 <Link
                   to={`/profile/${user.id}`}
                   className="flex items-center space-x-2 px-3 py-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
@@ -168,15 +166,13 @@ export default function Navbar() {
                 >
                   ✏️ 发帖
                 </Link>
-                {isSuperAdmin && (
-                  <Link
-                    to="/admin/users"
-                    className="block px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    👥 用户管理
-                  </Link>
-                )}
+                <Link
+                  to="/admin/users"
+                  className="block px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {isSuperAdmin ? '👥 用户管理' : '🏠 嘎宇宙住户'}
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="w-full text-left px-3 py-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
