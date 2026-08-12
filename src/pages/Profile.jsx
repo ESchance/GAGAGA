@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { getUserWorldInfo, checkRaceSelected, updateCustomBackstory } from '../lib/worldbuilding'
 import PostCard from '../components/PostCard'
@@ -10,6 +10,7 @@ import WorldInfo from '../components/WorldInfo'
 
 export default function Profile() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const [profile, setProfile] = useState(null)
   const [worldInfo, setWorldInfo] = useState(null)
   const [posts, setPosts] = useState([])

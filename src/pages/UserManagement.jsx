@@ -146,12 +146,13 @@ export default function UserManagement() {
 
         {/* PC端：表格布局 */}
         <div className="hidden md:block glass-effect rounded-2xl shadow-lg overflow-hidden animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-          <div className="grid grid-cols-12 gap-4 p-4 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-600">
-            <div className="col-span-1"></div>
-            <div className="col-span-2">用户名</div>
-            <div className="col-span-3">编号</div>
-            <div className="col-span-2">角色</div>
-            <div className="col-span-4 text-right">操作</div>
+          {/* 表头 - 根据权限显示不同列 */}
+          <div className={`grid gap-4 p-4 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-600 ${isSuperAdmin ? 'grid-cols-12' : 'grid-cols-10'}`}>
+            <div className={isSuperAdmin ? 'col-span-1' : 'col-span-1'}></div>
+            <div className={isSuperAdmin ? 'col-span-2' : 'col-span-3'}>用户名</div>
+            <div className={isSuperAdmin ? 'col-span-3' : 'col-span-3'}>编号</div>
+            <div className={isSuperAdmin ? 'col-span-2' : 'col-span-3'}>角色</div>
+            {isSuperAdmin && <div className="col-span-4 text-right">操作</div>}
           </div>
 
           {filteredUsers.length === 0 ? (
@@ -162,30 +163,30 @@ export default function UserManagement() {
               const isCurrentUser = userData.id === user?.id
 
               return (
-                <div key={userData.id} className="grid grid-cols-12 gap-4 p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors items-center">
-                  <div className="col-span-1">
+                <div key={userData.id} className={`grid gap-4 p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors items-center ${isSuperAdmin ? 'grid-cols-12' : 'grid-cols-10'}`}>
+                  <div className={isSuperAdmin ? 'col-span-1' : 'col-span-1'}>
                     <Avatar url={userData.avatar_url} username={userData.username} size="sm" role={userData.role} />
                   </div>
-                  <div className="col-span-2">
+                  <div className={isSuperAdmin ? 'col-span-2' : 'col-span-3'}>
                     <span className="font-medium text-gray-800">{userData.username}</span>
                     {isCurrentUser && <span className="ml-2 text-xs text-blue-500">(我)</span>}
                   </div>
-                  <div className="col-span-3 text-sm text-gray-500 font-mono">{userData.member_code || '-'}</div>
-                  <div className="col-span-2">
+                  <div className={`${isSuperAdmin ? 'col-span-3' : 'col-span-3'} text-sm text-gray-500 font-mono`}>{userData.member_code || '-'}</div>
+                  <div className={isSuperAdmin ? 'col-span-2' : 'col-span-3'}>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${roleDisplay.color}`}>{roleDisplay.text}</span>
                   </div>
-                  <div className="col-span-4 text-right">
-                    {/* 只有超级管理员才能看到操作按钮 */}
-                    {isSuperAdmin && userData.role !== 'superadmin' && !isCurrentUser && (
-                      <div className="flex justify-end space-x-2">
-                        <button onClick={() => handleToggleAdmin(userData.id, userData.role)} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${userData.role === 'admin' ? 'text-orange-600 hover:bg-orange-50' : 'text-blue-600 hover:bg-blue-50'}`}>
-                          {userData.role === 'admin' ? '撤销管理' : '设为管理员'}
-                        </button>
-                        <button onClick={() => handleDeleteClick(userData)} className="px-3 py-1 text-red-500 hover:bg-red-50 rounded-full text-xs font-medium transition-colors">删除</button>
-                      </div>
-                    )}
-                    {(userData.role === 'superadmin' || isCurrentUser || !isSuperAdmin) && <span className="text-xs text-gray-400">-</span>}
-                  </div>
+                  {isSuperAdmin && (
+                    <div className="col-span-4 text-right">
+                      {userData.role !== 'superadmin' && !isCurrentUser && (
+                        <div className="flex justify-end space-x-2">
+                          <button onClick={() => handleToggleAdmin(userData.id, userData.role)} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${userData.role === 'admin' ? 'text-orange-600 hover:bg-orange-50' : 'text-blue-600 hover:bg-blue-50'}`}>
+                            {userData.role === 'admin' ? '撤销管理' : '设为管理员'}
+                          </button>
+                          <button onClick={() => handleDeleteClick(userData)} className="px-3 py-1 text-red-500 hover:bg-red-50 rounded-full text-xs font-medium transition-colors">删除</button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )
             })

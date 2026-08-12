@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useLocation } from 'react-router-dom'
 
 const ANNOUNCEMENT_KEY = 'gagaga_announcement_dismissed'
 const ANNOUNCEMENT_VERSION = '1.2'
@@ -44,10 +45,14 @@ const announcementContent = {
 
 export default function AnnouncementModal() {
   const [show, setShow] = useState(false)
+  const location = useLocation()
 
+  // 监听路由变化，在首页时检查是否需要弹出公告
   useEffect(() => {
-    // 检查用户是否已登录
     const checkAndShow = async () => {
+      // 只在首页（/）时检查
+      if (location.pathname !== '/') return
+
       const { supabase } = await import('../lib/supabase')
       const { data: { session } } = await supabase.auth.getSession()
 
@@ -58,14 +63,14 @@ export default function AnnouncementModal() {
         if (dismissed !== ANNOUNCEMENT_VERSION) {
           const timer = setTimeout(() => {
             setShow(true)
-          }, 1000)
+          }, 500)
           return () => clearTimeout(timer)
         }
       }
     }
 
     checkAndShow()
-  }, [])
+  }, [location.pathname])
 
   const handleClose = useCallback(() => {
     setShow(false)
