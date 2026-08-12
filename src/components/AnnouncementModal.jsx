@@ -44,25 +44,25 @@ export default function AnnouncementModal() {
   const [show, setShow] = useState(false)
 
   useEffect(() => {
-    // 检查是否已关闭过公告
-    const dismissed = localStorage.getItem(ANNOUNCEMENT_KEY)
-    if (dismissed !== ANNOUNCEMENT_VERSION) {
-      // 检查用户是否已登录
-      const checkAndShow = async () => {
-        const { supabase } = await import('../lib/supabase')
-        const { data: { session } } = await supabase.auth.getSession()
+    // 检查用户是否已登录
+    const checkAndShow = async () => {
+      const { supabase } = await import('../lib/supabase')
+      const { data: { session } } = await supabase.auth.getSession()
 
-        // 只有登录用户才显示公告
-        if (session?.user) {
+      // 只有登录用户才显示公告
+      if (session?.user) {
+        // 检查是否已关闭过当前版本的公告
+        const dismissed = localStorage.getItem(ANNOUNCEMENT_KEY)
+        if (dismissed !== ANNOUNCEMENT_VERSION) {
           const timer = setTimeout(() => {
             setShow(true)
           }, 1000)
           return () => clearTimeout(timer)
         }
       }
-
-      checkAndShow()
     }
+
+    checkAndShow()
   }, [])
 
   const handleClose = useCallback(() => {
@@ -70,6 +70,7 @@ export default function AnnouncementModal() {
   }, [])
 
   const handleDismiss = useCallback(() => {
+    // 记住当前版本，下次登录不再显示
     localStorage.setItem(ANNOUNCEMENT_KEY, ANNOUNCEMENT_VERSION)
     setShow(false)
   }, [])
