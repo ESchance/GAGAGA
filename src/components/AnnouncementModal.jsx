@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 
 const ANNOUNCEMENT_KEY = 'gagaga_announcement_dismissed'
-const ANNOUNCEMENT_VERSION = '1.0'
+const ANNOUNCEMENT_VERSION = '1.1'
 
 const announcementContent = {
   version: ANNOUNCEMENT_VERSION,
@@ -11,7 +11,7 @@ const announcementContent = {
       icon: '🎉',
       title: '最新更新',
       items: [
-        '新增用户管理功能（超级管理员）',
+        '新增用户管理功能',
         '新增嘎宇宙种族系统和编号',
         '新增嘎宇宙创作板块',
         '优化移动端体验',
@@ -25,8 +25,7 @@ const announcementContent = {
       items: [
         '注册后可选择种族，获得唯一编号',
         '嘎宇宙创作需要选择种族才能参与',
-        '首页发帖无需选择种族',
-        '超级管理员可以管理用户'
+        '首页发帖无需选择种族'
       ]
     },
     {
@@ -48,11 +47,21 @@ export default function AnnouncementModal() {
     // 检查是否已关闭过公告
     const dismissed = localStorage.getItem(ANNOUNCEMENT_KEY)
     if (dismissed !== ANNOUNCEMENT_VERSION) {
-      // 延迟显示，让页面先加载
-      const timer = setTimeout(() => {
-        setShow(true)
-      }, 1000)
-      return () => clearTimeout(timer)
+      // 检查用户是否已登录
+      const checkAndShow = async () => {
+        const { supabase } = await import('../lib/supabase')
+        const { data: { session } } = await supabase.auth.getSession()
+
+        // 只有登录用户才显示公告
+        if (session?.user) {
+          const timer = setTimeout(() => {
+            setShow(true)
+          }, 1000)
+          return () => clearTimeout(timer)
+        }
+      }
+
+      checkAndShow()
     }
   }, [])
 
@@ -68,7 +77,7 @@ export default function AnnouncementModal() {
   if (!show) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-gradient-to-br from-blue-500/30 to-purple-500/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[80vh] overflow-hidden animate-fade-in-up">
         {/* 头部 */}
         <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-4">

@@ -86,33 +86,49 @@ export const toggleAdmin = async (userId, currentRole) => {
 }
 
 // 删除用户（仅超级管理员可用）
+// 检查清单：
+// 1. SQL 函数 delete_user 必须按正确顺序删除外键关联数据
+// 2. RLS 策略必须允许超级管理员删除 profiles
+// 3. 前端调用 RPC 必须正确传递参数
 export const deleteUser = async (userId) => {
   try {
-    console.log('开始删除用户:', userId)
+    console.log('=== 删除用户检查清单 ===')
+    console.log('1. 目标用户 ID:', userId)
 
-    // 1. 删除所有关联数据
-    console.log('删除关联数据...')
+    // 1. 删除所有关联数据（按外键依赖顺序）
+    console.log('2. 删除关联数据...')
     await supabase.from('worldbuilding_comments').delete().eq('user_id', userId)
+    console.log('   - worldbuilding_comments 已删除')
     await supabase.from('worldbuilding_likes').delete().eq('user_id', userId)
+    console.log('   - worldbuilding_likes 已删除')
     await supabase.from('worldbuilding').delete().eq('user_id', userId)
+    console.log('   - worldbuilding 已删除')
     await supabase.from('member_codes').delete().eq('user_id', userId)
+    console.log('   - member_codes 已删除')
     await supabase.from('comments').delete().eq('user_id', userId)
+    console.log('   - comments 已删除')
     await supabase.from('posts').delete().eq('user_id', userId)
+    console.log('   - posts 已删除')
 
     // 2. 调用 SQL 函数删除 profiles 和 auth.users
-    console.log('调用 delete_user 函数...')
+    console.log('3. 调用 delete_user 函数...')
     const { data, error } = await supabase.rpc('delete_user', {
       target_user_id: userId
     })
 
-    console.log('RPC 结果:', { data, error })
+    console.log('4. RPC 结果:', { data, error })
 
     if (error) {
-      console.error('RPC 错误:', error)
+      console.error('❌ RPC 错误:', error)
       throw error
     }
 
-    console.log('删除成功')
+    if (data === false) {
+      console.error('❌ SQL 函数返回 false，可能存在外键约束问题')
+      throw new Error('删除失败：SQL 函数执行失败')
+    }
+
+    console.log('✅ 删除成功')
     return { success: true }
   } catch (error) {
     console.error('删除用户失败:', error)
