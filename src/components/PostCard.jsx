@@ -5,7 +5,6 @@ import { checkIsAdmin, togglePinPost } from '../lib/admin'
 import { RACES } from '../lib/worldbuilding'
 import Avatar from './Avatar'
 
-// 格式化时间的纯函数（移到组件外部，避免每次渲染重新创建）
 const formatDate = (dateString) => {
   const date = new Date(dateString)
   const now = new Date()
@@ -74,23 +73,28 @@ const PostCard = memo(function PostCard({ post, onDelete, onPinChange }) {
   const canDelete = user && (user.id === post.user_id || isAdmin)
 
   return (
-    <div className={`post-card card-hover animate-fade-in-up ${post.is_pinned ? 'ring-2 ring-yellow-400 bg-yellow-50' : ''}`}>
+    <article className={`post-card card-hover animate-fade-in-up ${post.is_pinned ? 'ring-2 ring-yellow-400/50 bg-yellow-50/50' : ''}`}>
       <Link to={`/post/${post.id}`} className="block">
         {/* 置顶标记 */}
         {post.is_pinned && (
-          <div className="flex items-center mb-2 text-yellow-600 text-sm font-medium">
+          <div className="inline-flex items-center mb-3 px-2.5 py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full">
             <span className="mr-1">📌</span>
-            <span>置顶</span>
+            置顶
           </div>
         )}
 
-        <h3 className="text-lg font-semibold text-gray-800 mb-2 hover:text-blue-600 transition-colors duration-200">
+        {/* 标题 */}
+        <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-2 hover:text-[var(--color-primary)] transition-colors duration-200">
           {post.title}
         </h3>
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
+
+        {/* 内容预览 */}
+        <p className="text-[var(--color-text-secondary)] text-sm mb-4 line-clamp-2 leading-relaxed">
           {post.content}
         </p>
-        <div className="flex justify-between items-center">
+
+        {/* 底部信息 */}
+        <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Avatar
               url={post.profiles?.avatar_url}
@@ -100,7 +104,9 @@ const PostCard = memo(function PostCard({ post, onDelete, onPinChange }) {
             />
             <div>
               <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-gray-700">{post.profiles?.username || '匿名用户'}</span>
+                <span className="text-sm font-medium text-[var(--color-text-primary)]">
+                  {post.profiles?.username || '匿名用户'}
+                </span>
                 {post.profiles?.role === 'admin' && (
                   <span className="hidden sm:inline text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-full font-medium">
                     管理员
@@ -111,49 +117,45 @@ const PostCard = memo(function PostCard({ post, onDelete, onPinChange }) {
                 )}
               </div>
               {post.profiles?.member_code && (
-                <div className="flex items-center space-x-2 text-xs text-gray-500">
+                <div className="flex items-center space-x-1.5 text-xs text-[var(--color-text-tertiary)]">
                   <span>{RACES[post.profiles?.race]?.icon || '🧑'}</span>
                   <span className="font-mono">{post.profiles.member_code}</span>
-                  <span>{RACES[post.profiles?.race]?.name || '人类'}</span>
                 </div>
               )}
             </div>
           </div>
-          <div className="flex items-center space-x-2 text-xs">
-            <span className="text-gray-500 flex items-center space-x-1">
-              <span>🕐</span>
-              <span>{formatDate(post.created_at)}</span>
+
+          <div className="flex items-center space-x-3">
+            {/* 时间 */}
+            <span className="text-xs text-[var(--color-text-tertiary)]">
+              {formatDate(post.created_at)}
             </span>
 
             {/* 管理员操作按钮 */}
             {isAdmin && (
-              <>
-                <button
-                  onClick={handlePin}
-                  className={`px-3 py-1 rounded-full transition-all duration-200 ${
-                    post.is_pinned
-                      ? 'text-yellow-600 hover:text-white hover:bg-yellow-500'
-                      : 'text-yellow-500 hover:text-white hover:bg-yellow-500'
-                  }`}
-                >
-                  {post.is_pinned ? '📌 取消置顶' : '📌 置顶'}
-                </button>
-              </>
+              <button
+                onClick={handlePin}
+                className="text-xs text-[var(--color-text-tertiary)] hover:text-[var(--color-primary)] transition-colors"
+                title={post.is_pinned ? '取消置顶' : '置顶'}
+              >
+                {post.is_pinned ? '📌' : '📍'}
+              </button>
             )}
 
-            {/* 删除按钮（作者或管理员） */}
+            {/* 删除按钮 */}
             {canDelete && (
               <button
                 onClick={handleDelete}
-                className="px-3 py-1 text-red-500 hover:text-white hover:bg-red-500 rounded-full transition-all duration-200"
+                className="text-xs text-[var(--color-text-tertiary)] hover:text-[var(--color-error)] transition-colors"
+                title="删除"
               >
-                🗑️ 删除
+                🗑️
               </button>
             )}
           </div>
         </div>
       </Link>
-    </div>
+    </article>
   )
 })
 
