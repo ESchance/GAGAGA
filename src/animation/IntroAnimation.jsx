@@ -1,5 +1,5 @@
 /**
- * 入场动画主组件
+ * 入场动画主组件 - 电影级叙事体验
  * 管理整个入场动画流程
  */
 
@@ -18,14 +18,14 @@ export default function IntroAnimation({ onComplete, isFirstTime = true }) {
   const [animationStarted, setAnimationStarted] = useState(false)
   const timelineRef = useRef(null)
 
-  // 初始化动画时间轴
+  // 初始化动画时间轴（30秒）
   useEffect(() => {
-    timelineRef.current = new AnimationTimeline(5000)
+    timelineRef.current = new AnimationTimeline(30000)
 
     // 模拟加载过程
     let progress = 0
     const loadInterval = setInterval(() => {
-      progress += Math.random() * 15 + 5
+      progress += Math.random() * 10 + 3
       if (progress >= 100) {
         progress = 100
         setIsLoading(false)
@@ -34,10 +34,10 @@ export default function IntroAnimation({ onComplete, isFirstTime = true }) {
         // 延迟启动动画
         setTimeout(() => {
           setAnimationStarted(true)
-        }, 300)
+        }, 500)
       }
       setLoadProgress(Math.min(progress, 100))
-    }, 100)
+    }, 150)
 
     return () => clearInterval(loadInterval)
   }, [])
@@ -60,20 +60,24 @@ export default function IntroAnimation({ onComplete, isFirstTime = true }) {
       if (isMuted) return
 
       switch (phase) {
-        case 'star_form':
-          soundManager.playBurst(0.5)
-          soundManager.playAmbient(4)
+        case 'nebula_form':
+          // 星云凝聚 - 轻微嗡鸣
+          soundManager.playDrone(4, 0, 0.15)
           break
         case 'traverse':
+          // 穿越 - whoosh音效
+          soundManager.playWhoosh(1)
+          break
+        case 'discovery':
+          // 发现星球 - 共鸣声
+          soundManager.playGlow(2)
+          break
+        case 'transition':
+          // 进入世界 - 裂开音效
           soundManager.playWhoosh(0.8)
           break
-        case 'core':
-          soundManager.playGlow(1)
-          break
-        case 'crack':
-          soundManager.playWhoosh(0.6)
-          break
         case 'complete':
+          // 完成 - 和弦音
           soundManager.playComplete()
           break
       }
@@ -84,16 +88,16 @@ export default function IntroAnimation({ onComplete, isFirstTime = true }) {
         if (onComplete) {
           onComplete()
         }
-      }, 500)
+      }, 1000)
     }
   }, [animationStarted, isMuted, onComplete])
 
   // 启动动画
   useEffect(() => {
     if (animationStarted && timelineRef.current) {
-      // 播放初始音效
+      // 播放初始音效（低沉的嗡鸣）
       if (!isMuted) {
-        soundManager.playDrone(1, 0, 0.2)
+        soundManager.playDrone(2, 0, 0.1)
       }
 
       timelineRef.current.start()
@@ -145,7 +149,6 @@ export default function IntroAnimation({ onComplete, isFirstTime = true }) {
         <AnimationCanvas
           timeline={timelineRef.current}
           onComplete={onComplete}
-          isMuted={isMuted}
         />
       )}
 

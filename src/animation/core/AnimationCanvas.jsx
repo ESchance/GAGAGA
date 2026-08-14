@@ -1,25 +1,26 @@
 /**
- * Canvas 渲染组件
+ * Canvas 渲染组件 - 电影级叙事体验
  * 负责渲染所有动画效果
  */
 
-import { useEffect, useRef, useCallback } from 'react'
-import { ParticleSystem } from './ParticleSystem'
-import { StarField } from './StarField'
-import { GlowEffect } from './GlowEffect'
-import { SpaceEffect } from './SpaceEffect'
+import { useEffect, useRef } from 'react'
+import { DustSystem } from './DustSystem'
+import { NebulaEffect } from './NebulaEffect'
+import { PlanetEffect } from './PlanetEffect'
+import { TransitionEffect } from './TransitionEffect'
 import { AnimationTimeline, PHASES } from '../timeline/AnimationTimeline'
 import { lerp, easeInOut, randomRange } from '../utils/MathUtils'
 
-export default function AnimationCanvas({ timeline, onComplete, isMuted }) {
+export default function AnimationCanvas({ timeline, onComplete }) {
   const canvasRef = useRef(null)
   const animationRef = useRef(null)
   const stateRef = useRef({
-    particleSystem: null,
-    starField: null,
-    glowEffect: null,
-    spaceEffect: null,
-    camera: { x: 0, y: 0, z: 0 }
+    dustSystem: null,
+    nebulaEffect: null,
+    planetEffect: null,
+    transitionEffect: null,
+    camera: { x: 0, y: 0, z: 0 },
+    emitTimer: 0
   })
 
   // 初始化
@@ -40,21 +41,20 @@ export default function AnimationCanvas({ timeline, onComplete, isMuted }) {
       canvas.style.width = rect.width + 'px'
       canvas.style.height = rect.height + 'px'
 
-      // 重新初始化星场
-      state.starField = new StarField(rect.width, rect.height, {
-        starCount: window.innerWidth < 640 ? 150 : 300
+      // 重新初始化系统
+      const isMobile = window.innerWidth < 640
+      state.dustSystem = new DustSystem({
+        maxParticles: isMobile ? 100 : 200,
+        width: rect.width,
+        height: rect.height
       })
+      state.nebulaEffect = new NebulaEffect(rect.width, rect.height)
+      state.planetEffect = new PlanetEffect()
+      state.transitionEffect = new TransitionEffect()
     }
 
     updateSize()
     window.addEventListener('resize', updateSize)
-
-    // 初始化效果
-    state.particleSystem = new ParticleSystem({
-      maxParticles: window.innerWidth < 640 ? 300 : 500
-    })
-    state.glowEffect = new GlowEffect()
-    state.spaceEffect = new SpaceEffect()
 
     return () => {
       window.removeEventListener('resize', updateSize)
@@ -71,7 +71,7 @@ export default function AnimationCanvas({ timeline, onComplete, isMuted }) {
     let lastTime = 0
 
     const animate = (timestamp) => {
-      const dt = timestamp - lastTime
+      const dt = Math.min(timestamp - lastTime, 50) // 限制最大dt
       lastTime = timestamp
 
       // 更新时间轴
@@ -90,29 +90,39 @@ export default function AnimationCanvas({ timeline, onComplete, isMuted }) {
       const centerX = rect.width / 2
       const centerY = rect.height / 2
 
+      // 更新所有效果
+      state.dustSystem.update(dt)
+      state.nebulaEffect.update(dt)
+      state.planetEffect.update(dt)
+      state.transitionEffect.update(dt)
+
       switch (phase) {
-        case PHASES.VOID:
-          drawVoidPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
+        case PHASES.VOID_BIRTH:
+          drawVoidBirthPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
           break
 
-        case PHASES.STAR_FORM:
-          drawStarFormPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
+        case PHASES.NEBULA_FORM:
+          drawNebulaFormPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
           break
 
         case PHASES.TRAVERSE:
           drawTraversePhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline, dt)
           break
 
-        case PHASES.CORE:
-          drawCorePhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
+        case PHASES.DISCOVERY:
+          drawDiscoveryPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
           break
 
-        case PHASES.CRACK:
-          drawCrackPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
+        case PHASES.APPROACH:
+          drawApproachPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
+          break
+
+        case PHASES.TRANSITION:
+          drawTransitionPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
           break
 
         case PHASES.COMPLETE:
-          // 动画完成，淡出
+          // 动画完成
           break
       }
 
@@ -141,109 +151,183 @@ export default function AnimationCanvas({ timeline, onComplete, isMuted }) {
   )
 }
 
-// 阶段1：虚空觉醒
-function drawVoidPhase(ctx, width, height, centerX, centerY, state, timeline) {
-  const progress = timeline.getEasedProgress(PHASES.VOID)
+// 阶段1：虚空诞生 (0-4s)
+function drawVoidBirthPhase(ctx, width, height, centerX, centerY, state, timeline) {
+  const progress = timeline.getEasedProgress(PHASES.VOID_BIRTH)
 
-  // 中心光点出现
-  const glowSize = lerp(0, 30, progress)
-  const glowAlpha = lerp(0, 0.8, progress)
+  // 中心光点从无到有
+  const glowSize = lerp(0, 20, progress)
+  const glowAlpha = lerp(0, 0.6, progress)
 
   // 呼吸效果
-  const breathe = Math.sin(progress * Math.PI * 2) * 0.2 + 0.8
+  const breathe = Math.sin(progress * Math.PI) * 0.1 + 0.9
 
-  state.glowEffect.drawCenterGlow(ctx, centerX, centerY, glowSize * breathe, glowAlpha)
+  // 绘制光点
+  const gradient = ctx.createRadialGradient(
+    centerX, centerY, 0,
+    centerX, centerY, glowSize * breathe
+  )
+  gradient.addColorStop(0, `rgba(100, 120, 200, ${glowAlpha})`)
+  gradient.addColorStop(0.5, `rgba(80, 100, 180, ${glowAlpha * 0.5})`)
+  gradient.addColorStop(1, 'rgba(60, 80, 160, 0)')
+
+  ctx.beginPath()
+  ctx.arc(centerX, centerY, glowSize * breathe, 0, Math.PI * 2)
+  ctx.fillStyle = gradient
+  ctx.fill()
 }
 
-// 阶段2：星河形成
-function drawStarFormPhase(ctx, width, height, centerX, centerY, state, timeline) {
-  const progress = timeline.getEasedProgress(PHASES.STAR_FORM)
+// 阶段2：星云凝聚 (4-8s)
+function drawNebulaFormPhase(ctx, width, height, centerX, centerY, state, timeline) {
+  const progress = timeline.getEasedProgress(PHASES.NEBULA_FORM)
 
-  // 绘制背景星场
-  state.starField.draw(ctx, timeline.currentTime * 0.001)
+  // 绘制星云
+  state.nebulaEffect.draw(ctx, centerX, centerY, 200, progress, 'blue')
 
-  // 中央光源增强
-  const coreSize = lerp(30, 60, progress)
-  const coreAlpha = lerp(0.8, 1, progress)
-  state.glowEffect.drawCoreLight(ctx, centerX, centerY, coreSize, coreAlpha)
-
-  // 发射粒子
-  if (Math.random() < 0.3) {
-    state.particleSystem.emitSpiral(centerX, centerY, 5)
+  // 从边缘发射尘埃
+  state.emitTimer += 16
+  if (state.emitTimer > 200) {
+    state.dustSystem.emitFromEdges(10)
+    state.emitTimer = 0
   }
 
-  // 更新和绘制粒子
-  state.particleSystem.update(16)
-  state.particleSystem.draw(ctx, 0, 0, 0)
+  // 更新和绘制尘埃
+  state.dustSystem.draw(ctx, 0, 0, 0)
+
+  // 中心光点增强
+  const glowSize = lerp(20, 40, progress)
+  const glowAlpha = lerp(0.6, 0.8, progress)
+
+  const gradient = ctx.createRadialGradient(
+    centerX, centerY, 0,
+    centerX, centerY, glowSize
+  )
+  gradient.addColorStop(0, `rgba(100, 120, 200, ${glowAlpha})`)
+  gradient.addColorStop(0.5, `rgba(80, 100, 180, ${glowAlpha * 0.5})`)
+  gradient.addColorStop(1, 'rgba(60, 80, 160, 0)')
+
+  ctx.beginPath()
+  ctx.arc(centerX, centerY, glowSize, 0, Math.PI * 2)
+  ctx.fillStyle = gradient
+  ctx.fill()
 }
 
-// 阶段3：穿越星云
+// 阶段3：穿越星云 (8-14s)
 function drawTraversePhase(ctx, width, height, centerX, centerY, state, timeline, dt) {
   const progress = timeline.getEasedProgress(PHASES.TRAVERSE)
+  const velocity = timeline.getTraverseVelocity()
 
-  // 更新相机位置
-  state.camera.z += dt * 0.2
+  // 更新相机位置（Z轴移动）
+  state.camera.z += velocity * dt * 0.5
 
-  // 绘制星场（带视差）
-  state.starField.draw(ctx, timeline.currentTime * 0.001, 0, 0, state.camera.z)
+  // 绘制星云（带视差）
+  state.nebulaEffect.draw(ctx, centerX, centerY, 250, 0.8, 'purple')
 
-  // 发射粒子
-  if (Math.random() < 0.5) {
-    state.particleSystem.emit(
-      centerX + randomRange(-200, 200),
-      centerY + randomRange(-200, 200),
-      3,
-      { z: randomRange(100, 500), decay: 0.008 }
-    )
+  // 从中心发射尘埃
+  state.emitTimer += 16
+  if (state.emitTimer > 100) {
+    state.dustSystem.emitBurst(centerX, centerY, 5)
+    state.emitTimer = 0
   }
 
-  // 更新和绘制粒子
-  state.particleSystem.update(dt)
-  state.particleSystem.draw(ctx, 0, 0, state.camera.z)
+  // 更新和绘制尘埃（带视差）
+  state.dustSystem.draw(ctx, 0, 0, state.camera.z)
+
+  // 绘制速度线（增强穿越感）
+  if (velocity > 0.5) {
+    const lineCount = Math.floor(velocity * 10)
+    for (let i = 0; i < lineCount; i++) {
+      const x = randomRange(0, width)
+      const y = randomRange(0, height)
+      const length = velocity * 30
+
+      ctx.beginPath()
+      ctx.moveTo(x, y)
+      ctx.lineTo(x, y + length)
+      ctx.strokeStyle = `rgba(150, 170, 220, ${velocity * 0.2})`
+      ctx.lineWidth = 1
+      ctx.stroke()
+    }
+  }
 }
 
-// 阶段4：抵达核心
-function drawCorePhase(ctx, width, height, centerX, centerY, state, timeline) {
-  const progress = timeline.getEasedProgress(PHASES.CORE)
+// 阶段4：发现星球 (14-20s)
+function drawDiscoveryPhase(ctx, width, height, centerX, centerY, state, timeline) {
+  const progress = timeline.getEasedProgress(PHASES.DISCOVERY)
 
-  // 绘制星场
-  state.starField.draw(ctx, timeline.currentTime * 0.001, 0, 0, state.camera.z)
+  // 绘制星云（逐渐消散）
+  state.nebulaEffect.draw(ctx, centerX, centerY, 300, 1 - progress * 0.5, 'purple')
 
-  // 核心光源
-  const coreSize = lerp(60, 150, progress)
-  const coreAlpha = lerp(1, 0.8, progress)
-  state.glowEffect.drawCoreLight(ctx, centerX, centerY, coreSize, coreAlpha)
+  // 绘制尘埃
+  state.dustSystem.draw(ctx, 0, 0, state.camera.z)
 
-  // 光线辐射
-  const rayLength = lerp(100, 300, progress)
-  state.glowEffect.drawRays(ctx, centerX, centerY, rayLength, lerp(0.5, 0.3, progress))
+  // 星球从远处逐渐显现
+  const planetRadius = lerp(10, 80, progress)
+  const planetAlpha = lerp(0, 1, progress)
 
-  // 镜头光晕
-  const flareSize = lerp(50, 150, progress)
-  state.glowEffect.drawLensFlare(ctx, centerX, centerY, flareSize, lerp(0.3, 0.6, progress))
+  state.planetEffect.draw(ctx, centerX, centerY, planetRadius, progress, planetAlpha)
 
-  // 能量波纹
-  state.spaceEffect.drawEnergyRipple(ctx, centerX, centerY, 100, progress, 0.5)
+  // 绘制光晕
+  const glowGradient = ctx.createRadialGradient(
+    centerX, centerY, planetRadius,
+    centerX, centerY, planetRadius * 2
+  )
+  glowGradient.addColorStop(0, `rgba(100, 120, 200, ${planetAlpha * 0.3})`)
+  glowGradient.addColorStop(1, 'rgba(100, 120, 200, 0)')
+
+  ctx.beginPath()
+  ctx.arc(centerX, centerY, planetRadius * 2, 0, Math.PI * 2)
+  ctx.fillStyle = glowGradient
+  ctx.fill()
 }
 
-// 阶段5：空间裂开
-function drawCrackPhase(ctx, width, height, centerX, centerY, state, timeline) {
-  const progress = timeline.getEasedProgress(PHASES.CRACK)
+// 阶段5：接近星球 (20-26s)
+function drawApproachPhase(ctx, width, height, centerX, centerY, state, timeline) {
+  const progress = timeline.getEasedProgress(PHASES.APPROACH)
 
-  // 绘制背景
-  state.starField.draw(ctx, timeline.currentTime * 0.001, 0, 0, state.camera.z)
+  // 绘制星云（继续消散）
+  state.nebulaEffect.draw(ctx, centerX, centerY, 200, (1 - progress) * 0.5, 'teal')
 
-  // 核心光源（逐渐消失）
-  const coreAlpha = lerp(0.8, 0, progress)
-  state.glowEffect.drawCoreLight(ctx, centerX, centerY, 150, coreAlpha)
+  // 绘制尘埃
+  state.dustSystem.draw(ctx, 0, 0, state.camera.z)
 
-  // 空间裂开效果
-  state.spaceEffect.drawSpaceCrack(ctx, window.innerWidth, window.innerHeight, progress, centerX, centerY)
+  // 星球逐渐变大
+  const planetRadius = lerp(80, 150, progress)
 
-  // 淡出效果
+  state.planetEffect.draw(ctx, centerX, centerY, planetRadius, progress, 1)
+
+  // 光晕增强
+  const glowGradient = ctx.createRadialGradient(
+    centerX, centerY, planetRadius,
+    centerX, centerY, planetRadius * 1.5
+  )
+  glowGradient.addColorStop(0, `rgba(100, 120, 200, ${0.3 + progress * 0.2})`)
+  glowGradient.addColorStop(1, 'rgba(100, 120, 200, 0)')
+
+  ctx.beginPath()
+  ctx.arc(centerX, centerY, planetRadius * 1.5, 0, Math.PI * 2)
+  ctx.fillStyle = glowGradient
+  ctx.fill()
+}
+
+// 阶段6：进入世界 (26-30s)
+function drawTransitionPhase(ctx, width, height, centerX, centerY, state, timeline) {
+  const progress = timeline.getEasedProgress(PHASES.TRANSITION)
+
+  // 绘制空间裂开效果
+  state.transitionEffect.drawSpaceCrack(ctx, width, height, progress, centerX, centerY)
+
+  // 星球逐渐消失
+  const planetAlpha = 1 - progress
+  if (planetAlpha > 0) {
+    const planetRadius = lerp(150, 50, progress)
+    state.planetEffect.draw(ctx, centerX, centerY, planetRadius, progress, planetAlpha)
+  }
+
+  // 最后阶段淡出到白色
   if (progress > 0.8) {
-    const fadeOut = (progress - 0.8) / 0.2
-    ctx.fillStyle = `rgba(0, 0, 0, ${fadeOut * 0.5})`
-    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight)
+    const fadeProgress = (progress - 0.8) / 0.2
+    ctx.fillStyle = `rgba(255, 255, 255, ${fadeProgress})`
+    ctx.fillRect(0, 0, width, height)
   }
 }
