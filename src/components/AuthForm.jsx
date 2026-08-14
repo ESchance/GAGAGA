@@ -117,7 +117,7 @@ export default function AuthForm({ type = 'login' }) {
         setMessage('注册成功！')
         // 跳转到个人主页，会自动弹出种族选择
         console.log('跳转到个人主页...')
-        setTimeout(() => navigate(`/profile/${data.user.id}`), 1000)
+        setTimeout(() => navigate(`/profile/${data.user.id}?showIntro=true`), 1000)
       } else {
         // 登录
         const { error } = await supabase.auth.signInWithPassword({
@@ -126,7 +126,8 @@ export default function AuthForm({ type = 'login' }) {
         })
 
         if (error) throw error
-        navigate('/')
+        // 登录成功，显示入场动画
+        navigate('/?showIntro=true')
       }
     } catch (error) {
       setMessage(error.message)

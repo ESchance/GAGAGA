@@ -1,8 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { lazy, Suspense } from 'react'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { lazy, Suspense, useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
 import ErrorBoundary from './components/ErrorBoundary'
 import AnnouncementModal from './components/AnnouncementModal'
+import IntroAnimation from './animation/IntroAnimation'
 import './index.css'
 
 // 代码分割 - 只加载当前路由需要的组件
@@ -30,29 +31,66 @@ function LoadingFallback() {
   )
 }
 
+// 动画状态管理
+function AnimationManager({ children }) {
+  const [showIntro, setShowIntro] = useState(false)
+  const [isFirstLogin, setIsFirstLogin] = useState(true)
+  const location = useLocation()
+
+  useEffect(() => {
+    // 检查是否是首次登录后的跳转
+    const params = new URLSearchParams(location.search)
+    const showIntroParam = params.get('showIntro')
+
+    if (showIntroParam === 'true') {
+      setShowIntro(true)
+      // 清除 URL 参数
+      window.history.replaceState({}, '', location.pathname)
+    }
+  }, [location])
+
+  const handleIntroComplete = () => {
+    setShowIntro(false)
+  }
+
+  return (
+    <>
+      {showIntro && (
+        <IntroAnimation
+          onComplete={handleIntroComplete}
+          isFirstTime={isFirstLogin}
+        />
+      )}
+      {children}
+    </>
+  )
+}
+
 function App() {
   return (
     <ErrorBoundary>
       <Router>
-        <AnnouncementModal />
-        <div className="min-h-screen">
-          <Navbar />
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/create" element={<CreatePost />} />
-              <Route path="/post/:id" element={<PostDetail />} />
-              <Route path="/profile/:id" element={<Profile />} />
-              <Route path="/worldbuilding" element={<Worldbuilding />} />
-              <Route path="/worldbuilding/create" element={<WorldbuildingCreate />} />
-              <Route path="/worldbuilding/:id" element={<WorldbuildingDetail />} />
-              <Route path="/worldbuilding/:id/edit" element={<WorldbuildingEdit />} />
-              <Route path="/admin/users" element={<UserManagement />} />
-            </Routes>
-          </Suspense>
-        </div>
+        <AnimationManager>
+          <AnnouncementModal />
+          <div className="min-h-screen">
+            <Navbar />
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/create" element={<CreatePost />} />
+                <Route path="/post/:id" element={<PostDetail />} />
+                <Route path="/profile/:id" element={<Profile />} />
+                <Route path="/worldbuilding" element={<Worldbuilding />} />
+                <Route path="/worldbuilding/create" element={<WorldbuildingCreate />} />
+                <Route path="/worldbuilding/:id" element={<WorldbuildingDetail />} />
+                <Route path="/worldbuilding/:id/edit" element={<WorldbuildingEdit />} />
+                <Route path="/admin/users" element={<UserManagement />} />
+              </Routes>
+            </Suspense>
+          </div>
+        </AnimationManager>
       </Router>
     </ErrorBoundary>
   )
