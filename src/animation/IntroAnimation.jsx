@@ -1,6 +1,5 @@
 /**
  * 入场动画主组件 - 最终版
- * 宇宙大爆发叙事体验
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react'
@@ -20,15 +19,12 @@ export default function IntroAnimation({
   const [animationStarted, setAnimationStarted] = useState(false)
   const [showExploreButton, setShowExploreButton] = useState(false)
   const [showHUD, setShowHUD] = useState(false)
-  const [phase, setPhase] = useState(PHASES.DARKNESS)
   const [showTitle, setShowTitle] = useState(false)
   const timelineRef = useRef(null)
 
-  // 初始化动画时间轴（34秒）
   useEffect(() => {
-    timelineRef.current = new AnimationTimeline(34000)
+    timelineRef.current = new AnimationTimeline(28000)
 
-    // 模拟加载过程
     let progress = 0
     const loadInterval = setInterval(() => {
       progress += Math.random() * 10 + 3
@@ -36,7 +32,6 @@ export default function IntroAnimation({
         progress = 100
         setIsLoading(false)
         clearInterval(loadInterval)
-
         setTimeout(() => {
           setAnimationStarted(true)
         }, 500)
@@ -47,29 +42,27 @@ export default function IntroAnimation({
     return () => clearInterval(loadInterval)
   }, [])
 
-  // 动画阶段变化
   useEffect(() => {
     if (!timelineRef.current || !animationStarted) return
 
     const timeline = timelineRef.current
 
     timeline.onPhaseChange = (newPhase) => {
-      setPhase(newPhase)
-
       if (newPhase === PHASES.BIRTH) {
         setShowTitle(true)
       }
-
       if (newPhase === PHASES.EXPLOSION) {
         setShowTitle(false)
       }
-
       if (newPhase === PHASES.TRAVERSE) {
         setShowHUD(true)
       }
-
       if (newPhase === PHASES.BUTTON) {
         setShowExploreButton(true)
+      }
+      if (newPhase === PHASES.FAST_TRAVERSE) {
+        setShowHUD(false)
+        setShowExploreButton(false)
       }
     }
 
@@ -78,29 +71,31 @@ export default function IntroAnimation({
         if (onComplete) {
           onComplete()
         }
-      }, 1000)
+      }, 500)
     }
   }, [animationStarted, onComplete])
 
-  // 启动动画
   useEffect(() => {
     if (animationStarted && timelineRef.current) {
       timelineRef.current.start()
     }
   }, [animationStarted])
 
-  // 处理"开始探索"按钮点击
+  // 点击开始探索 → 继续动画（快速穿梭）
   const handleExploreClick = useCallback(() => {
     setShowExploreButton(false)
-    if (onExploreClick) {
-      onExploreClick()
-    }
+    setShowHUD(false)
+
     if (timelineRef.current) {
       timelineRef.current.continueAfterUserAction()
     }
+
+    // 通知父组件
+    if (onExploreClick) {
+      onExploreClick()
+    }
   }, [onExploreClick])
 
-  // 跳过动画
   const handleSkip = useCallback(() => {
     if (onComplete) {
       onComplete()
@@ -129,12 +124,10 @@ export default function IntroAnimation({
 
       {/* 动画画布 */}
       {!isLoading && (
-        <AnimationCanvas
-          timeline={timelineRef.current}
-        />
+        <AnimationCanvas timeline={timelineRef.current} />
       )}
 
-      {/* 标题显示 */}
+      {/* 标题 */}
       {!isLoading && showTitle && (
         <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
           <div className="text-center animate-fade-in">
@@ -157,38 +150,16 @@ export default function IntroAnimation({
         </div>
       )}
 
-      {/* HUD覆盖层 */}
+      {/* HUD */}
       {!isLoading && showHUD && (
         <HUDOverlay visible={showHUD} />
       )}
 
-      {/* "开始探索" 按钮 + 穿梭动画 */}
+      {/* 开始探索按钮 */}
       {!isLoading && showExploreButton && (
         <div className="absolute inset-0 flex items-center justify-center z-40">
           <div className="text-center animate-fade-in">
-            {/* 穿梭星空动画背景 */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <div className="absolute inset-0" style={{
-                background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.5) 100%)'
-              }} />
-              {/* 穿梭粒子效果 */}
-              {Array.from({ length: 20 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="absolute bg-cyan-400 rounded-full opacity-60"
-                  style={{
-                    width: `${Math.random() * 3 + 1}px`,
-                    height: `${Math.random() * 20 + 10}px`,
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 100}%`,
-                    animation: `traverseStar ${Math.random() * 2 + 1}s linear infinite`,
-                    animationDelay: `${Math.random() * 2}s`
-                  }}
-                />
-              ))}
-            </div>
-
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 relative" style={{
+            <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{
               background: 'linear-gradient(135deg, #00ffff 0%, #00bfff 30%, #e0ffff 60%, #9370db 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
@@ -198,7 +169,7 @@ export default function IntroAnimation({
             }}>
               宇宙探索者
             </h2>
-            <p className="text-cyan-300 text-sm tracking-widest mb-8 relative" style={{
+            <p className="text-cyan-300 text-sm tracking-widest mb-8" style={{
               fontFamily: 'JetBrains Mono, monospace',
               textShadow: '0 0 10px rgba(0, 255, 255, 0.3)'
             }}>
@@ -206,7 +177,7 @@ export default function IntroAnimation({
             </p>
             <button
               onClick={handleExploreClick}
-              className="relative px-10 py-4 bg-white/10 backdrop-blur-sm text-cyan-300 border border-cyan-400/40 rounded-lg text-lg font-medium hover:bg-white/20 hover:border-cyan-400/80 hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-300"
+              className="px-10 py-4 bg-white/10 backdrop-blur-sm text-cyan-300 border border-cyan-400/40 rounded-lg text-lg font-medium hover:bg-white/20 hover:border-cyan-400/80 hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-300"
               style={{
                 fontFamily: 'Orbitron, sans-serif',
                 letterSpacing: '0.2em',
@@ -215,14 +186,14 @@ export default function IntroAnimation({
             >
               开始探索
             </button>
-            <p className="text-gray-500 text-xs mt-4 tracking-widest relative">
+            <p className="text-gray-500 text-xs mt-4 tracking-widest">
               点击进入深空
             </p>
           </div>
         </div>
       )}
 
-      {/* 跳过按钮（仅老用户登录后显示） */}
+      {/* 跳过按钮 */}
       {!isLoading && showSkip && !showExploreButton && (
         <SkipButton visible={true} onSkip={handleSkip} />
       )}

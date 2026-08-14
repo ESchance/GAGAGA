@@ -1,20 +1,14 @@
 /**
- * 粒子系统 - 借鉴参考代码的ExplosionParticle
- * 实现速度、大小、颜色、生命周期的差异
+ * 粒子系统 - 最终版
+ * 支持固定粒子、拖影效果
  */
 
-import { randomRange, lerp, easeOut } from '../utils/MathUtils'
+import { randomRange } from '../utils/MathUtils'
 
 // 宇宙色彩配置
 const COSMIC_COLORS = [
-  '#ffffff', // 白色 - 恒星核心
-  '#e0ffff', // 浅青白 - 高温恒星
-  '#00ced1', // 青色 - 等离子体
-  '#00bfff', // 深天蓝 - 年轻恒星
-  '#4169e1', // 皇家蓝 - 蓝巨星
-  '#9370db', // 中紫色 - 星云
-  '#ff6347', // 珊瑚红 - 红巨星
-  '#ff4500'  // 橙红色 - 超新星残骸
+  '#ffffff', '#e0ffff', '#00ced1', '#00bfff',
+  '#4169e1', '#9370db', '#ff6347', '#ff4500'
 ]
 
 export class ExplosionParticle {
@@ -28,7 +22,7 @@ export class ExplosionParticle {
     // 随机角度
     const angle = Math.random() * Math.PI * 2
 
-    // 速度差异：有快有慢
+    // 速度差异
     const speedRange = Math.random()
     let speed
     if (speedRange > 0.95) {
@@ -46,88 +40,83 @@ export class ExplosionParticle {
     this.vx = Math.cos(angle) * speed
     this.vy = Math.sin(angle) * speed
 
-    // 尺寸差异：有的大有的小
+    // 尺寸差异
     const sizeRange = Math.random()
-    let size
     if (sizeRange > 0.98) {
-      size = Math.random() * 4 + 5      // 大粒子 (2%)
+      this.size = randomRange(4, 9)
     } else if (sizeRange > 0.88) {
-      size = Math.random() * 2.5 + 2.5  // 中大粒子 (10%)
+      this.size = randomRange(2.5, 5)
     } else if (sizeRange > 0.60) {
-      size = Math.random() * 1.5 + 1    // 中小粒子 (28%)
+      this.size = randomRange(1, 2.5)
     } else if (sizeRange > 0.25) {
-      size = Math.random() * 0.8 + 0.4  // 小粒子 (35%)
+      this.size = randomRange(0.4, 1.2)
     } else {
-      size = Math.random() * 0.3 + 0.1  // 微小粒子 (25%)
+      this.size = randomRange(0.1, 0.5)
     }
 
-    this.size = size
-    this.originalSize = size
+    this.originalSize = this.size
 
-    // 生命周期差异
+    // 生命周期
     this.life = 1
     const lifeRange = Math.random()
     if (lifeRange > 0.85) {
-      this.decay = Math.random() * 0.003 + 0.002 // 长寿命 (15%)
+      this.decay = randomRange(0.002, 0.005)
     } else if (lifeRange > 0.50) {
-      this.decay = Math.random() * 0.008 + 0.006  // 中寿命 (35%)
+      this.decay = randomRange(0.006, 0.014)
     } else if (lifeRange > 0.15) {
-      this.decay = Math.random() * 0.015 + 0.012  // 短寿命 (35%)
+      this.decay = randomRange(0.012, 0.027)
     } else {
-      this.decay = Math.random() * 0.025 + 0.020  // 极短寿命 (15%)
+      this.decay = randomRange(0.020, 0.045)
     }
 
     // 宇宙色彩
     const colorRange = Math.random()
-    if (colorRange > 0.90) {
-      this.color = COSMIC_COLORS[0]      // 白色 (10%)
-    } else if (colorRange > 0.75) {
-      this.color = COSMIC_COLORS[1]      // 浅青白 (15%)
-    } else if (colorRange > 0.60) {
-      this.color = COSMIC_COLORS[2]      // 青色 (15%)
-    } else if (colorRange > 0.45) {
-      this.color = COSMIC_COLORS[3]      // 深天蓝 (15%)
-    } else if (colorRange > 0.30) {
-      this.color = COSMIC_COLORS[4]      // 皇家蓝 (15%)
-    } else if (colorRange > 0.18) {
-      this.color = COSMIC_COLORS[5]      // 中紫色 (12%)
-    } else if (colorRange > 0.08) {
-      this.color = COSMIC_COLORS[6]      // 珊瑚红 (10%)
-    } else {
-      this.color = COSMIC_COLORS[7]      // 橙红色 (8%)
-    }
+    if (colorRange > 0.90) this.color = COSMIC_COLORS[0]
+    else if (colorRange > 0.75) this.color = COSMIC_COLORS[1]
+    else if (colorRange > 0.60) this.color = COSMIC_COLORS[2]
+    else if (colorRange > 0.45) this.color = COSMIC_COLORS[3]
+    else if (colorRange > 0.30) this.color = COSMIC_COLORS[4]
+    else if (colorRange > 0.18) this.color = COSMIC_COLORS[5]
+    else if (colorRange > 0.08) this.color = COSMIC_COLORS[6]
+    else this.color = COSMIC_COLORS[7]
 
     this.glowSize = this.size * 4
 
-    // 深度模拟：有的近有的远
+    // 深度模拟
     this.depth = Math.random()
     this.opacity = 0.3 + this.depth * 0.7
 
-    // 速度衰减差异
+    // 速度衰减
     this.drag = 0.92 + Math.random() * 0.06
+
+    // 是否固定（不移动）
+    this.fixed = false
   }
 
   update(dt) {
     if (!this.active) return
 
-    // 使用 dt 进行时间归一化
-    const dtFactor = dt / 16 // 假设 16ms 为标准帧时间
+    const dtFactor = dt / 16
 
-    this.x += this.vx * dtFactor
-    this.y += this.vy * dtFactor
+    if (!this.fixed) {
+      this.x += this.vx * dtFactor
+      this.y += this.vy * dtFactor
 
-    // 速度衰减
-    this.vx *= Math.pow(this.drag, dtFactor)
-    this.vy *= Math.pow(this.drag, dtFactor)
+      this.vx *= Math.pow(this.drag, dtFactor)
+      this.vy *= Math.pow(this.drag, dtFactor)
+    }
 
     this.life -= this.decay * dtFactor
-
-    // 尺寸随生命变化
     this.size = this.originalSize * (0.2 + this.life * 0.8)
   }
 
   activate() {
     this.active = true
+  }
+
+  makeFixed() {
+    this.fixed = true
+    this.decay = randomRange(0.001, 0.003) // 固定粒子衰减更慢
   }
 
   draw(ctx) {
@@ -170,18 +159,200 @@ export class ExplosionParticle {
   }
 }
 
+// 穿梭粒子（Z轴方向）
+export class TraverseParticle {
+  constructor(width, height) {
+    this.width = width
+    this.height = height
+    this.reset()
+  }
+
+  reset() {
+    // 初始位置：随机分布在屏幕上
+    this.x = randomRange(0, this.width)
+    this.y = randomRange(0, this.height)
+    this.z = randomRange(500, 1000) // 从远处开始
+
+    // 大小随机
+    this.size = randomRange(0.5, 3)
+
+    // 颜色随机
+    const colors = ['#00ffff', '#00bfff', '#e0ffff', '#9370db', '#ffffff']
+    this.color = colors[Math.floor(Math.random() * colors.length)]
+
+    // 生命周期
+    this.life = 1
+    this.decay = randomRange(0.002, 0.008)
+
+    // 速度（Z轴方向）
+    this.vz = randomRange(2, 8)
+  }
+
+  update(dt) {
+    const dtFactor = dt / 16
+
+    // Z轴移动（从远到近）
+    this.z -= this.vz * dtFactor
+
+    // 如果到达屏幕，重置
+    if (this.z <= 0) {
+      this.reset()
+    }
+
+    this.life -= this.decay * dtFactor
+    if (this.life <= 0) {
+      this.reset()
+    }
+  }
+
+  draw(ctx) {
+    if (this.life <= 0) return
+
+    // 计算屏幕位置（透视投影）
+    const scale = 500 / (this.z + 1)
+    const screenX = (this.x - this.width / 2) * scale + this.width / 2
+    const screenY = (this.y - this.height / 2) * scale + this.height / 2
+    const screenSize = this.size * scale
+
+    // 检查是否在屏幕内
+    if (screenX < -50 || screenX > this.width + 50 ||
+        screenY < -50 || screenY > this.height + 50) {
+      return
+    }
+
+    ctx.save()
+    ctx.globalAlpha = this.life * Math.min(1, scale)
+
+    // 绘制粒子
+    const gradient = ctx.createRadialGradient(
+      screenX, screenY, 0,
+      screenX, screenY, screenSize * 2
+    )
+    gradient.addColorStop(0, this.color)
+    gradient.addColorStop(1, this.color + '00')
+
+    ctx.fillStyle = gradient
+    ctx.beginPath()
+    ctx.arc(screenX, screenY, screenSize * 2, 0, Math.PI * 2)
+    ctx.fill()
+
+    ctx.restore()
+  }
+}
+
+// 快速穿梭粒子（带拖影）
+export class FastTraverseParticle {
+  constructor(width, height) {
+    this.width = width
+    this.height = height
+    this.reset()
+  }
+
+  reset() {
+    this.x = randomRange(0, this.width)
+    this.y = randomRange(0, this.height)
+    this.z = randomRange(500, 1000)
+
+    this.size = randomRange(0.5, 2)
+    this.color = '#00ffff'
+
+    this.life = 1
+    this.decay = randomRange(0.005, 0.015)
+
+    // 更快的速度
+    this.vz = randomRange(15, 30)
+
+    // 拖影历史
+    this.trail = []
+    this.maxTrail = 5
+  }
+
+  update(dt) {
+    const dtFactor = dt / 16
+
+    // 保存当前位置到拖影
+    this.trail.push({ x: this.x, y: this.y, z: this.z })
+    if (this.trail.length > this.maxTrail) {
+      this.trail.shift()
+    }
+
+    // Z轴移动
+    this.z -= this.vz * dtFactor
+
+    if (this.z <= 0) {
+      this.reset()
+    }
+
+    this.life -= this.decay * dtFactor
+    if (this.life <= 0) {
+      this.reset()
+    }
+  }
+
+  draw(ctx) {
+    if (this.life <= 0) return
+
+    // 绘制拖影
+    this.trail.forEach((pos, index) => {
+      const scale = 500 / (pos.z + 1)
+      const screenX = (pos.x - this.width / 2) * scale + this.width / 2
+      const screenY = (pos.y - this.height / 2) * scale + this.height / 2
+      const screenSize = this.size * scale
+
+      const alpha = (index / this.trail.length) * 0.3 * this.life
+
+      ctx.save()
+      ctx.globalAlpha = alpha
+      ctx.fillStyle = this.color
+      ctx.beginPath()
+      ctx.arc(screenX, screenY, screenSize, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.restore()
+    })
+
+    // 绘制当前粒子
+    const scale = 500 / (this.z + 1)
+    const screenX = (this.x - this.width / 2) * scale + this.width / 2
+    const screenY = (this.y - this.height / 2) * scale + this.height / 2
+    const screenSize = this.size * scale
+
+    if (screenX < -50 || screenX > this.width + 50 ||
+        screenY < -50 || screenY > this.height + 50) {
+      return
+    }
+
+    ctx.save()
+    ctx.globalAlpha = this.life * Math.min(1, scale)
+
+    const gradient = ctx.createRadialGradient(
+      screenX, screenY, 0,
+      screenX, screenY, screenSize * 2
+    )
+    gradient.addColorStop(0, '#ffffff')
+    gradient.addColorStop(0.3, this.color)
+    gradient.addColorStop(1, this.color + '00')
+
+    ctx.fillStyle = gradient
+    ctx.beginPath()
+    ctx.arc(screenX, screenY, screenSize * 2, 0, Math.PI * 2)
+    ctx.fill()
+
+    ctx.restore()
+  }
+}
+
+// 粒子系统
 export class ParticleSystem {
   constructor(options = {}) {
     this.particles = []
     this.maxParticles = options.maxParticles || 2000
   }
 
-  // 触发爆炸（优化性能）
-  emitExplosion(x, y, count = 800) {
+  // 触发爆炸
+  emitExplosion(x, y, count = 1500) {
     for (let i = 0; i < count; i++) {
       if (this.particles.length >= this.maxParticles) break
 
-      // 延迟时间分布（更平滑）
       let delay
       const delayRand = Math.random()
       if (delayRand > 0.90) {
@@ -198,29 +369,25 @@ export class ParticleSystem {
     }
   }
 
-  // 从中心发射
-  emitFromCenter(x, y, count = 50) {
-    for (let i = 0; i < count; i++) {
-      if (this.particles.length >= this.maxParticles) break
+  // 固定部分粒子
+  fixParticles(percentage = 0.3) {
+    const activeParticles = this.particles.filter(p => p.active && p.life > 0.5)
+    const count = Math.floor(activeParticles.length * percentage)
 
-      const particle = new ExplosionParticle(x, y, 0)
-      particle.activate()
-      this.particles.push(particle)
+    for (let i = 0; i < count; i++) {
+      const randomIndex = Math.floor(Math.random() * activeParticles.length)
+      activeParticles[randomIndex].makeFixed()
     }
   }
 
   update(dt) {
-    // 激活延迟的粒子
     this.particles.forEach(p => {
       if (!p.active && p.isReady()) {
         p.activate()
       }
     })
 
-    // 更新所有粒子
     this.particles.forEach(p => p.update(dt))
-
-    // 移除死亡的粒子
     this.particles = this.particles.filter(p => !p.isDead())
   }
 
