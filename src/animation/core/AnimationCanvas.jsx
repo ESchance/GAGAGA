@@ -1,6 +1,5 @@
 /**
- * Canvas 渲染组件 - 电影级叙事体验
- * 负责渲染所有动画效果
+ * Canvas 渲染组件 - 宇宙大爆发叙事体验
  */
 
 import { useEffect, useRef } from 'react'
@@ -11,7 +10,7 @@ import { TransitionEffect } from './TransitionEffect'
 import { AnimationTimeline, PHASES } from '../timeline/AnimationTimeline'
 import { lerp, easeInOut, randomRange } from '../utils/MathUtils'
 
-export default function AnimationCanvas({ timeline, onComplete }) {
+export default function AnimationCanvas({ timeline }) {
   const canvasRef = useRef(null)
   const animationRef = useRef(null)
   const stateRef = useRef({
@@ -20,10 +19,10 @@ export default function AnimationCanvas({ timeline, onComplete }) {
     planetEffect: null,
     transitionEffect: null,
     camera: { x: 0, y: 0, z: 0 },
-    emitTimer: 0
+    emitTimer: 0,
+    explosionProgress: 0
   })
 
-  // 初始化
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -31,7 +30,6 @@ export default function AnimationCanvas({ timeline, onComplete }) {
     const ctx = canvas.getContext('2d')
     const state = stateRef.current
 
-    // 设置画布大小
     const updateSize = () => {
       const dpr = window.devicePixelRatio || 1
       const rect = canvas.getBoundingClientRect()
@@ -41,7 +39,6 @@ export default function AnimationCanvas({ timeline, onComplete }) {
       canvas.style.width = rect.width + 'px'
       canvas.style.height = rect.height + 'px'
 
-      // 重新初始化系统
       const isMobile = window.innerWidth < 640
       state.dustSystem = new DustSystem({
         maxParticles: isMobile ? 100 : 200,
@@ -61,7 +58,6 @@ export default function AnimationCanvas({ timeline, onComplete }) {
     }
   }, [])
 
-  // 动画循环
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -71,68 +67,67 @@ export default function AnimationCanvas({ timeline, onComplete }) {
     let lastTime = 0
 
     const animate = (timestamp) => {
-      const dt = Math.min(timestamp - lastTime, 50) // 限制最大dt
+      const dt = Math.min(timestamp - lastTime, 50)
       lastTime = timestamp
 
-      // 更新时间轴
       const isComplete = timeline.update(timestamp)
 
-      // 清空画布
       const rect = canvas.getBoundingClientRect()
       ctx.clearRect(0, 0, rect.width, rect.height)
 
-      // 绘制背景
+      // 黑色背景
       ctx.fillStyle = '#000000'
       ctx.fillRect(0, 0, rect.width, rect.height)
 
-      // 根据阶段绘制不同效果
       const phase = timeline.currentPhase
       const centerX = rect.width / 2
       const centerY = rect.height / 2
 
-      // 更新所有效果
+      // 更新效果
       state.dustSystem.update(dt)
       state.nebulaEffect.update(dt)
       state.planetEffect.update(dt)
       state.transitionEffect.update(dt)
 
       switch (phase) {
-        case PHASES.VOID_BIRTH:
-          drawVoidBirthPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
+        case PHASES.DARKNESS:
+          // 纯黑，无任何元素
           break
 
-        case PHASES.NEBULA_FORM:
-          drawNebulaFormPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
+        case PHASES.BIRTH:
+          drawBirthPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
+          break
+
+        case PHASES.EXPLOSION:
+          drawExplosionPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline, dt)
           break
 
         case PHASES.TRAVERSE:
           drawTraversePhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline, dt)
           break
 
-        case PHASES.DISCOVERY:
-          drawDiscoveryPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
+        case PHASES.BUTTON:
+          drawButtonPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
           break
 
-        case PHASES.APPROACH:
-          drawApproachPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
+        case PHASES.RACE_SELECTION:
+          // 等待用户操作，保持当前画面
           break
 
-        case PHASES.TRANSITION:
-          drawTransitionPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
+        case PHASES.TRAVERSE_2:
+          drawTraverse2Phase(ctx, rect.width, rect.height, centerX, centerY, state, timeline, dt)
           break
 
-        case PHASES.COMPLETE:
-          // 动画完成
+        case PHASES.ENTER:
+          drawEnterPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
           break
       }
 
-      // 继续动画
       if (!isComplete) {
         animationRef.current = requestAnimationFrame(animate)
       }
     }
 
-    // 开始动画
     animationRef.current = requestAnimationFrame(animate)
 
     return () => {
@@ -151,25 +146,31 @@ export default function AnimationCanvas({ timeline, onComplete }) {
   )
 }
 
-// 阶段1：虚空诞生 (0-4s)
-function drawVoidBirthPhase(ctx, width, height, centerX, centerY, state, timeline) {
-  const progress = timeline.getEasedProgress(PHASES.VOID_BIRTH)
+// 阶段1：黑暗 (0-3s)
+function drawDarknessPhase(ctx, width, height) {
+  // 纯黑，无任何元素
+}
 
-  // 中心光点从无到有
-  const glowSize = lerp(0, 20, progress)
-  const glowAlpha = lerp(0, 0.6, progress)
+// 阶段2：亮点诞生 (3-6s)
+function drawBirthPhase(ctx, width, height, centerX, centerY, state, timeline) {
+  const progress = timeline.getEasedProgress(PHASES.BIRTH)
+
+  // 亮点从无到有
+  const glowSize = lerp(0, 15, progress)
+  const glowAlpha = lerp(0, 0.8, progress)
 
   // 呼吸效果
-  const breathe = Math.sin(progress * Math.PI) * 0.1 + 0.9
+  const breathe = Math.sin(progress * Math.PI * 2) * 0.2 + 0.8
 
-  // 绘制光点
+  // 绘制亮点
   const gradient = ctx.createRadialGradient(
     centerX, centerY, 0,
     centerX, centerY, glowSize * breathe
   )
-  gradient.addColorStop(0, `rgba(100, 120, 200, ${glowAlpha})`)
-  gradient.addColorStop(0.5, `rgba(80, 100, 180, ${glowAlpha * 0.5})`)
-  gradient.addColorStop(1, 'rgba(60, 80, 160, 0)')
+  gradient.addColorStop(0, `rgba(255, 255, 255, ${glowAlpha})`)
+  gradient.addColorStop(0.3, `rgba(200, 220, 255, ${glowAlpha * 0.8})`)
+  gradient.addColorStop(0.6, `rgba(150, 180, 255, ${glowAlpha * 0.5})`)
+  gradient.addColorStop(1, 'rgba(100, 120, 200, 0)')
 
   ctx.beginPath()
   ctx.arc(centerX, centerY, glowSize * breathe, 0, Math.PI * 2)
@@ -177,34 +178,108 @@ function drawVoidBirthPhase(ctx, width, height, centerX, centerY, state, timelin
   ctx.fill()
 }
 
-// 阶段2：星云凝聚 (4-8s)
-function drawNebulaFormPhase(ctx, width, height, centerX, centerY, state, timeline) {
-  const progress = timeline.getEasedProgress(PHASES.NEBULA_FORM)
+// 阶段3：宇宙大爆炸 (6-10s)
+function drawExplosionPhase(ctx, width, height, centerX, centerY, state, timeline, dt) {
+  const progress = timeline.getEasedProgress(PHASES.EXPLOSION)
+
+  // 爆炸效果
+  const explosionSize = lerp(15, 100, easeOut(progress))
+  const explosionAlpha = lerp(1, 0.3, progress)
+
+  // 中央光源
+  const coreGradient = ctx.createRadialGradient(
+    centerX, centerY, 0,
+    centerX, centerY, explosionSize
+  )
+  coreGradient.addColorStop(0, `rgba(255, 255, 255, ${explosionAlpha})`)
+  coreGradient.addColorStop(0.2, `rgba(200, 220, 255, ${explosionAlpha * 0.8})`)
+  coreGradient.addColorStop(0.5, `rgba(100, 120, 200, ${explosionAlpha * 0.5})`)
+  coreGradient.addColorStop(1, 'rgba(50, 60, 100, 0)')
+
+  ctx.beginPath()
+  ctx.arc(centerX, centerY, explosionSize, 0, Math.PI * 2)
+  ctx.fillStyle = coreGradient
+  ctx.fill()
+
+  // 爆炸粒子
+  if (progress > 0.1 && progress < 0.8) {
+    state.emitTimer += dt
+    if (state.emitTimer > 50) {
+      state.dustSystem.emitBurst(centerX, centerY, 20)
+      state.emitTimer = 0
+    }
+  }
+
+  // 绘制尘埃
+  state.dustSystem.draw(ctx, 0, 0, 0)
+
+  // 星云开始形成
+  if (progress > 0.3) {
+    const nebulaProgress = (progress - 0.3) / 0.7
+    state.nebulaEffect.draw(ctx, centerX, centerY, 150 * nebulaProgress, nebulaProgress, 'blue')
+  }
+}
+
+// 阶段4：穿越停留 (10-14s)
+function drawTraversePhase(ctx, width, height, centerX, centerY, state, timeline, dt) {
+  const progress = timeline.getEasedProgress(PHASES.TRAVERSE)
+  const velocity = timeline.getTraverseVelocity()
+
+  // 更新相机位置
+  state.camera.z += velocity * dt * 0.3
 
   // 绘制星云
-  state.nebulaEffect.draw(ctx, centerX, centerY, 200, progress, 'blue')
+  state.nebulaEffect.draw(ctx, centerX, centerY, 200, 0.8, 'purple')
 
-  // 从边缘发射尘埃
-  state.emitTimer += 16
-  if (state.emitTimer > 200) {
-    state.dustSystem.emitFromEdges(10)
+  // 绘制尘埃
+  state.dustSystem.draw(ctx, 0, 0, state.camera.z)
+
+  // 发射尘埃
+  state.emitTimer += dt
+  if (state.emitTimer > 150) {
+    state.dustSystem.emitBurst(centerX, centerY, 5)
     state.emitTimer = 0
   }
 
-  // 更新和绘制尘埃
-  state.dustSystem.draw(ctx, 0, 0, 0)
+  // 速度线
+  if (velocity > 0.3) {
+    const lineCount = Math.floor(velocity * 8)
+    for (let i = 0; i < lineCount; i++) {
+      const x = randomRange(0, width)
+      const y = randomRange(0, height)
+      const length = velocity * 25
 
-  // 中心光点增强
-  const glowSize = lerp(20, 40, progress)
-  const glowAlpha = lerp(0.6, 0.8, progress)
+      ctx.beginPath()
+      ctx.moveTo(x, y)
+      ctx.lineTo(x, y + length)
+      ctx.strokeStyle = `rgba(150, 170, 220, ${velocity * 0.15})`
+      ctx.lineWidth = 1
+      ctx.stroke()
+    }
+  }
+}
+
+// 阶段5：按钮出现 (14-16s)
+function drawButtonPhase(ctx, width, height, centerX, centerY, state, timeline) {
+  const progress = timeline.getEasedProgress(PHASES.BUTTON)
+
+  // 绘制背景星云
+  state.nebulaEffect.draw(ctx, centerX, centerY, 200, 0.8, 'purple')
+
+  // 绘制尘埃
+  state.dustSystem.draw(ctx, 0, 0, state.camera.z)
+
+  // 中央光源
+  const glowSize = lerp(50, 80, progress)
+  const glowAlpha = lerp(0.5, 0.8, progress)
 
   const gradient = ctx.createRadialGradient(
     centerX, centerY, 0,
     centerX, centerY, glowSize
   )
-  gradient.addColorStop(0, `rgba(100, 120, 200, ${glowAlpha})`)
-  gradient.addColorStop(0.5, `rgba(80, 100, 180, ${glowAlpha * 0.5})`)
-  gradient.addColorStop(1, 'rgba(60, 80, 160, 0)')
+  gradient.addColorStop(0, `rgba(255, 255, 255, ${glowAlpha})`)
+  gradient.addColorStop(0.3, `rgba(100, 120, 200, ${glowAlpha * 0.6})`)
+  gradient.addColorStop(1, 'rgba(50, 60, 100, 0)')
 
   ctx.beginPath()
   ctx.arc(centerX, centerY, glowSize, 0, Math.PI * 2)
@@ -212,121 +287,76 @@ function drawNebulaFormPhase(ctx, width, height, centerX, centerY, state, timeli
   ctx.fill()
 }
 
-// 阶段3：穿越星云 (8-14s)
-function drawTraversePhase(ctx, width, height, centerX, centerY, state, timeline, dt) {
-  const progress = timeline.getEasedProgress(PHASES.TRAVERSE)
-  const velocity = timeline.getTraverseVelocity()
+// 阶段7：再次穿越 (16-22s)
+function drawTraverse2Phase(ctx, width, height, centerX, centerY, state, timeline, dt) {
+  const progress = timeline.getEasedProgress(PHASES.TRAVERSE_2)
+  const velocity = timeline.getTraverse2Velocity()
 
-  // 更新相机位置（Z轴移动）
+  // 更新相机位置
   state.camera.z += velocity * dt * 0.5
 
-  // 绘制星云（带视差）
-  state.nebulaEffect.draw(ctx, centerX, centerY, 250, 0.8, 'purple')
+  // 绘制星云
+  state.nebulaEffect.draw(ctx, centerX, centerY, 250, 0.8, 'teal')
 
-  // 从中心发射尘埃
-  state.emitTimer += 16
-  if (state.emitTimer > 100) {
-    state.dustSystem.emitBurst(centerX, centerY, 5)
+  // 绘制尘埃
+  state.dustSystem.draw(ctx, 0, 0, state.camera.z)
+
+  // 发射尘埃
+  state.emitTimer += dt
+  if (state.emitTimer > 80) {
+    state.dustSystem.emitBurst(centerX, centerY, 10)
     state.emitTimer = 0
   }
 
-  // 更新和绘制尘埃（带视差）
-  state.dustSystem.draw(ctx, 0, 0, state.camera.z)
-
-  // 绘制速度线（增强穿越感）
+  // 速度线（更快）
   if (velocity > 0.5) {
-    const lineCount = Math.floor(velocity * 10)
+    const lineCount = Math.floor(velocity * 12)
     for (let i = 0; i < lineCount; i++) {
       const x = randomRange(0, width)
       const y = randomRange(0, height)
-      const length = velocity * 30
+      const length = velocity * 35
 
       ctx.beginPath()
       ctx.moveTo(x, y)
       ctx.lineTo(x, y + length)
-      ctx.strokeStyle = `rgba(150, 170, 220, ${velocity * 0.2})`
-      ctx.lineWidth = 1
+      ctx.strokeStyle = `rgba(100, 150, 200, ${velocity * 0.2})`
+      ctx.lineWidth = 1.5
       ctx.stroke()
     }
   }
 }
 
-// 阶段4：发现星球 (14-20s)
-function drawDiscoveryPhase(ctx, width, height, centerX, centerY, state, timeline) {
-  const progress = timeline.getEasedProgress(PHASES.DISCOVERY)
+// 阶段8：进入首页 (22-26s)
+function drawEnterPhase(ctx, width, height, centerX, centerY, state, timeline) {
+  const progress = timeline.getEasedProgress(PHASES.ENTER)
 
   // 绘制星云（逐渐消散）
-  state.nebulaEffect.draw(ctx, centerX, centerY, 300, 1 - progress * 0.5, 'purple')
+  state.nebulaEffect.draw(ctx, centerX, centerY, 200, (1 - progress) * 0.8, 'teal')
 
   // 绘制尘埃
   state.dustSystem.draw(ctx, 0, 0, state.camera.z)
 
-  // 星球从远处逐渐显现
-  const planetRadius = lerp(10, 80, progress)
-  const planetAlpha = lerp(0, 1, progress)
+  // 中央光源逐渐变大变亮
+  const glowSize = lerp(80, width, progress)
+  const glowAlpha = lerp(0.8, 1, progress)
 
-  state.planetEffect.draw(ctx, centerX, centerY, planetRadius, progress, planetAlpha)
-
-  // 绘制光晕
-  const glowGradient = ctx.createRadialGradient(
-    centerX, centerY, planetRadius,
-    centerX, centerY, planetRadius * 2
+  const gradient = ctx.createRadialGradient(
+    centerX, centerY, 0,
+    centerX, centerY, glowSize
   )
-  glowGradient.addColorStop(0, `rgba(100, 120, 200, ${planetAlpha * 0.3})`)
-  glowGradient.addColorStop(1, 'rgba(100, 120, 200, 0)')
+  gradient.addColorStop(0, `rgba(255, 255, 255, ${glowAlpha})`)
+  gradient.addColorStop(0.3, `rgba(200, 220, 255, ${glowAlpha * 0.8})`)
+  gradient.addColorStop(0.6, `rgba(150, 180, 255, ${glowAlpha * 0.5})`)
+  gradient.addColorStop(1, 'rgba(100, 120, 200, 0)')
 
   ctx.beginPath()
-  ctx.arc(centerX, centerY, planetRadius * 2, 0, Math.PI * 2)
-  ctx.fillStyle = glowGradient
+  ctx.arc(centerX, centerY, glowSize, 0, Math.PI * 2)
+  ctx.fillStyle = gradient
   ctx.fill()
-}
-
-// 阶段5：接近星球 (20-26s)
-function drawApproachPhase(ctx, width, height, centerX, centerY, state, timeline) {
-  const progress = timeline.getEasedProgress(PHASES.APPROACH)
-
-  // 绘制星云（继续消散）
-  state.nebulaEffect.draw(ctx, centerX, centerY, 200, (1 - progress) * 0.5, 'teal')
-
-  // 绘制尘埃
-  state.dustSystem.draw(ctx, 0, 0, state.camera.z)
-
-  // 星球逐渐变大
-  const planetRadius = lerp(80, 150, progress)
-
-  state.planetEffect.draw(ctx, centerX, centerY, planetRadius, progress, 1)
-
-  // 光晕增强
-  const glowGradient = ctx.createRadialGradient(
-    centerX, centerY, planetRadius,
-    centerX, centerY, planetRadius * 1.5
-  )
-  glowGradient.addColorStop(0, `rgba(100, 120, 200, ${0.3 + progress * 0.2})`)
-  glowGradient.addColorStop(1, 'rgba(100, 120, 200, 0)')
-
-  ctx.beginPath()
-  ctx.arc(centerX, centerY, planetRadius * 1.5, 0, Math.PI * 2)
-  ctx.fillStyle = glowGradient
-  ctx.fill()
-}
-
-// 阶段6：进入世界 (26-30s)
-function drawTransitionPhase(ctx, width, height, centerX, centerY, state, timeline) {
-  const progress = timeline.getEasedProgress(PHASES.TRANSITION)
-
-  // 绘制空间裂开效果
-  state.transitionEffect.drawSpaceCrack(ctx, width, height, progress, centerX, centerY)
-
-  // 星球逐渐消失
-  const planetAlpha = 1 - progress
-  if (planetAlpha > 0) {
-    const planetRadius = lerp(150, 50, progress)
-    state.planetEffect.draw(ctx, centerX, centerY, planetRadius, progress, planetAlpha)
-  }
 
   // 最后阶段淡出到白色
-  if (progress > 0.8) {
-    const fadeProgress = (progress - 0.8) / 0.2
+  if (progress > 0.7) {
+    const fadeProgress = (progress - 0.7) / 0.3
     ctx.fillStyle = `rgba(255, 255, 255, ${fadeProgress})`
     ctx.fillRect(0, 0, width, height)
   }

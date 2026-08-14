@@ -4,10 +4,12 @@ import Navbar from './components/Navbar'
 import ErrorBoundary from './components/ErrorBoundary'
 import AnnouncementModal from './components/AnnouncementModal'
 import IntroAnimation from './animation/IntroAnimation'
+import RaceSelector from './components/RaceSelector'
 import { supabase } from './lib/supabase'
+import { checkRaceSelected } from './lib/worldbuilding'
 import './index.css'
 
-// 代码分割 - 只加载当前路由需要的组件
+// 代码分割
 const Home = lazy(() => import('./pages/Home'))
 const Login = lazy(() => import('./pages/Login'))
 const Register = lazy(() => import('./pages/Register'))
@@ -36,6 +38,8 @@ function LoadingFallback() {
 function AnimationManager({ children }) {
   const [showIntro, setShowIntro] = useState(false)
   const [isNewUser, setIsNewUser] = useState(false)
+  const [showRaceSelector, setShowRaceSelector] = useState(false)
+  const [animationPhase, setAnimationPhase] = useState('idle') // idle, playing, waiting, complete
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -48,16 +52,48 @@ function AnimationManager({ children }) {
     if (showIntroParam === 'true') {
       setShowIntro(true)
       setIsNewUser(newUserParam === 'true')
+      setAnimationPhase('playing')
       // 清除 URL 参数
       window.history.replaceState({}, '', location.pathname)
     }
   }, [location])
 
+  // 处理动画阶段变化
+  const handleAnimationPhaseChange = (phase) => {
+    setAnimationPhase(phase)
+  }
+
+  // 处理"开始探索"按钮点击
+  const handleExploreClick = () => {
+    if (isNewUser) {
+      // 新用户：显示种族选择
+      setShowRaceSelector(true)
+    } else {
+      // 老用户：继续动画
+      setAnimationPhase('traverse')
+    }
+  }
+
+  // 处理种族选择完成
+  const handleRaceSelect = async (race) => {
+    setShowRaceSelector(false)
+
+    if (race === null) {
+      // 跳过选择
+      setAnimationPhase('traverse')
+    } else {
+      // 选择种族后继续动画
+      setAnimationPhase('traverse')
+    }
+  }
+
+  // 处理动画完成
   const handleIntroComplete = () => {
     setShowIntro(false)
-    // 动画结束后，如果是新用户，跳转到种族选择
+    setAnimationPhase('complete')
+
+    // 如果是新用户，跳转到种族选择页面
     if (isNewUser) {
-      // 获取当前用户 ID 并跳转到个人主页
       supabase.auth.getSession().then(({ data: { session } }) => {
         if (session?.user) {
           navigate(`/profile/${session.user.id}`)
@@ -73,8 +109,16 @@ function AnimationManager({ children }) {
           onComplete={handleIntroComplete}
           isFirstTime={!isNewUser}
           showSkip={!isNewUser}
+          onPhaseChange={handleAnimationPhaseChange}
+          onExploreClick={handleExploreClick}
         />
       )}
+
+      {/* 种族选择弹窗 */}
+      {showRaceSelector && (
+        <RaceSelector onSelect={handleRaceSelect} />
+      )}
+
       {children}
     </>
   )

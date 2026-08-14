@@ -1,6 +1,5 @@
 /**
- * 入场动画主组件 - 电影级叙事体验
- * 管理整个入场动画流程
+ * 入场动画主组件 - 宇宙大爆发叙事体验
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react'
@@ -8,15 +7,22 @@ import AnimationCanvas from './core/AnimationCanvas'
 import SkipButton from './components/SkipButton'
 import { AnimationTimeline, PHASES } from './timeline/AnimationTimeline'
 
-export default function IntroAnimation({ onComplete, isFirstTime = true, showSkip = false }) {
+export default function IntroAnimation({
+  onComplete,
+  isFirstTime = true,
+  showSkip = false,
+  onPhaseChange,
+  onExploreClick
+}) {
   const [isLoading, setIsLoading] = useState(true)
   const [loadProgress, setLoadProgress] = useState(0)
   const [animationStarted, setAnimationStarted] = useState(false)
+  const [showExploreButton, setShowExploreButton] = useState(false)
   const timelineRef = useRef(null)
 
-  // 初始化动画时间轴（30秒）
+  // 初始化动画时间轴（26秒）
   useEffect(() => {
-    timelineRef.current = new AnimationTimeline(30000)
+    timelineRef.current = new AnimationTimeline(26000)
 
     // 模拟加载过程
     let progress = 0
@@ -38,11 +44,23 @@ export default function IntroAnimation({ onComplete, isFirstTime = true, showSki
     return () => clearInterval(loadInterval)
   }, [])
 
-  // 动画完成回调
+  // 动画阶段变化
   useEffect(() => {
     if (!timelineRef.current || !animationStarted) return
 
     const timeline = timelineRef.current
+
+    timeline.onPhaseChange = (phase) => {
+      // 通知父组件阶段变化
+      if (onPhaseChange) {
+        onPhaseChange(phase)
+      }
+
+      // 在按钮阶段显示"开始探索"按钮
+      if (phase === PHASES.BUTTON) {
+        setShowExploreButton(true)
+      }
+    }
 
     timeline.onComplete = () => {
       setTimeout(() => {
@@ -51,7 +69,7 @@ export default function IntroAnimation({ onComplete, isFirstTime = true, showSki
         }
       }, 1000)
     }
-  }, [animationStarted, onComplete])
+  }, [animationStarted, onComplete, onPhaseChange])
 
   // 启动动画
   useEffect(() => {
@@ -59,6 +77,18 @@ export default function IntroAnimation({ onComplete, isFirstTime = true, showSki
       timelineRef.current.start()
     }
   }, [animationStarted])
+
+  // 处理"开始探索"按钮点击
+  const handleExploreClick = useCallback(() => {
+    setShowExploreButton(false)
+    if (onExploreClick) {
+      onExploreClick()
+    }
+    // 继续动画
+    if (timelineRef.current) {
+      timelineRef.current.continueAfterUserAction()
+    }
+  }, [onExploreClick])
 
   // 跳过动画
   const handleSkip = useCallback(() => {
@@ -91,13 +121,24 @@ export default function IntroAnimation({ onComplete, isFirstTime = true, showSki
       {!isLoading && (
         <AnimationCanvas
           timeline={timelineRef.current}
-          onComplete={onComplete}
         />
       )}
 
-      {/* 跳过按钮（仅后续登录显示） */}
-      {!isLoading && (
-        <SkipButton visible={showSkip} onSkip={handleSkip} />
+      {/* "开始探索" 按钮 */}
+      {!isLoading && showExploreButton && (
+        <div className="absolute inset-0 flex items-center justify-center z-40">
+          <button
+            onClick={handleExploreClick}
+            className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-full text-lg font-medium hover:bg-white/20 hover:border-white/40 transition-all duration-300 animate-fade-in"
+          >
+            开始探索
+          </button>
+        </div>
+      )}
+
+      {/* 跳过按钮（仅老用户登录后显示） */}
+      {!isLoading && showSkip && !showExploreButton && (
+        <SkipButton visible={true} onSkip={handleSkip} />
       )}
     </div>
   )

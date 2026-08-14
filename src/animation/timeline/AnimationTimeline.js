@@ -1,63 +1,57 @@
 /**
  * 动画时间轴控制系统
- * 电影级叙事体验 - 30秒完整旅程
+ * 宇宙大爆发叙事体验
  */
 
 import { lerp, easeInOut, easeOut, easeIn } from '../utils/MathUtils'
 
-// 动画阶段定义（7个阶段）
+// 动画阶段定义
 export const PHASES = {
-  VOID_BIRTH: 'void_birth',       // 阶段1：虚空诞生 (0-4s)
-  NEBULA_FORM: 'nebula_form',     // 阶段2：星云凝聚 (4-8s)
-  TRAVERSE: 'traverse',           // 阶段3：穿越星云 (8-14s)
-  DISCOVERY: 'discovery',         // 阶段4：发现星球 (14-20s)
-  APPROACH: 'approach',           // 阶段5：接近星球 (20-26s)
-  TRANSITION: 'transition',       // 阶段6：进入世界 (26-30s)
-  COMPLETE: 'complete'            // 阶段7：完成 (30s)
+  DARKNESS: 'darkness',           // 阶段1：黑暗
+  BIRTH: 'birth',                 // 阶段2：亮点诞生
+  EXPLOSION: 'explosion',         // 阶段3：宇宙大爆炸
+  TRAVERSE: 'traverse',           // 阶段4：穿越停留
+  BUTTON: 'button',               // 阶段5：按钮出现
+  RACE_SELECTION: 'race_selection', // 阶段6：种族选择（用户操作）
+  TRAVERSE_2: 'traverse_2',       // 阶段7：再次穿越
+  ENTER: 'enter'                  // 阶段8：进入首页
 }
 
 export class AnimationTimeline {
-  constructor(duration = 30000) { // 30秒
+  constructor(duration = 26000) { // 26秒（不含种族选择时间）
     this.duration = duration
     this.startTime = 0
     this.currentTime = 0
     this.progress = 0
-    this.currentPhase = PHASES.VOID_BIRTH
+    this.currentPhase = PHASES.DARKNESS
     this.isPlaying = false
     this.isPaused = false
+    this.isWaitingForUser = false // 等待用户点击"开始探索"
 
-    // 阶段时间点（毫秒）- 电影级节奏
+    // 阶段时间点（毫秒）
     this.phaseTimes = {
-      [PHASES.VOID_BIRTH]: { start: 0, end: 4000 },      // 4秒：虚空诞生
-      [PHASES.NEBULA_FORM]: { start: 4000, end: 8000 },   // 4秒：星云凝聚
-      [PHASES.TRAVERSE]: { start: 8000, end: 14000 },     // 6秒：穿越星云
-      [PHASES.DISCOVERY]: { start: 14000, end: 20000 },   // 6秒：发现星球
-      [PHASES.APPROACH]: { start: 20000, end: 26000 },    // 6秒：接近星球
-      [PHASES.TRANSITION]: { start: 26000, end: 30000 },  // 4秒：进入世界
-      [PHASES.COMPLETE]: { start: 30000, end: 30000 }     // 完成
+      [PHASES.DARKNESS]: { start: 0, end: 3000 },           // 3秒：黑暗
+      [PHASES.BIRTH]: { start: 3000, end: 6000 },           // 3秒：亮点诞生
+      [PHASES.EXPLOSION]: { start: 6000, end: 10000 },      // 4秒：宇宙大爆炸
+      [PHASES.TRAVERSE]: { start: 10000, end: 14000 },      // 4秒：穿越停留
+      [PHASES.BUTTON]: { start: 14000, end: 16000 },        // 2秒：按钮出现
+      [PHASES.RACE_SELECTION]: { start: 16000, end: 16000 }, // 用户操作
+      [PHASES.TRAVERSE_2]: { start: 16000, end: 22000 },    // 6秒：再次穿越
+      [PHASES.ENTER]: { start: 22000, end: 26000 }          // 4秒：进入首页
     }
-
-    // 速度曲线（用于穿越阶段）
-    this.velocityCurve = [
-      { time: 0, velocity: 0 },
-      { time: 0.1, velocity: 0.2 },
-      { time: 0.3, velocity: 0.8 },
-      { time: 0.5, velocity: 1.5 },  // 峰值
-      { time: 0.7, velocity: 1.0 },
-      { time: 0.9, velocity: 0.5 },
-      { time: 1.0, velocity: 0 }
-    ]
 
     // 回调函数
     this.onPhaseChange = null
     this.onComplete = null
     this.onProgress = null
+    this.onWaitForUser = null // 等待用户点击
   }
 
   start() {
     this.startTime = performance.now()
     this.isPlaying = true
     this.isPaused = false
+    this.isWaitingForUser = false
   }
 
   pause() {
@@ -68,17 +62,24 @@ export class AnimationTimeline {
     this.isPaused = false
   }
 
+  // 用户点击"开始探索"后继续
+  continueAfterUserAction() {
+    this.isWaitingForUser = false
+    this.startTime = performance.now() - this.phaseTimes[PHASES.TRAVERSE_2].start
+  }
+
   reset() {
     this.startTime = 0
     this.currentTime = 0
     this.progress = 0
-    this.currentPhase = PHASES.VOID_BIRTH
+    this.currentPhase = PHASES.DARKNESS
     this.isPlaying = false
     this.isPaused = false
+    this.isWaitingForUser = false
   }
 
   update(timestamp) {
-    if (!this.isPlaying || this.isPaused) return false
+    if (!this.isPlaying || this.isPaused || this.isWaitingForUser) return false
 
     this.currentTime = timestamp - this.startTime
     this.progress = Math.min(this.currentTime / this.duration, 1)
@@ -112,20 +113,22 @@ export class AnimationTimeline {
   getCurrentPhase() {
     const time = this.currentTime
 
-    if (time < this.phaseTimes[PHASES.VOID_BIRTH].end) {
-      return PHASES.VOID_BIRTH
-    } else if (time < this.phaseTimes[PHASES.NEBULA_FORM].end) {
-      return PHASES.NEBULA_FORM
+    if (time < this.phaseTimes[PHASES.DARKNESS].end) {
+      return PHASES.DARKNESS
+    } else if (time < this.phaseTimes[PHASES.BIRTH].end) {
+      return PHASES.BIRTH
+    } else if (time < this.phaseTimes[PHASES.EXPLOSION].end) {
+      return PHASES.EXPLOSION
     } else if (time < this.phaseTimes[PHASES.TRAVERSE].end) {
       return PHASES.TRAVERSE
-    } else if (time < this.phaseTimes[PHASES.DISCOVERY].end) {
-      return PHASES.DISCOVERY
-    } else if (time < this.phaseTimes[PHASES.APPROACH].end) {
-      return PHASES.APPROACH
-    } else if (time < this.phaseTimes[PHASES.TRANSITION].end) {
-      return PHASES.TRANSITION
+    } else if (time < this.phaseTimes[PHASES.BUTTON].end) {
+      return PHASES.BUTTON
+    } else if (time < this.phaseTimes[PHASES.TRAVERSE_2].start) {
+      return PHASES.RACE_SELECTION
+    } else if (time < this.phaseTimes[PHASES.ENTER].start) {
+      return PHASES.TRAVERSE_2
     } else {
-      return PHASES.COMPLETE
+      return PHASES.ENTER
     }
   }
 
@@ -143,27 +146,36 @@ export class AnimationTimeline {
     return this.progress
   }
 
-  // 获取缓动后的进度
   getEasedProgress(phase, easing = easeInOut) {
     const rawProgress = this.getPhaseProgress(phase)
     return easing(rawProgress)
   }
 
-  // 获取穿越阶段的速度（基于速度曲线）
+  // 获取穿越阶段的速度
   getTraverseVelocity() {
     const progress = this.getPhaseProgress(PHASES.TRAVERSE)
 
-    // 找到对应的速度值
-    for (let i = 0; i < this.velocityCurve.length - 1; i++) {
-      const current = this.velocityCurve[i]
-      const next = this.velocityCurve[i + 1]
-
-      if (progress >= current.time && progress <= next.time) {
-        const localProgress = (progress - current.time) / (next.time - current.time)
-        return lerp(current.velocity, next.velocity, easeInOut(localProgress))
-      }
+    // 速度曲线：慢-快-慢
+    if (progress < 0.3) {
+      return easeIn(progress / 0.3) * 0.8
+    } else if (progress < 0.7) {
+      return 0.8 + Math.sin((progress - 0.3) / 0.4 * Math.PI) * 0.4
+    } else {
+      return easeOut((1 - progress) / 0.3) * 0.8
     }
+  }
 
-    return 0
+  // 获取第二次穿越的速度（更快）
+  getTraverse2Velocity() {
+    const progress = this.getPhaseProgress(PHASES.TRAVERSE_2)
+
+    // 更快的速度曲线
+    if (progress < 0.2) {
+      return easeIn(progress / 0.2) * 1.5
+    } else if (progress < 0.8) {
+      return 1.5
+    } else {
+      return easeOut((1 - progress) / 0.2) * 1.5
+    }
   }
 }
