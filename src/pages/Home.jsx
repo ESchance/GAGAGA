@@ -37,9 +37,10 @@ export default function Home() {
     try {
       const { data, error } = await supabase
         .from('posts')
-        .select('*, profiles(username, avatar_url, role)')
+        .select('id, title, content, created_at, is_pinned, user_id, profiles(username, avatar_url, role)')
         .order('is_pinned', { ascending: false })
         .order('created_at', { ascending: false })
+        .limit(50)  // 限制返回数量
 
       if (error) throw error
       setPosts(data || [])

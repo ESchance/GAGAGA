@@ -51,6 +51,8 @@ const Avatar = memo(function Avatar({ url, username, size = 'md', role = 'user' 
             src={url}
             alt={`${username}的头像`}
             className="w-full h-full object-cover"
+            loading="lazy"  // 懒加载
+            decoding="async"  // 异步解码
           />
         ) : (
           <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold shadow-inner`}>
