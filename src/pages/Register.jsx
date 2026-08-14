@@ -28,7 +28,7 @@ export default function Register() {
       <AuthForm type="register" />
 
       <div className="max-w-md mx-auto mt-6 glass-effect p-6 rounded-2xl shadow-lg animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-        <h3 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+        <h3 className="text-lg font-bold text-[var(--color-text-primary)] mb-4">
           📧 可用的注册邮箱
         </h3>
         <div className="max-h-60 overflow-y-auto space-y-2 pr-2">
@@ -39,13 +39,13 @@ export default function Register() {
                 key={index}
                 className={`flex items-center justify-between p-3 rounded-xl transition-all duration-200 ${
                   isRegistered
-                    ? 'bg-red-50 text-red-500 line-through'
-                    : 'bg-gradient-to-r from-blue-50 to-purple-50 text-gray-700 hover:from-blue-100 hover:to-purple-100'
+                    ? 'bg-[var(--color-error)] bg-opacity-10 text-[var(--color-error)] line-through'
+                    : 'bg-[var(--color-bg-tertiary)] text-[var(--color-text-primary)] hover:bg-[var(--color-surface-hover)]'
                 }`}
               >
                 <span className="text-sm font-medium">{email}</span>
                 {isRegistered && (
-                  <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">
+                  <span className="text-xs bg-[var(--color-error)] bg-opacity-20 text-[var(--color-error)] px-2 py-1 rounded-full">
                     已注册
                   </span>
                 )}
@@ -53,17 +53,17 @@ export default function Register() {
             )
           })}
         </div>
-        <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl">
-          <p className="text-xs text-gray-600 flex items-center">
+        <div className="mt-4 p-3 bg-[var(--color-bg-tertiary)] rounded-xl">
+          <p className="text-xs text-[var(--color-text-secondary)] flex items-center">
             <span className="mr-2">💡</span>
             红色删除线表示已注册，密码需包含大小写字母和数字
           </p>
         </div>
       </div>
 
-      <p className="text-center mt-6 text-gray-600 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
+      <p className="text-center mt-6 text-[var(--color-text-secondary)] animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
         已有账号？{' '}
-        <Link to="/login" className="font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-purple-600 hover:to-blue-600 transition-all duration-300">
+        <Link to="/login" className="font-semibold text-[var(--color-primary)] hover:underline transition-all duration-300">
           点击登录
         </Link>
       </p>

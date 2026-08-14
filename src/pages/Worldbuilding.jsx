@@ -75,12 +75,12 @@ export default function Worldbuilding() {
         {/* 页面标题 */}
         <div className="text-center mb-8 animate-fade-in-up">
           <div className="flex items-center justify-center space-x-3 mb-2">
-            <GalaxyIcon className="w-10 h-10 text-purple-600" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+            <GalaxyIcon className="w-10 h-10 text-[var(--color-primary)]" />
+            <h1 className="text-4xl font-bold text-[var(--color-text-primary)]">
               嘎宇宙创作
             </h1>
           </div>
-          <p className="text-gray-500">在这里创作属于你的嘎宇宙故事</p>
+          <p className="text-[var(--color-text-secondary)]">在这里创作属于你的嘎宇宙故事</p>
         </div>
 
         {/* 类型筛选 */}
@@ -89,10 +89,10 @@ export default function Worldbuilding() {
             <button
               key={filter.key || 'all'}
               onClick={() => setActiveFilter(filter.key)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                 activeFilter === filter.key
-                  ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg'
-                  : 'bg-white text-gray-600 hover:bg-gray-100'
+                  ? 'bg-[var(--color-primary)] text-white shadow-md'
+                  : 'bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]'
               }`}
             >
               <filter.Icon className="w-4 h-4" />
@@ -106,7 +106,7 @@ export default function Worldbuilding() {
           <div className="text-center mb-8 animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
             <a
               href="/worldbuilding/create"
-              className="btn-gradient text-white px-6 py-3 rounded-full font-medium btn-animate inline-block"
+              className="btn btn-primary"
             >
               ✏️ 开始创作
             </a>
@@ -117,38 +117,38 @@ export default function Worldbuilding() {
         {loading ? (
           <div className="text-center py-16">
             <div className="loading-spinner mx-auto mb-4"></div>
-            <p className="text-gray-500">加载中...</p>
+            <p className="text-[var(--color-text-secondary)]">加载中...</p>
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-16 animate-fade-in-up">
-            <div className="text-6xl mb-4">📝</div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">还没有创作</h3>
-            <p className="text-gray-500">成为第一个创作者吧！</p>
+            <div className="text-6xl mb-4 opacity-50">📝</div>
+            <h3 className="text-xl font-semibold text-[var(--color-text-primary)] mb-2">还没有创作</h3>
+            <p className="text-[var(--color-text-secondary)]">成为第一个创作者吧！</p>
           </div>
         ) : (
           <div className="space-y-4">
             {posts.map((post, index) => (
               <div
                 key={post.id}
-                className="glass-effect p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 animate-fade-in-up cursor-pointer"
+                className="post-card card-hover animate-fade-in-up cursor-pointer"
                 style={{ animationDelay: `${index * 0.05}s` }}
                 onClick={() => window.location.href = `/worldbuilding/${post.id}`}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center space-x-2">
-                    <div className="text-purple-600">{getTypeIcon(post.type, "w-6 h-6")}</div>
-                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                    <div className="text-[var(--color-primary)]">{getTypeIcon(post.type, "w-5 h-5")}</div>
+                    <span className="text-xs text-[var(--color-text-secondary)] bg-[var(--color-bg-tertiary)] px-2 py-1 rounded-full">
                       {getTypeName(post.type)}
                     </span>
                   </div>
-                  <span className="text-xs text-gray-400">{formatDate(post.created_at)}</span>
+                  <span className="text-xs text-[var(--color-text-tertiary)]">{formatDate(post.created_at)}</span>
                 </div>
 
-                <h3 className="text-lg font-semibold text-gray-800 mb-2 hover:text-purple-600 transition-colors">
+                <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-2 hover:text-[var(--color-primary)] transition-colors">
                   {post.title}
                 </h3>
 
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
+                <p className="text-[var(--color-text-secondary)] text-sm mb-4 line-clamp-2 leading-relaxed">
                   {post.content}
                 </p>
 
@@ -162,17 +162,17 @@ export default function Worldbuilding() {
                     />
                     <div>
                       <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium text-gray-700">
+                        <span className="text-sm font-medium text-[var(--color-text-primary)]">
                           {post.profiles?.username || '匿名用户'}
                         </span>
                         {post.profiles?.role === 'admin' && (
-                          <span className="text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-full font-medium">
+                          <span className="text-xs bg-[var(--color-primary-light)] text-[var(--color-primary)] px-2 py-0.5 rounded-full font-medium">
                             管理员
                           </span>
                         )}
                       </div>
                       {post.profiles?.member_code && (
-                        <div className="flex items-center space-x-2 text-xs text-gray-500">
+                        <div className="flex items-center space-x-2 text-xs text-[var(--color-text-tertiary)]">
                           <span>{RACES[post.profiles?.race]?.icon || '🧑'}</span>
                           <span className="font-mono">{post.profiles.member_code}</span>
                         </div>
@@ -180,12 +180,12 @@ export default function Worldbuilding() {
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-4 text-xs text-gray-500">
-                    <span className="flex items-center space-x-1">
+                  <div className="flex items-center space-x-4 text-xs">
+                    <span className="flex items-center space-x-1 text-[var(--color-text-tertiary)]">
                       <span>❤️</span>
                       <span>{post.likes_count || 0}</span>
                     </span>
-                    <span className="flex items-center space-x-1">
+                    <span className="flex items-center space-x-1 text-[var(--color-text-tertiary)]">
                       <span>💬</span>
                       <span>{post.comments_count || 0}</span>
                     </span>
