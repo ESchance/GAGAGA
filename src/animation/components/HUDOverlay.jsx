@@ -15,6 +15,12 @@ export default function HUDOverlay({ visible = false }) {
     network: 78,
     energy: 95
   })
+  const [signalValues, setSignalValues] = useState({
+    signal: 85,
+    quantum: 99.7,
+    gravity: 0,
+    darkMatter: 27.4
+  })
 
   // 监听鼠标移动
   useEffect(() => {
@@ -47,6 +53,19 @@ export default function HUDOverlay({ visible = false }) {
         energy: Math.max(60, Math.min(100, prev.energy + (Math.random() - 0.5) * 5))
       }))
     }, 2000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // 动态波动信号值
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSignalValues(prev => ({
+        signal: Math.max(70, Math.min(95, prev.signal + (Math.random() - 0.5) * 8)),
+        quantum: Math.max(95, Math.min(99.9, prev.quantum + (Math.random() - 0.5) * 2)),
+        gravity: Math.floor(Math.random() * 1000),
+        darkMatter: Math.max(25, Math.min(30, prev.darkMatter + (Math.random() - 0.5) * 2))
+      }))
+    }, 1500)
     return () => clearInterval(interval)
   }, [])
 
@@ -109,9 +128,9 @@ export default function HUDOverlay({ visible = false }) {
               SENSORS
             </div>
             <div className="text-cyan-300 text-xs font-mono space-y-1 opacity-70">
-              <div>引力波: <span className="text-cyan-200">检测中</span></div>
-              <div>暗物质: <span className="text-cyan-200">27.4%</span></div>
-              <div>量子场: <span className="text-cyan-200">稳定</span></div>
+              <div>引力波: <span className="text-cyan-200">{signalValues.gravity}</span></div>
+              <div>暗物质: <span className="text-cyan-200">{signalValues.darkMatter.toFixed(1)}%</span></div>
+              <div>量子场: <span className="text-cyan-200">{signalValues.quantum.toFixed(1)}%</span></div>
             </div>
           </div>
         </div>
@@ -168,8 +187,10 @@ export default function HUDOverlay({ visible = false }) {
             </div>
             <div className="text-cyan-300 text-xs font-mono space-y-1 opacity-70">
               <div>系统: <span className="text-cyan-200">在线</span></div>
-              <div>信号: <span className="text-cyan-200">85%</span></div>
-              <div>扇区: <span className="text-cyan-200">ALPHA-7</span></div>
+              <div>信号: <span className="text-cyan-200">{Math.round(signalValues.signal)}%</span></div>
+              <div>量子: <span className="text-cyan-200">{signalValues.quantum.toFixed(1)}%</span></div>
+              <div>引力: <span className="text-cyan-200">{signalValues.gravity}</span></div>
+              <div>暗物质: <span className="text-cyan-200">{signalValues.darkMatter.toFixed(1)}%</span></div>
             </div>
           </div>
         </div>

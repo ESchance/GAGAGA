@@ -53,15 +53,15 @@ export default function AnimationCanvas({ timeline }) {
         nebulaCount: isMobile ? 4 : 8
       })
 
-      // 创建穿梭粒子
+      // 创建穿梭粒子（HUD界面）
       state.traverseParticles = []
-      for (let i = 0; i < (isMobile ? 30 : 60); i++) {
+      for (let i = 0; i < (isMobile ? 60 : 120); i++) {
         state.traverseParticles.push(new TraverseParticle(rect.width, rect.height))
       }
 
-      // 创建快速穿梭粒子
+      // 创建快速穿梭粒子（点击开始探索后）
       state.fastTraverseParticles = []
-      for (let i = 0; i < (isMobile ? 50 : 100); i++) {
+      for (let i = 0; i < (isMobile ? 80 : 150); i++) {
         state.fastTraverseParticles.push(new FastTraverseParticle(rect.width, rect.height))
       }
 
