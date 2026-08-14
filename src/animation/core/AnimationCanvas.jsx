@@ -309,27 +309,6 @@ function drawExplosionPhase(ctx, width, height, centerX, centerY, state, timelin
   }
 }
 
-  // 呼吸光源
-  if (progress > 0.2) {
-    const breathe = Math.sin(state.time * 2) * 0.3 + 0.7
-    const glowAlpha = (1 - progress) * 0.5 * breathe
-    const glowSize = 30 + progress * 20
-
-    const glow = ctx.createRadialGradient(
-      centerX, centerY, 0,
-      centerX, centerY, glowSize
-    )
-    glow.addColorStop(0, `rgba(255, 255, 255, ${glowAlpha})`)
-    glow.addColorStop(0.5, `rgba(100, 120, 200, ${glowAlpha * 0.5})`)
-    glow.addColorStop(1, 'rgba(50, 60, 100, 0)')
-
-    ctx.beginPath()
-    ctx.arc(centerX, centerY, glowSize, 0, Math.PI * 2)
-    ctx.fillStyle = glow
-    ctx.fill()
-  }
-}
-
 // 阶段4：HUD穿梭
 function drawTraversePhase(ctx, width, height, centerX, centerY, state, timeline, dt) {
   const progress = timeline.getEasedProgress(PHASES.TRAVERSE)
