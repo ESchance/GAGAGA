@@ -39,13 +39,13 @@ export default function Register() {
                 key={index}
                 className={`flex items-center justify-between p-3 rounded-xl transition-all duration-200 ${
                   isRegistered
-                    ? 'bg-[var(--color-error)] bg-opacity-10 text-[var(--color-error)] line-through'
+                    ? 'bg-gray-100 text-gray-400 line-through'
                     : 'bg-[var(--color-bg-tertiary)] text-[var(--color-text-primary)] hover:bg-[var(--color-surface-hover)]'
                 }`}
               >
                 <span className="text-sm font-medium">{email}</span>
                 {isRegistered && (
-                  <span className="text-xs bg-[var(--color-error)] bg-opacity-20 text-[var(--color-error)] px-2 py-1 rounded-full">
+                  <span className="text-xs bg-gray-200 text-gray-500 px-2 py-1 rounded-full">
                     已注册
                   </span>
                 )}
