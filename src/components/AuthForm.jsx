@@ -68,46 +68,31 @@ export default function AuthForm({ type = 'login' }) {
     setLoading(true)
     setMessage('')
 
+    console.log('开始注册流程', { email, username })
+
     try {
       if (type === 'register') {
-        // 输入验证
-        const emailValidation = validateEmail(email)
-        if (!emailValidation.valid) {
-          throw new Error(emailValidation.message)
+        // 简化的输入验证
+        if (!email || email.length < 5) {
+          throw new Error('请输入有效的邮箱地址')
         }
 
-        const usernameValidation = validateUsername(username)
-        if (!usernameValidation.valid) {
-          throw new Error(usernameValidation.message)
+        if (!username || username.length < 2) {
+          throw new Error('用户名至少需要2个字符')
         }
 
-        const passwordValidation = validatePassword(password)
-        if (!passwordValidation.valid) {
-          throw new Error(passwordValidation.message)
-        }
-
-        // 检查危险内容
-        if (isDangerous(username) || isDangerous(email)) {
-          throw new Error('输入包含非法内容')
+        if (!password || password.length < 6) {
+          throw new Error('密码至少需要6个字符')
         }
 
         // 检查邮箱是否在白名单中
+        console.log('检查邮箱白名单...')
         if (!isEmailAllowed(email)) {
           throw new Error('该邮箱未被授权注册，请使用指定的邮箱地址')
         }
 
-        // 检查该用户名是否已被使用
-        const { data: existingUser } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('username', username)
-          .single()
-
-        if (existingUser) {
-          throw new Error('该用户名已被使用，请换一个用户名')
-        }
-
         // 注册新用户
+        console.log('开始注册...')
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -118,7 +103,10 @@ export default function AuthForm({ type = 'login' }) {
           }
         })
 
+        console.log('注册结果:', { data, error })
+
         if (error) {
+          console.error('注册错误:', error)
           if (error.message.includes('already registered')) {
             throw new Error('该邮箱已被注册，请直接登录')
           }
@@ -128,6 +116,7 @@ export default function AuthForm({ type = 'login' }) {
         // 注册成功（profile 由数据库触发器自动创建）
         setMessage('注册成功！')
         // 跳转到个人主页，会自动弹出种族选择
+        console.log('跳转到个人主页...')
         setTimeout(() => navigate(`/profile/${data.user.id}`), 1000)
       } else {
         // 登录
