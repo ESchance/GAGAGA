@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useLocation } from 'react-router-dom'
 
 const ANNOUNCEMENT_KEY = 'gagaga_announcement_dismissed'
-const ANNOUNCEMENT_VERSION = '1.7'
+const ANNOUNCEMENT_VERSION = '1.8'
 
 const announcementContent = {
   version: ANNOUNCEMENT_VERSION,
