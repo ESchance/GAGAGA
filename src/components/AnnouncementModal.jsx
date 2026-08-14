@@ -67,10 +67,10 @@ export default function AnnouncementModal() {
         // 检查是否已关闭过当前版本的公告
         const dismissed = localStorage.getItem(ANNOUNCEMENT_KEY)
         if (dismissed !== ANNOUNCEMENT_VERSION) {
-          // 延迟3秒后显示公告（确保动画已完成）
+          // 延迟500ms后显示公告（让页面加载完成）
           const timer = setTimeout(() => {
             setShow(true)
-          }, 3000)
+          }, 500)
           return () => clearTimeout(timer)
         }
       }
