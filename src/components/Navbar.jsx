@@ -69,50 +69,50 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center">
-              <span className="text-white font-bold text-sm">嘎</span>
+        <div className="flex justify-between items-center h-14">
+          {/* Logo - 更简洁 */}
+          <Link to="/" className="flex items-center space-x-2 group">
+            <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center transition-transform group-hover:scale-105">
+              <span className="text-white font-bold text-xs">嘎</span>
             </div>
-            <span className="text-lg font-semibold text-[var(--color-text-primary)] hidden sm:block">
+            <span className="text-base font-semibold text-[var(--color-text-primary)] hidden sm:block">
               嘎宇宙
             </span>
           </Link>
 
-          {/* PC端导航 */}
+          {/* PC端导航 - 更简洁 */}
           <div className="hidden md:flex items-center space-x-1">
             {user ? (
               <>
                 <Link
                   to="/worldbuilding"
-                  className="px-4 py-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-tertiary)] rounded-lg transition-all duration-200 font-medium text-sm"
+                  className="px-3 py-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-tertiary)] rounded-md transition-all duration-150 text-sm"
                 >
-                  🌌 创作
+                  创作
                 </Link>
                 <Link
                   to="/create"
-                  className="btn-primary btn-sm"
+                  className="btn btn-primary btn-sm"
                 >
-                  ✏️ 发帖
+                  发帖
                 </Link>
                 <Link
                   to="/admin/users"
-                  className="px-4 py-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-tertiary)] rounded-lg transition-all duration-200 font-medium text-sm"
+                  className="px-3 py-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-tertiary)] rounded-md transition-all duration-150 text-sm"
                 >
-                  {isSuperAdmin ? '👥 管理' : '🏠 住户'}
+                  {isSuperAdmin ? '管理' : '住户'}
                 </Link>
-                <div className="w-px h-6 bg-[var(--color-border)] mx-2"></div>
+                <div className="w-px h-4 bg-[var(--color-border)] mx-2"></div>
                 <Link
                   to={`/profile/${user.id}`}
-                  className="flex items-center space-x-2 px-3 py-1.5 rounded-lg hover:bg-[var(--color-bg-tertiary)] transition-colors duration-200"
+                  className="flex items-center space-x-2 px-2 py-1 rounded-md hover:bg-[var(--color-bg-tertiary)] transition-colors duration-150"
                 >
                   <Avatar url={profile?.avatar_url} username={profile?.username} size="sm" />
-                  <span className="text-[var(--color-text-primary)] font-medium text-sm">{profile?.username}</span>
+                  <span className="text-[var(--color-text-primary)] text-sm">{profile?.username}</span>
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="px-3 py-1.5 text-[var(--color-text-tertiary)] hover:text-[var(--color-error)] hover:bg-red-50 rounded-lg transition-all duration-200 text-sm"
+                  className="px-3 py-1.5 text-[var(--color-text-tertiary)] hover:text-[var(--color-error)] rounded-md transition-all duration-150 text-sm"
                 >
                   退出
                 </button>
@@ -121,13 +121,13 @@ export default function Navbar() {
               <>
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] font-medium text-sm"
+                  className="px-3 py-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] text-sm"
                 >
                   登录
                 </Link>
                 <Link
                   to="/register"
-                  className="btn-primary btn-sm"
+                  className="btn btn-primary btn-sm"
                 >
                   注册
                 </Link>
@@ -138,7 +138,7 @@ export default function Navbar() {
           {/* 移动端菜单按钮 */}
           <button
             onClick={toggleMobileMenu}
-            className="md:hidden p-2 rounded-lg hover:bg-[var(--color-bg-tertiary)] transition-colors"
+            className="md:hidden p-2 rounded-md hover:bg-[var(--color-bg-tertiary)] transition-colors"
             aria-label="菜单"
           >
             <svg className="w-5 h-5 text-[var(--color-text-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,58 +153,58 @@ export default function Navbar() {
 
         {/* 移动端菜单 */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-[var(--color-border)] animate-fade-in-down">
+          <div className="md:hidden py-3 border-t border-[var(--color-border)] animate-fade-in">
             {user ? (
               <div className="space-y-1">
                 <Link
                   to={`/profile/${user.id}`}
-                  className="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-[var(--color-bg-tertiary)] transition-colors"
+                  className="flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-[var(--color-bg-tertiary)] transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <Avatar url={profile?.avatar_url} username={profile?.username} size="sm" />
-                  <span className="text-[var(--color-text-primary)] font-medium">{profile?.username}</span>
+                  <span className="text-[var(--color-text-primary)] text-sm">{profile?.username}</span>
                 </Link>
                 <Link
                   to="/worldbuilding"
-                  className="block px-3 py-2.5 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] rounded-lg transition-colors"
+                  className="block px-3 py-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] rounded-md transition-colors text-sm"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  🌌 嘎宇宙创作
+                  创作
                 </Link>
                 <Link
                   to="/create"
-                  className="block px-3 py-2.5 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] rounded-lg transition-colors"
+                  className="block px-3 py-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] rounded-md transition-colors text-sm"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  ✏️ 发帖
+                  发帖
                 </Link>
                 <Link
                   to="/admin/users"
-                  className="block px-3 py-2.5 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] rounded-lg transition-colors"
+                  className="block px-3 py-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] rounded-md transition-colors text-sm"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {isSuperAdmin ? '👥 用户管理' : '🏠 嘎宇宙住户'}
+                  {isSuperAdmin ? '管理' : '住户'}
                 </Link>
-                <div className="border-t border-[var(--color-border)] my-2"></div>
+                <div className="border-t border-[var(--color-border)] my-1"></div>
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-3 py-2.5 text-[var(--color-error)] hover:bg-red-50 rounded-lg transition-colors"
+                  className="w-full text-left px-3 py-2 text-[var(--color-error)] hover:bg-red-50 rounded-md transition-colors text-sm"
                 >
-                  退出登录
+                  退出
                 </button>
               </div>
             ) : (
               <div className="space-y-1">
                 <Link
                   to="/login"
-                  className="block px-3 py-2.5 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] rounded-lg transition-colors"
+                  className="block px-3 py-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] rounded-md transition-colors text-sm"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   登录
                 </Link>
                 <Link
                   to="/register"
-                  className="block px-3 py-2.5 text-[var(--color-primary)] hover:bg-[var(--color-primary-light)] rounded-lg transition-colors font-medium"
+                  className="block px-3 py-2 text-[var(--color-primary)] hover:bg-[var(--color-primary-light)] rounded-md transition-colors text-sm font-medium"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   注册

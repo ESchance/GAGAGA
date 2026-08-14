@@ -147,21 +147,47 @@ export default function PostDetail() {
 
   return (
     <div className="page-container py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        <a href="/" className="inline-flex items-center text-gray-600 hover:text-blue-600 mb-6 transition-colors">
-          ← 返回首页
-        </a>
+      <div className="max-w-3xl mx-auto px-4">
+        <Link to="/" className="inline-flex items-center text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] mb-6 transition-colors text-sm">
+          ← 返回
+        </Link>
 
-        <div className={`glass-effect p-8 rounded-2xl shadow-lg mb-6 animate-fade-in-up ${post.is_pinned ? 'ring-2 ring-yellow-400' : ''}`}>
+        <article className={`glass-effect p-8 rounded-2xl shadow-lg mb-6 animate-fade-in-up ${post.is_pinned ? 'ring-1 ring-yellow-400/50' : ''}`}>
           {post.is_pinned && (
-            <div className="flex items-center mb-4 text-yellow-600 text-sm font-medium bg-yellow-50 px-4 py-2 rounded-full inline-flex">
-              <span className="mr-2">📌</span>
-              <span>置顶帖子</span>
+            <div className="inline-flex items-center mb-4 px-3 py-1 bg-yellow-100 text-yellow-700 text-sm font-medium rounded-full">
+              📌 置顶
             </div>
           )}
 
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">{post.title}</h1>
-          <p className="text-gray-700 whitespace-pre-wrap mb-6 leading-relaxed text-lg">{post.content}</p>
+          <h1 className="text-3xl font-bold text-[var(--color-text-primary)] mb-4 leading-tight">{post.title}</h1>
+
+          {/* 作者信息 */}
+          <div className="flex items-center space-x-3 mb-6 pb-6 border-b border-[var(--color-border)]">
+            <Link to={`/profile/${post.user_id}`} className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+              <Avatar
+                url={post.profiles?.avatar_url}
+                username={post.profiles?.username}
+                size="md"
+                role={post.profiles?.role}
+              />
+              <div>
+                <div className="flex items-center space-x-2">
+                  <span className="font-medium text-[var(--color-text-primary)]">{post.profiles?.username || '匿名用户'}</span>
+                  {post.profiles?.role === 'admin' && (
+                    <span className="text-xs bg-[var(--color-primary-light)] text-[var(--color-primary)] px-2 py-0.5 rounded font-medium">
+                      管理员
+                    </span>
+                  )}
+                </div>
+                <span className="text-xs text-[var(--color-text-tertiary)]">
+                  {new Date(post.created_at).toLocaleString('zh-CN')}
+                </span>
+              </div>
+            </Link>
+          </div>
+
+          {/* 内容 - 使用阅读内容样式 */}
+          <div className="reading-content mb-6">{post.content}</div>
 
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-4 border-t border-gray-200 gap-4">
             <Link
