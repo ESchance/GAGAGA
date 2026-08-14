@@ -63,28 +63,17 @@ function AnimationManager({ children }) {
     setAnimationPhase(phase)
   }
 
-  // 处理"开始探索"按钮点击
+  // 处理"开始探索"按钮点击 - 让动画继续播放
   const handleExploreClick = () => {
-    if (isNewUser) {
-      // 新用户：显示种族选择
-      setShowRaceSelector(true)
-    } else {
-      // 老用户：继续动画
-      setAnimationPhase('traverse')
-    }
+    // 不做任何事，让动画继续播放（快速穿梭）
+    // 动画完成后会调用 handleIntroComplete
   }
 
   // 处理种族选择完成
-  const handleRaceSelect = async (race) => {
+  const handleRaceSelect = (race) => {
     setShowRaceSelector(false)
-
-    if (race === null) {
-      // 跳过选择
-      setAnimationPhase('traverse')
-    } else {
-      // 选择种族后继续动画
-      setAnimationPhase('traverse')
-    }
+    // 选择种族后跳转到首页
+    navigate('/')
   }
 
   // 处理动画完成
@@ -92,14 +81,11 @@ function AnimationManager({ children }) {
     setShowIntro(false)
     setAnimationPhase('complete')
 
-    // 如果是新用户，跳转到种族选择页面
+    // 如果是新用户，显示种族选择
     if (isNewUser) {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session?.user) {
-          navigate(`/profile/${session.user.id}`)
-        }
-      })
+      setShowRaceSelector(true)
     }
+    // 老用户不需要做任何事，已经在首页了
   }
 
   return (
