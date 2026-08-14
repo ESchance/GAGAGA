@@ -2,40 +2,45 @@ import { useState, useEffect, useCallback } from 'react'
 import { useLocation } from 'react-router-dom'
 
 const ANNOUNCEMENT_KEY = 'gagaga_announcement_dismissed'
-const ANNOUNCEMENT_VERSION = '1.8'
+const ANNOUNCEMENT_VERSION = '2.0'
 
 const announcementContent = {
   version: ANNOUNCEMENT_VERSION,
-  title: '📢 网站公告',
+  title: '📢 嘎宇宙公告',
   sections: [
     {
       icon: '🎉',
       title: '最新更新',
       items: [
-        '全新UI设计，参考Linear/Vercel/Medium风格',
-        '支持暗色/浅色模式切换',
-        '优化阅读体验，更好的字体和排版',
-        '新增用户管理功能',
-        '新增嘎宇宙种族系统和编号'
+        '全新宇宙大爆发入场动画（30秒沉浸式体验）',
+        '支持暗色/浅色模式手动切换',
+        '新增嘎宇宙创作板块（故事、角色、设定、点子）',
+        '新增用户管理功能（超级管理员专属）',
+        '新增嘎宇宙种族系统（6种种族+独特编号）',
+        '优化移动端和PC端视觉体验',
+        '修复点赞计数和删除用户等问题'
       ]
     },
     {
       icon: '📖',
       title: '功能说明',
       items: [
-        '注册后可选择种族，获得唯一编号',
+        '注册后可选择种族，获得唯一编号（GZ-XXXX）',
+        '首页发帖无需选择种族，所有用户可参与',
         '嘎宇宙创作需要选择种族才能参与',
-        '首页发帖无需选择种族',
-        '所有用户可查看嘎宇宙住户'
+        '所有用户可查看嘎宇宙住户',
+        '超级管理员可管理用户和删除内容',
+        '支持暗色/浅色模式切换'
       ]
     },
     {
       icon: '⚠️',
       title: '注意事项',
       items: [
-        '种族选择后不可更改',
+        '种族选择后不可更改，请慎重选择',
         '编号中的 4 和 44 已跳过（不吉利）',
-        '删除用户操作不可撤销'
+        '删除用户操作不可撤销',
+        '请遵守社区规则，文明交流'
       ]
     }
   ]
