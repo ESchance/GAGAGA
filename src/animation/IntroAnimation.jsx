@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import AnimationCanvas from './core/AnimationCanvas'
 import SkipButton from './components/SkipButton'
 import HUDOverlay from './components/HUDOverlay'
+import MobileHUD from './components/MobileHUD'
 import { AnimationTimeline, PHASES } from './timeline/AnimationTimeline'
 
 export default function IntroAnimation({
@@ -154,7 +155,14 @@ export default function IntroAnimation({
 
       {/* HUD */}
       {!isLoading && showHUD && (
-        <HUDOverlay visible={showHUD} />
+        <>
+          <div className="hidden sm:block">
+            <HUDOverlay visible={showHUD} />
+          </div>
+          <div className="sm:hidden">
+            <MobileHUD visible={showHUD} />
+          </div>
+        </>
       )}
 
       {/* 开始探索按钮 */}

@@ -260,7 +260,7 @@ export class FastTraverseParticle {
     const angle = Math.atan2(this.y - centerY, this.x - centerX)
 
     // 发散速度（更快）
-    const spreadSpeed = randomRange(1, 4)
+    const spreadSpeed = randomRange(2, 6)
     this.vx = Math.cos(angle) * spreadSpeed
     this.vy = Math.sin(angle) * spreadSpeed
 
@@ -268,10 +268,10 @@ export class FastTraverseParticle {
     this.color = '#00ffff'
 
     this.life = 1
-    this.decay = randomRange(0.005, 0.015)
+    this.decay = randomRange(0.008, 0.02)
 
     // Z轴速度（从远到近，更快）
-    this.vz = randomRange(20, 40)
+    this.vz = randomRange(30, 60)
 
     // 拖影
     this.trail = []

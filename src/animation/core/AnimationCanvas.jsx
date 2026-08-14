@@ -1,12 +1,13 @@
 /**
  * Canvas 渲染组件 - 最终版
- * 炸开+固定粒子+呼吸光源+HUD穿梭+快速穿梭
+ * 炸开+固定粒子+呼吸光源+HUD穿梭+快速穿梭+星云集群
  */
 
 import { useEffect, useRef } from 'react'
 import { ParticleSystem, TraverseParticle, FastTraverseParticle } from './ParticleSystem'
 import { StarSystem } from './StarSystem'
 import { NebulaSystem } from './NebulaSystem'
+import { createNebulaClusters } from './NebulaCluster'
 import { AnimationTimeline, PHASES } from '../timeline/AnimationTimeline'
 import { lerp, randomRange } from '../utils/MathUtils'
 
@@ -17,13 +18,17 @@ export default function AnimationCanvas({ timeline }) {
     particleSystem: null,
     starSystem: null,
     nebulaSystem: null,
+    nebulaClusters: [],
     traverseParticles: [],
     fastTraverseParticles: [],
     camera: { x: 0, y: 0, z: 0 },
     time: 0,
     explosionTriggered: false,
     fixTriggered: false,
-    nebulaTriggered: false
+    nebulaTriggered: false,
+    clustersVisible: false,
+    mouseX: 0,
+    mouseY: 0
   })
 
   useEffect(() => {
@@ -53,13 +58,16 @@ export default function AnimationCanvas({ timeline }) {
         nebulaCount: isMobile ? 4 : 8
       })
 
-      // 创建穿梭粒子（HUD界面）
+      // 创建星云集群
+      state.nebulaClusters = createNebulaClusters(rect.width, rect.height, isMobile ? 4 : 6)
+
+      // 创建穿梭粒子
       state.traverseParticles = []
       for (let i = 0; i < (isMobile ? 60 : 120); i++) {
         state.traverseParticles.push(new TraverseParticle(rect.width, rect.height))
       }
 
-      // 创建快速穿梭粒子（点击开始探索后）
+      // 创建快速穿梭粒子
       state.fastTraverseParticles = []
       for (let i = 0; i < (isMobile ? 80 : 150); i++) {
         state.fastTraverseParticles.push(new FastTraverseParticle(rect.width, rect.height))
@@ -68,13 +76,30 @@ export default function AnimationCanvas({ timeline }) {
       state.explosionTriggered = false
       state.fixTriggered = false
       state.nebulaTriggered = false
+      state.clustersVisible = false
     }
 
     updateSize()
     window.addEventListener('resize', updateSize)
 
+    // 监听鼠标移动
+    const handleMouseMove = (e) => {
+      const rect = canvas.getBoundingClientRect()
+      state.mouseX = e.clientX - rect.left
+      state.mouseY = e.clientY - rect.top
+
+      // 检测星云悬停
+      if (state.clustersVisible) {
+        state.nebulaClusters.forEach(cluster => {
+          cluster.checkHover(state.mouseX, state.mouseY)
+        })
+      }
+    }
+    window.addEventListener('mousemove', handleMouseMove)
+
     return () => {
       window.removeEventListener('resize', updateSize)
+      window.removeEventListener('mousemove', handleMouseMove)
     }
   }, [])
 
@@ -181,7 +206,6 @@ function drawBirthPhase(ctx, width, height, centerX, centerY, state, timeline) {
   ctx.fillStyle = gradient
   ctx.fill()
 
-  // 脉动光环
   for (let i = 0; i < 3; i++) {
     const ringProgress = (progress + i * 0.3) % 1
     const ringSize = ringProgress * 100
@@ -223,6 +247,14 @@ function drawExplosionPhase(ctx, width, height, centerX, centerY, state, timelin
     state.nebulaTriggered = true
   }
 
+  // 星云集群显示
+  if (progress > 0.6 && !state.clustersVisible) {
+    state.clustersVisible = true
+    state.nebulaClusters.forEach(cluster => {
+      cluster.visible = true
+    })
+  }
+
   // 绘制粒子
   if (state.particleSystem) {
     state.particleSystem.draw(ctx)
@@ -234,6 +266,13 @@ function drawExplosionPhase(ctx, width, height, centerX, centerY, state, timelin
     ctx.globalAlpha = nebulaAlpha * 0.8
     state.nebulaSystem.draw(ctx)
     ctx.globalAlpha = 1
+  }
+
+  // 绘制星云集群
+  if (state.clustersVisible) {
+    state.nebulaClusters.forEach(cluster => {
+      cluster.draw(ctx, state.time)
+    })
   }
 
   // 呼吸光源
@@ -257,36 +296,10 @@ function drawExplosionPhase(ctx, width, height, centerX, centerY, state, timelin
   }
 }
 
-// 阶段4：HUD穿梭（从屏幕里到屏幕外）
+// 阶段4：HUD穿梭
 function drawTraversePhase(ctx, width, height, centerX, centerY, state, timeline, dt) {
   const progress = timeline.getEasedProgress(PHASES.TRAVERSE)
 
-  // 绘制固定粒子（形成星云背景）
-  if (state.particleSystem) {
-    ctx.globalAlpha = 0.5
-    state.particleSystem.draw(ctx)
-    ctx.globalAlpha = 1
-  }
-
-  // 绘制星云
-  if (state.nebulaSystem) {
-    state.nebulaSystem.draw(ctx)
-  }
-
-  // 绘制恒星
-  if (state.starSystem) {
-    state.starSystem.draw(ctx, state.time)
-  }
-
-  // 绘制穿梭粒子（远小近大）
-  state.traverseParticles.forEach(p => {
-    p.update(dt)
-    p.draw(ctx)
-  })
-}
-
-// 阶段5：按钮出现
-function drawButtonPhase(ctx, width, height, centerX, centerY, state, timeline) {
   // 绘制固定粒子
   if (state.particleSystem) {
     ctx.globalAlpha = 0.5
@@ -304,18 +317,49 @@ function drawButtonPhase(ctx, width, height, centerX, centerY, state, timeline) 
     state.starSystem.draw(ctx, state.time)
   }
 
+  // 绘制星云集群
+  state.nebulaClusters.forEach(cluster => {
+    cluster.draw(ctx, state.time)
+  })
+
   // 绘制穿梭粒子
+  state.traverseParticles.forEach(p => {
+    p.update(dt)
+    p.draw(ctx)
+  })
+}
+
+// 阶段5：按钮出现
+function drawButtonPhase(ctx, width, height, centerX, centerY, state, timeline) {
+  if (state.particleSystem) {
+    ctx.globalAlpha = 0.5
+    state.particleSystem.draw(ctx)
+    ctx.globalAlpha = 1
+  }
+
+  if (state.nebulaSystem) {
+    state.nebulaSystem.draw(ctx)
+  }
+
+  if (state.starSystem) {
+    state.starSystem.draw(ctx, state.time)
+  }
+
+  // 绘制星云集群（带悬停效果）
+  state.nebulaClusters.forEach(cluster => {
+    cluster.draw(ctx, state.time)
+  })
+
   state.traverseParticles.forEach(p => {
     p.update(16)
     p.draw(ctx)
   })
 }
 
-// 阶段6：快速穿梭（点击开始探索后）
+// 阶段6：快速穿梭
 function drawFastTraversePhase(ctx, width, height, centerX, centerY, state, timeline, dt) {
   const progress = timeline.getEasedProgress(PHASES.FAST_TRAVERSE)
 
-  // 绘制快速穿梭粒子（带拖影，从屏幕里到屏幕外，倾斜视差）
   state.fastTraverseParticles.forEach(p => {
     p.update(dt)
     p.draw(ctx)
@@ -333,7 +377,6 @@ function drawFastTraversePhase(ctx, width, height, centerX, centerY, state, time
 function drawEnterPhase(ctx, width, height, centerX, centerY, state, timeline) {
   const progress = timeline.getEasedProgress(PHASES.ENTER)
 
-  // 白色淡入
   ctx.fillStyle = `rgba(255, 255, 255, ${progress})`
   ctx.fillRect(0, 0, width, height)
 }
