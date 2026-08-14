@@ -21,6 +21,7 @@ export default function IntroAnimation({
   const [showExploreButton, setShowExploreButton] = useState(false)
   const [showHUD, setShowHUD] = useState(false)
   const [showTitle, setShowTitle] = useState(false)
+  const [hoveredNebula, setHoveredNebula] = useState(null)
   const timelineRef = useRef(null)
 
   useEffect(() => {
@@ -127,7 +128,10 @@ export default function IntroAnimation({
 
       {/* 动画画布 */}
       {!isLoading && (
-        <AnimationCanvas timeline={timelineRef.current} />
+        <AnimationCanvas
+          timeline={timelineRef.current}
+          onNebulaHover={setHoveredNebula}
+        />
       )}
 
       {/* 标题 */}
@@ -157,10 +161,10 @@ export default function IntroAnimation({
       {!isLoading && showHUD && (
         <>
           <div className="hidden sm:block">
-            <HUDOverlay visible={showHUD} />
+            <HUDOverlay visible={showHUD} hoveredNebula={hoveredNebula} />
           </div>
           <div className="sm:hidden">
-            <MobileHUD visible={showHUD} />
+            <MobileHUD visible={showHUD} hoveredNebula={hoveredNebula} />
           </div>
         </>
       )}

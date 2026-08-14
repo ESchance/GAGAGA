@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 
-export default function HUDOverlay({ visible = false }) {
+export default function HUDOverlay({ visible = false, hoveredNebula = null }) {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const [time, setTime] = useState('00:00:00')
   const [startTime] = useState(Date.now())
@@ -76,15 +76,11 @@ export default function HUDOverlay({ visible = false }) {
     const xPercent = (mousePos.x / width * 100).toFixed(1)
     const yPercent = (mousePos.y / height * 100).toFixed(1)
 
-    const regions = [
-      '猎户座星云', '仙女座星系', '蟹状星云', '鹰状星云',
-      '马头星云', '玫瑰星云', '礁湖星云', '螺旋星云'
-    ]
-    const regionIndex = Math.floor((mousePos.x + mousePos.y) / (width + height) * regions.length)
-    const region = regions[Math.min(regionIndex, regions.length - 1)]
+    // 如果有悬停的星云，显示它的名称
+    const region = hoveredNebula || '未知区域'
 
     return { xPercent, yPercent, region }
-  }, [mousePos])
+  }, [mousePos, hoveredNebula])
 
   if (!visible) return null
 

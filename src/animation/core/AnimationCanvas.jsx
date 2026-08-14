@@ -11,7 +11,7 @@ import { createNebulaClusters } from './NebulaCluster'
 import { AnimationTimeline, PHASES } from '../timeline/AnimationTimeline'
 import { lerp, randomRange } from '../utils/MathUtils'
 
-export default function AnimationCanvas({ timeline }) {
+export default function AnimationCanvas({ timeline, onNebulaHover }) {
   const canvasRef = useRef(null)
   const animationRef = useRef(null)
   const stateRef = useRef({
@@ -90,9 +90,17 @@ export default function AnimationCanvas({ timeline }) {
 
       // 检测星云悬停
       if (state.clustersVisible) {
+        let foundHovered = null
         state.nebulaClusters.forEach(cluster => {
-          cluster.checkHover(state.mouseX, state.mouseY)
+          const isHovered = cluster.checkHover(state.mouseX, state.mouseY)
+          if (isHovered) {
+            foundHovered = cluster.name
+          }
         })
+        // 通知父组件
+        if (onNebulaHover) {
+          onNebulaHover(foundHovered)
+        }
       }
     }
     window.addEventListener('mousemove', handleMouseMove)
