@@ -1,28 +1,32 @@
 /**
- * 入场动画主组件 - 宇宙大爆发叙事体验
+ * 入场动画主组件 - 最终版
+ * 宇宙大爆发叙事体验
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import AnimationCanvas from './core/AnimationCanvas'
 import SkipButton from './components/SkipButton'
+import HUDOverlay from './components/HUDOverlay'
 import { AnimationTimeline, PHASES } from './timeline/AnimationTimeline'
 
 export default function IntroAnimation({
   onComplete,
   isFirstTime = true,
   showSkip = false,
-  onPhaseChange,
   onExploreClick
 }) {
   const [isLoading, setIsLoading] = useState(true)
   const [loadProgress, setLoadProgress] = useState(0)
   const [animationStarted, setAnimationStarted] = useState(false)
   const [showExploreButton, setShowExploreButton] = useState(false)
+  const [showHUD, setShowHUD] = useState(false)
+  const [phase, setPhase] = useState(PHASES.DARKNESS)
+  const [showTitle, setShowTitle] = useState(false)
   const timelineRef = useRef(null)
 
-  // 初始化动画时间轴（26秒）
+  // 初始化动画时间轴（36秒）
   useEffect(() => {
-    timelineRef.current = new AnimationTimeline(26000)
+    timelineRef.current = new AnimationTimeline(36000)
 
     // 模拟加载过程
     let progress = 0
@@ -33,7 +37,6 @@ export default function IntroAnimation({
         setIsLoading(false)
         clearInterval(loadInterval)
 
-        // 延迟启动动画
         setTimeout(() => {
           setAnimationStarted(true)
         }, 500)
@@ -50,14 +53,22 @@ export default function IntroAnimation({
 
     const timeline = timelineRef.current
 
-    timeline.onPhaseChange = (phase) => {
-      // 通知父组件阶段变化
-      if (onPhaseChange) {
-        onPhaseChange(phase)
+    timeline.onPhaseChange = (newPhase) => {
+      setPhase(newPhase)
+
+      if (newPhase === PHASES.BIRTH) {
+        setShowTitle(true)
       }
 
-      // 在按钮阶段显示"开始探索"按钮
-      if (phase === PHASES.BUTTON) {
+      if (newPhase === PHASES.EXPLOSION) {
+        setShowTitle(false)
+      }
+
+      if (newPhase === PHASES.TRAVERSE) {
+        setShowHUD(true)
+      }
+
+      if (newPhase === PHASES.BUTTON) {
         setShowExploreButton(true)
       }
     }
@@ -69,7 +80,7 @@ export default function IntroAnimation({
         }
       }, 1000)
     }
-  }, [animationStarted, onComplete, onPhaseChange])
+  }, [animationStarted, onComplete])
 
   // 启动动画
   useEffect(() => {
@@ -84,7 +95,6 @@ export default function IntroAnimation({
     if (onExploreClick) {
       onExploreClick()
     }
-    // 继续动画
     if (timelineRef.current) {
       timelineRef.current.continueAfterUserAction()
     }
@@ -98,7 +108,7 @@ export default function IntroAnimation({
   }, [onComplete])
 
   return (
-    <div className="fixed inset-0 z-50 bg-black">
+    <div className="fixed inset-0 z-50 bg-black overflow-hidden">
       {/* 加载界面 */}
       {isLoading && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black z-50">
@@ -124,15 +134,67 @@ export default function IntroAnimation({
         />
       )}
 
+      {/* 标题显示 */}
+      {!isLoading && showTitle && (
+        <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
+          <div className="text-center animate-fade-in">
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-4" style={{
+              textShadow: '0 0 40px rgba(0, 255, 255, 0.6), 0 0 80px rgba(0, 191, 255, 0.3)',
+              fontFamily: 'Orbitron, sans-serif',
+              letterSpacing: '0.2em'
+            }}>
+              嘎宇宙
+            </h1>
+            <p className="text-cyan-300 text-lg tracking-widest opacity-80" style={{
+              fontFamily: 'JetBrains Mono, monospace'
+            }}>
+              GAGA UNIVERSE
+            </p>
+            <p className="text-gray-400 text-sm mt-2 tracking-widest">
+              初始化宇宙创生协议
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* HUD覆盖层 */}
+      {!isLoading && showHUD && (
+        <HUDOverlay visible={showHUD} phase={phase} />
+      )}
+
       {/* "开始探索" 按钮 */}
       {!isLoading && showExploreButton && (
         <div className="absolute inset-0 flex items-center justify-center z-40">
-          <button
-            onClick={handleExploreClick}
-            className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-full text-lg font-medium hover:bg-white/20 hover:border-white/40 transition-all duration-300 animate-fade-in"
-          >
-            开始探索
-          </button>
+          <div className="text-center animate-fade-in">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{
+              background: 'linear-gradient(135deg, #00ffff 0%, #00bfff 30%, #e0ffff 60%, #9370db 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              fontFamily: 'Orbitron, sans-serif',
+              letterSpacing: '0.15em'
+            }}>
+              宇宙探索者
+            </h2>
+            <p className="text-cyan-300 text-sm tracking-widest mb-8" style={{
+              fontFamily: 'JetBrains Mono, monospace'
+            }}>
+              深空探索系统已激活 · 准备进入宇宙
+            </p>
+            <button
+              onClick={handleExploreClick}
+              className="px-10 py-4 bg-white/10 backdrop-blur-sm text-cyan-300 border border-cyan-400/40 rounded-lg text-lg font-medium hover:bg-white/20 hover:border-cyan-400/80 hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-300"
+              style={{
+                fontFamily: 'Orbitron, sans-serif',
+                letterSpacing: '0.2em',
+                clipPath: 'polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px)'
+              }}
+            >
+              开始探索
+            </button>
+            <p className="text-gray-500 text-xs mt-4 tracking-widest">
+              点击进入深空
+            </p>
+          </div>
         </div>
       )}
 
