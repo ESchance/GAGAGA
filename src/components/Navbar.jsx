@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase'
 import { checkIsSuperAdmin } from '../lib/admin'
 import { useEffect, useState, useCallback } from 'react'
 import Avatar from './Avatar'
+import ThemeToggle from './ThemeToggle'
 
 export default function Navbar() {
   const [user, setUser] = useState(null)
@@ -110,6 +111,7 @@ export default function Navbar() {
                   <Avatar url={profile?.avatar_url} username={profile?.username} size="sm" />
                   <span className="text-[var(--color-text-primary)] text-sm">{profile?.username}</span>
                 </Link>
+                <ThemeToggle />
                 <button
                   onClick={handleLogout}
                   className="px-3 py-1.5 text-[var(--color-text-tertiary)] hover:text-[var(--color-error)] rounded-md transition-all duration-150 text-sm"
@@ -186,6 +188,10 @@ export default function Navbar() {
                   {isSuperAdmin ? '管理' : '住户'}
                 </Link>
                 <div className="border-t border-[var(--color-border)] my-1"></div>
+                <div className="flex items-center px-3 py-2">
+                  <ThemeToggle />
+                  <span className="ml-2 text-sm text-[var(--color-text-secondary)]">切换主题</span>
+                </div>
                 <button
                   onClick={handleLogout}
                   className="w-full text-left px-3 py-2 text-[var(--color-error)] hover:bg-red-50 rounded-md transition-colors text-sm"

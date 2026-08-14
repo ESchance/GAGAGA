@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useLocation } from 'react-router-dom'
 
 const ANNOUNCEMENT_KEY = 'gagaga_announcement_dismissed'
-const ANNOUNCEMENT_VERSION = '1.6'
+const ANNOUNCEMENT_VERSION = '1.7'
 
 const announcementContent = {
   version: ANNOUNCEMENT_VERSION,
@@ -13,8 +13,7 @@ const announcementContent = {
       title: '最新更新',
       items: [
         '全新UI设计，参考Linear/Vercel/Medium风格',
-        '优化字体系统，支持中文优化字体',
-        '支持暗色模式（自动跟随系统）',
+        '支持暗色/浅色模式切换',
         '优化阅读体验，更好的字体和排版',
         '新增用户管理功能',
         '新增嘎宇宙种族系统和编号'
