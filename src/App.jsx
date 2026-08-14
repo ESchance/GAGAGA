@@ -1,9 +1,10 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { lazy, Suspense, useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
 import ErrorBoundary from './components/ErrorBoundary'
 import AnnouncementModal from './components/AnnouncementModal'
 import IntroAnimation from './animation/IntroAnimation'
+import { supabase } from './lib/supabase'
 import './index.css'
 
 // 代码分割 - 只加载当前路由需要的组件
@@ -34,16 +35,19 @@ function LoadingFallback() {
 // 动画状态管理
 function AnimationManager({ children }) {
   const [showIntro, setShowIntro] = useState(false)
-  const [isFirstLogin, setIsFirstLogin] = useState(true)
+  const [isNewUser, setIsNewUser] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
 
   useEffect(() => {
-    // 检查是否是首次登录后的跳转
+    // 检查是否是登录/注册后的跳转
     const params = new URLSearchParams(location.search)
     const showIntroParam = params.get('showIntro')
+    const newUserParam = params.get('newUser')
 
     if (showIntroParam === 'true') {
       setShowIntro(true)
+      setIsNewUser(newUserParam === 'true')
       // 清除 URL 参数
       window.history.replaceState({}, '', location.pathname)
     }
@@ -51,6 +55,15 @@ function AnimationManager({ children }) {
 
   const handleIntroComplete = () => {
     setShowIntro(false)
+    // 动画结束后，如果是新用户，跳转到种族选择
+    if (isNewUser) {
+      // 获取当前用户 ID 并跳转到个人主页
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user) {
+          navigate(`/profile/${session.user.id}`)
+        }
+      })
+    }
   }
 
   return (
@@ -58,7 +71,7 @@ function AnimationManager({ children }) {
       {showIntro && (
         <IntroAnimation
           onComplete={handleIntroComplete}
-          isFirstTime={isFirstLogin}
+          isFirstTime={!isNewUser}
         />
       )}
       {children}
