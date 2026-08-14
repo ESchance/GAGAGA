@@ -46,13 +46,13 @@ class NebulaParticle {
 
     // 呼吸效果的随机偏移
     this.breatheOffset = randomRange(0, Math.PI * 2)
-    this.breatheSpeed = randomRange(0.02, 0.05)
+    this.breatheSpeed = randomRange(0.03, 0.08)
   }
 
   draw(ctx, time, isHovered, baseAlpha, colorScheme) {
-    // 呼吸效果
-    const breathe = Math.sin(time * this.breatheSpeed + this.breatheOffset) * 0.4 + 0.6
-    const alpha = isHovered ? this.opacity : this.opacity * breathe * baseAlpha
+    // 呼吸效果（更明显）
+    const breathe = Math.sin(time * this.breatheSpeed + this.breatheOffset) * 0.5 + 0.5
+    const alpha = isHovered ? this.opacity : this.opacity * breathe
 
     ctx.save()
     ctx.globalAlpha = alpha
@@ -109,6 +109,10 @@ export class NebulaCluster {
 
     // 是否可见
     this.visible = false
+
+    // 渐入效果
+    this.fadeIn = 0 // 0 到 1
+    this.fadeInSpeed = randomRange(0.005, 0.01)
   }
 
   // 检测鼠标是否在星云范围内
@@ -120,12 +124,22 @@ export class NebulaCluster {
     return this.isHovered
   }
 
+  update() {
+    // 渐入效果
+    if (this.visible && this.fadeIn < 1) {
+      this.fadeIn = Math.min(1, this.fadeIn + this.fadeInSpeed)
+    }
+  }
+
   draw(ctx, time) {
     if (!this.visible) return
 
+    // 计算渐入透明度
+    const fadeAlpha = this.fadeIn
+
     // 呼吸效果
-    const breathe = Math.sin(time * this.breatheSpeed + this.breatheOffset) * 0.4 + 0.6
-    const baseAlpha = this.isHovered ? 1.0 : breathe
+    const breathe = Math.sin(time * this.breatheSpeed + this.breatheOffset) * 0.5 + 0.5
+    const baseAlpha = (this.isHovered ? 1.0 : breathe) * fadeAlpha
 
     ctx.save()
 

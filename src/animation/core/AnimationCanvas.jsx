@@ -141,6 +141,9 @@ export default function AnimationCanvas({ timeline, onNebulaHover }) {
       if (state.starSystem) state.starSystem.update(state.time)
       if (state.nebulaSystem) state.nebulaSystem.update(dt)
 
+      // 更新星云集群（渐入效果）
+      state.nebulaClusters.forEach(cluster => cluster.update())
+
       switch (phase) {
         case PHASES.DARKNESS:
           break
