@@ -92,7 +92,7 @@ export class ExplosionParticle {
     // 是否被吸引到星云
     this.attractedToNebula = false
     this.targetNebula = null
-    this.attractSpeed = 0.02 + Math.random() * 0.03
+    this.attractSpeed = 0.005 + Math.random() * 0.01 // 更平滑的速度
 
     // 是否已到达星云
     this.arrivedAtNebula = false

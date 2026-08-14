@@ -114,13 +114,13 @@ export class NebulaCluster {
     this.fadeIn = 0 // 0 到 1
     this.fadeInSpeed = randomRange(0.005, 0.01)
 
-    // 光晕效果（有视差，有大有小）
+    // 光晕效果（有视差，有大有小，更大的光晕）
     this.glows = []
     for (let i = 0; i < 5; i++) {
       this.glows.push({
-        x: this.x + randomRange(-radius, radius),
-        y: this.y + randomRange(-radius, radius),
-        size: randomRange(20, 60),
+        x: this.x + randomRange(-radius * 1.5, radius * 1.5),
+        y: this.y + randomRange(-radius * 1.5, radius * 1.5),
+        size: randomRange(40, 100), // 更大的光晕
         opacity: randomRange(0.1, 0.3),
         breatheOffset: randomRange(0, Math.PI * 2),
         breatheSpeed: randomRange(0.02, 0.05),
