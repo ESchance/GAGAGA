@@ -240,7 +240,7 @@ export class TraverseParticle {
   }
 }
 
-// 快速穿梭粒子（带拖影）
+// 快速穿梭粒子（带拖影，倾斜视差）
 export class FastTraverseParticle {
   constructor(width, height) {
     this.width = width
@@ -249,35 +249,48 @@ export class FastTraverseParticle {
   }
 
   reset() {
+    // 屏幕上的随机位置
     this.x = randomRange(0, this.width)
     this.y = randomRange(0, this.height)
     this.z = randomRange(500, 1000)
 
-    this.size = randomRange(0.5, 2)
+    // 倾斜方向（从屏幕中心向外发散）
+    const centerX = this.width / 2
+    const centerY = this.height / 2
+    const angle = Math.atan2(this.y - centerY, this.x - centerX)
+
+    // 发散速度
+    const spreadSpeed = randomRange(0.5, 2)
+    this.vx = Math.cos(angle) * spreadSpeed
+    this.vy = Math.sin(angle) * spreadSpeed
+
+    this.size = randomRange(0.5, 2.5)
     this.color = '#00ffff'
 
     this.life = 1
-    this.decay = randomRange(0.005, 0.015)
+    this.decay = randomRange(0.003, 0.01)
 
-    // 更快的速度
-    this.vz = randomRange(15, 30)
+    // Z轴速度（从远到近）
+    this.vz = randomRange(10, 25)
 
-    // 拖影历史
+    // 拖影
     this.trail = []
-    this.maxTrail = 5
+    this.maxTrail = 8
   }
 
   update(dt) {
     const dtFactor = dt / 16
 
-    // 保存当前位置到拖影
+    // 保存拖影
     this.trail.push({ x: this.x, y: this.y, z: this.z })
     if (this.trail.length > this.maxTrail) {
       this.trail.shift()
     }
 
-    // Z轴移动
+    // Z轴移动 + 倾斜发散
     this.z -= this.vz * dtFactor
+    this.x += this.vx * dtFactor
+    this.y += this.vy * dtFactor
 
     if (this.z <= 0) {
       this.reset()
@@ -299,23 +312,24 @@ export class FastTraverseParticle {
       const screenY = (pos.y - this.height / 2) * scale + this.height / 2
       const screenSize = this.size * scale
 
-      const alpha = (index / this.trail.length) * 0.3 * this.life
+      const alpha = (index / this.trail.length) * 0.4 * this.life
 
       ctx.save()
       ctx.globalAlpha = alpha
       ctx.fillStyle = this.color
       ctx.beginPath()
-      ctx.arc(screenX, screenY, screenSize, 0, Math.PI * 2)
+      ctx.arc(screenX, screenY, Math.max(screenSize, 0.5), 0, Math.PI * 2)
       ctx.fill()
       ctx.restore()
     })
 
-    // 绘制当前粒子
+    // 绘制当前粒子（带光晕）
     const scale = 500 / (this.z + 1)
     const screenX = (this.x - this.width / 2) * scale + this.width / 2
     const screenY = (this.y - this.height / 2) * scale + this.height / 2
     const screenSize = this.size * scale
 
+    // 检查是否在屏幕内
     if (screenX < -50 || screenX > this.width + 50 ||
         screenY < -50 || screenY > this.height + 50) {
       return
@@ -324,6 +338,7 @@ export class FastTraverseParticle {
     ctx.save()
     ctx.globalAlpha = this.life * Math.min(1, scale)
 
+    // 光晕
     const gradient = ctx.createRadialGradient(
       screenX, screenY, 0,
       screenX, screenY, screenSize * 2

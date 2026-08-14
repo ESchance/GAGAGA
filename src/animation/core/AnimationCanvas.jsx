@@ -315,27 +315,11 @@ function drawButtonPhase(ctx, width, height, centerX, centerY, state, timeline) 
 function drawFastTraversePhase(ctx, width, height, centerX, centerY, state, timeline, dt) {
   const progress = timeline.getEasedProgress(PHASES.FAST_TRAVERSE)
 
-  // 绘制快速穿梭粒子（带拖影）
+  // 绘制快速穿梭粒子（带拖影，从屏幕里到屏幕外，倾斜视差）
   state.fastTraverseParticles.forEach(p => {
     p.update(dt)
     p.draw(ctx)
   })
-
-  // 绘制速度线
-  const velocity = 3
-  const lineCount = Math.floor(velocity * 8)
-  for (let i = 0; i < lineCount; i++) {
-    const x = randomRange(0, width)
-    const y = randomRange(0, height)
-    const length = velocity * 25
-
-    ctx.beginPath()
-    ctx.moveTo(x, y)
-    ctx.lineTo(x, y + length)
-    ctx.strokeStyle = `rgba(0, 255, 255, ${velocity * 0.15})`
-    ctx.lineWidth = 1.5
-    ctx.stroke()
-  }
 
   // 白色淡出
   if (progress > 0.7) {
