@@ -89,8 +89,13 @@ export class ExplosionParticle {
     // 速度衰减
     this.drag = 0.92 + Math.random() * 0.06
 
-    // 是否固定（不移动）
-    this.fixed = false
+    // 是否被吸引到星云
+    this.attractedToNebula = false
+    this.targetNebula = null
+    this.attractSpeed = 0.02 + Math.random() * 0.03
+
+    // 是否已到达星云
+    this.arrivedAtNebula = false
   }
 
   update(dt) {
@@ -98,7 +103,26 @@ export class ExplosionParticle {
 
     const dtFactor = dt / 16
 
-    if (!this.fixed) {
+    if (this.attractedToNebula && this.targetNebula) {
+      // 被吸引到星云位置
+      const dx = this.targetNebula.x - this.x
+      const dy = this.targetNebula.y - this.y
+      const distance = Math.sqrt(dx * dx + dy * dy)
+
+      if (distance < 10) {
+        // 到达星云
+        this.arrivedAtNebula = true
+        this.vx = 0
+        this.vy = 0
+      } else {
+        // 向星云移动
+        this.vx = (dx / distance) * distance * this.attractSpeed
+        this.vy = (dy / distance) * distance * this.attractSpeed
+        this.x += this.vx * dtFactor
+        this.y += this.vy * dtFactor
+      }
+    } else {
+      // 正常飞散
       this.x += this.vx * dtFactor
       this.y += this.vy * dtFactor
 
@@ -114,9 +138,11 @@ export class ExplosionParticle {
     this.active = true
   }
 
-  makeFixed() {
-    this.fixed = true
-    this.decay = randomRange(0.001, 0.003) // 固定粒子衰减更慢
+  // 设置吸引到星云
+  setAttractToNebula(nebula) {
+    this.attractedToNebula = true
+    this.targetNebula = nebula
+    this.decay = randomRange(0.001, 0.003) // 吸引粒子衰减更慢
   }
 
   draw(ctx) {

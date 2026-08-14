@@ -113,6 +113,20 @@ export class NebulaCluster {
     // 渐入效果
     this.fadeIn = 0 // 0 到 1
     this.fadeInSpeed = randomRange(0.005, 0.01)
+
+    // 光晕效果（有视差，有大有小）
+    this.glows = []
+    for (let i = 0; i < 5; i++) {
+      this.glows.push({
+        x: this.x + randomRange(-radius, radius),
+        y: this.y + randomRange(-radius, radius),
+        size: randomRange(20, 60),
+        opacity: randomRange(0.1, 0.3),
+        breatheOffset: randomRange(0, Math.PI * 2),
+        breatheSpeed: randomRange(0.02, 0.05),
+        depth: randomRange(0.5, 1.5)
+      })
+    }
   }
 
   // 检测鼠标是否在星云范围内
@@ -164,6 +178,25 @@ export class NebulaCluster {
 
     // 绘制粒子
     this.particles.forEach(p => p.draw(ctx, time, this.isHovered, baseAlpha, this.colorScheme))
+
+    // 绘制光晕（有视差，有大有小）
+    this.glows.forEach(glow => {
+      const glowBreathe = Math.sin(time * glow.breatheSpeed + glow.breatheOffset) * 0.5 + 0.5
+      const glowAlpha = glow.opacity * glowBreathe * fadeAlpha
+
+      const gradient = ctx.createRadialGradient(
+        glow.x, glow.y, 0,
+        glow.x, glow.y, glow.size * glow.depth
+      )
+      gradient.addColorStop(0, this.colorScheme.main + Math.floor(glowAlpha * 255).toString(16).padStart(2, '0'))
+      gradient.addColorStop(0.5, this.colorScheme.main + Math.floor(glowAlpha * 128).toString(16).padStart(2, '0'))
+      gradient.addColorStop(1, this.colorScheme.main + '00')
+
+      ctx.fillStyle = gradient
+      ctx.beginPath()
+      ctx.arc(glow.x, glow.y, glow.size * glow.depth, 0, Math.PI * 2)
+      ctx.fill()
+    })
 
     // 绘制星云名称（悬停时显示）
     if (this.isHovered) {

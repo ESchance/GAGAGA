@@ -24,8 +24,7 @@ export default function AnimationCanvas({ timeline, onNebulaHover }) {
     camera: { x: 0, y: 0, z: 0 },
     time: 0,
     explosionTriggered: false,
-    fixTriggered: false,
-    nebulaTriggered: false,
+    attractTriggered: false,
     clustersVisible: false,
     mouseX: 0,
     mouseY: 0
@@ -74,8 +73,7 @@ export default function AnimationCanvas({ timeline, onNebulaHover }) {
       }
 
       state.explosionTriggered = false
-      state.fixTriggered = false
-      state.nebulaTriggered = false
+      state.attractTriggered = false
       state.clustersVisible = false
     }
 
@@ -230,7 +228,7 @@ function drawBirthPhase(ctx, width, height, centerX, centerY, state, timeline) {
   }
 }
 
-// 阶段3：大爆发
+// 阶段3：大爆发（粒子吸引到星云位置）
 function drawExplosionPhase(ctx, width, height, centerX, centerY, state, timeline, dt) {
   const progress = timeline.getEasedProgress(PHASES.EXPLOSION)
 
@@ -247,44 +245,69 @@ function drawExplosionPhase(ctx, width, height, centerX, centerY, state, timelin
     state.explosionTriggered = true
   }
 
-  // 固定部分粒子
-  if (!state.fixTriggered && progress > 0.3) {
-    state.particleSystem.fixParticles(0.3)
-    state.fixTriggered = true
+  // 将粒子吸引到星云位置
+  if (!state.attractTriggered && progress > 0.3) {
+    state.attractTriggered = true
+
+    // 获取活跃的粒子
+    const activeParticles = state.particleSystem.particles.filter(p => p.active)
+
+    // 为每个星云分配粒子
+    state.nebulaClusters.forEach((cluster, clusterIndex) => {
+      // 计算应该分配给这个星云的粒子范围
+      const particlesPerCluster = Math.floor(activeParticles.length / state.nebulaClusters.length)
+      const startIndex = clusterIndex * particlesPerCluster
+      const endIndex = startIndex + particlesPerCluster
+
+      // 将粒子吸引到这个星云
+      for (let i = startIndex; i < endIndex && i < activeParticles.length; i++) {
+        activeParticles[i].setAttractToNebula(cluster)
+      }
+    })
   }
 
-  // 星云开始形成
-  if (!state.nebulaTriggered && progress > 0.4) {
-    state.nebulaTriggered = true
-  }
-
-  // 星云集群显示
-  if (progress > 0.6 && !state.clustersVisible) {
+  // 星云集群显示（渐入）
+  if (progress > 0.5 && !state.clustersVisible) {
     state.clustersVisible = true
     state.nebulaClusters.forEach(cluster => {
       cluster.visible = true
     })
   }
 
-  // 绘制粒子
+  // 更新和绘制粒子
   if (state.particleSystem) {
+    state.particleSystem.update(dt)
     state.particleSystem.draw(ctx)
-  }
-
-  // 绘制星云
-  if (state.nebulaTriggered && state.nebulaSystem) {
-    const nebulaAlpha = Math.min(1, (progress - 0.4) / 0.6)
-    ctx.globalAlpha = nebulaAlpha * 0.8
-    state.nebulaSystem.draw(ctx)
-    ctx.globalAlpha = 1
   }
 
   // 绘制星云集群
   if (state.clustersVisible) {
     state.nebulaClusters.forEach(cluster => {
+      cluster.update()
       cluster.draw(ctx, state.time)
     })
   }
+
+  // 呼吸光源
+  if (progress > 0.2) {
+    const breathe = Math.sin(state.time * 2) * 0.3 + 0.7
+    const glowAlpha = (1 - progress) * 0.5 * breathe
+    const glowSize = 30 + progress * 20
+
+    const glow = ctx.createRadialGradient(
+      centerX, centerY, 0,
+      centerX, centerY, glowSize
+    )
+    glow.addColorStop(0, `rgba(255, 255, 255, ${glowAlpha})`)
+    glow.addColorStop(0.5, `rgba(100, 120, 200, ${glowAlpha * 0.5})`)
+    glow.addColorStop(1, 'rgba(50, 60, 100, 0)')
+
+    ctx.beginPath()
+    ctx.arc(centerX, centerY, glowSize, 0, Math.PI * 2)
+    ctx.fillStyle = glow
+    ctx.fill()
+  }
+}
 
   // 呼吸光源
   if (progress > 0.2) {
