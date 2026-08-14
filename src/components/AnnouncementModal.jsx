@@ -51,6 +51,14 @@ export default function AnnouncementModal() {
       // 只在首页（/）时检查
       if (location.pathname !== '/') return
 
+      // 检查动画是否已完成（通过URL参数判断）
+      const params = new URLSearchParams(location.search)
+      const showIntroParam = params.get('showIntro')
+      if (showIntroParam === 'true') {
+        // 动画正在进行，不显示公告
+        return
+      }
+
       const { supabase } = await import('../lib/supabase')
       const { data: { session } } = await supabase.auth.getSession()
 
@@ -59,16 +67,17 @@ export default function AnnouncementModal() {
         // 检查是否已关闭过当前版本的公告
         const dismissed = localStorage.getItem(ANNOUNCEMENT_KEY)
         if (dismissed !== ANNOUNCEMENT_VERSION) {
+          // 延迟2秒后显示公告（确保动画已完成）
           const timer = setTimeout(() => {
             setShow(true)
-          }, 500)
+          }, 2000)
           return () => clearTimeout(timer)
         }
       }
     }
 
     checkAndShow()
-  }, [location.pathname])
+  }, [location.pathname, location.search])
 
   const handleClose = useCallback(() => {
     setShow(false)

@@ -72,6 +72,7 @@ function AnimationManager({ children }) {
         <IntroAnimation
           onComplete={handleIntroComplete}
           isFirstTime={!isNewUser}
+          showSkip={!isNewUser}
         />
       )}
       {children}

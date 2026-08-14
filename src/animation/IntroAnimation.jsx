@@ -8,10 +8,9 @@ import AnimationCanvas from './core/AnimationCanvas'
 import SkipButton from './components/SkipButton'
 import { AnimationTimeline, PHASES } from './timeline/AnimationTimeline'
 
-export default function IntroAnimation({ onComplete, isFirstTime = true }) {
+export default function IntroAnimation({ onComplete, isFirstTime = true, showSkip = false }) {
   const [isLoading, setIsLoading] = useState(true)
   const [loadProgress, setLoadProgress] = useState(0)
-  const [showSkip, setShowSkip] = useState(!isFirstTime)
   const [animationStarted, setAnimationStarted] = useState(false)
   const timelineRef = useRef(null)
 
