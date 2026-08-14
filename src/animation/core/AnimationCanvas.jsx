@@ -58,8 +58,8 @@ export default function AnimationCanvas({ timeline, onNebulaHover }) {
         nebulaCount: isMobile ? 4 : 8
       })
 
-      // 创建星云集群
-      state.nebulaClusters = createNebulaClusters(rect.width, rect.height, isMobile ? 4 : 6)
+      // 创建星云集群（区分移动端和PC端）
+      state.nebulaClusters = createNebulaClusters(rect.width, rect.height, isMobile ? 4 : 6, isMobile)
 
       // 创建穿梭粒子
       state.traverseParticles = []
@@ -67,10 +67,10 @@ export default function AnimationCanvas({ timeline, onNebulaHover }) {
         state.traverseParticles.push(new TraverseParticle(rect.width, rect.height))
       }
 
-      // 创建快速穿梭粒子
+      // 创建快速穿梭粒子（区分移动端）
       state.fastTraverseParticles = []
       for (let i = 0; i < (isMobile ? 80 : 150); i++) {
-        state.fastTraverseParticles.push(new FastTraverseParticle(rect.width, rect.height))
+        state.fastTraverseParticles.push(new FastTraverseParticle(rect.width, rect.height, isMobile))
       }
 
       state.explosionTriggered = false

@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 
-export default function MobileHUD({ visible = false }) {
+export default function MobileHUD({ visible = false, hoveredNebula = null }) {
   const [time, setTime] = useState('00:00:00')
   const [startTime] = useState(Date.now())
   const [loadValues, setLoadValues] = useState({
@@ -55,7 +55,7 @@ export default function MobileHUD({ visible = false }) {
         </div>
       </div>
 
-      {/* 右上角 - 状态 */}
+      {/* 右上角 - 状态和星云名称 */}
       <div className="absolute top-4 right-4 text-right">
         <div className="text-cyan-400 text-xs font-mono tracking-widest opacity-60 mb-1">
           STATUS
@@ -63,6 +63,16 @@ export default function MobileHUD({ visible = false }) {
         <div className="text-cyan-200 text-xs font-mono" style={{ textShadow: '0 0 10px rgba(0, 255, 255, 0.5)' }}>
           在线
         </div>
+        {hoveredNebula && (
+          <div className="mt-2">
+            <div className="text-cyan-400 text-xs font-mono tracking-widest opacity-60 mb-1">
+              SECTOR
+            </div>
+            <div className="text-cyan-200 text-sm font-mono font-bold" style={{ textShadow: '0 0 10px rgba(0, 255, 255, 0.5)' }}>
+              {hoveredNebula}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 左下角 - 负荷 */}

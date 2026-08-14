@@ -242,9 +242,10 @@ export class TraverseParticle {
 
 // 快速穿梭粒子（带拖影，倾斜视差）
 export class FastTraverseParticle {
-  constructor(width, height) {
+  constructor(width, height, isMobile = false) {
     this.width = width
     this.height = height
+    this.isMobile = isMobile
     this.reset()
   }
 
@@ -259,8 +260,8 @@ export class FastTraverseParticle {
     const centerY = this.height / 2
     const angle = Math.atan2(this.y - centerY, this.x - centerX)
 
-    // 发散速度（更快）
-    const spreadSpeed = randomRange(3, 8)
+    // 发散速度（移动端稍慢）
+    const spreadSpeed = this.isMobile ? randomRange(2, 5) : randomRange(3, 8)
     this.vx = Math.cos(angle) * spreadSpeed
     this.vy = Math.sin(angle) * spreadSpeed
 
@@ -268,14 +269,14 @@ export class FastTraverseParticle {
     this.color = '#00ffff'
 
     this.life = 1
-    this.decay = randomRange(0.01, 0.025)
+    this.decay = this.isMobile ? randomRange(0.008, 0.02) : randomRange(0.01, 0.025)
 
-    // Z轴速度（从远到近，更快）
-    this.vz = randomRange(40, 80)
+    // Z轴速度（移动端稍慢，更稳定）
+    this.vz = this.isMobile ? randomRange(25, 50) : randomRange(40, 80)
 
     // 拖影
     this.trail = []
-    this.maxTrail = 8
+    this.maxTrail = this.isMobile ? 5 : 8
   }
 
   update(dt) {

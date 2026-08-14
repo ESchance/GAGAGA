@@ -181,29 +181,45 @@ export class NebulaCluster {
   }
 }
 
-// 创建多个星云集群（网格布局，避免拥挤）
-export function createNebulaClusters(width, height, count = 6) {
+// 创建多个星云集群（区分PC端和移动端）
+export function createNebulaClusters(width, height, count = 6, isMobile = false) {
   const clusters = []
-  const margin = 80
 
-  // 使用网格布局避免拥挤
-  const cols = Math.ceil(Math.sqrt(count))
-  const rows = Math.ceil(count / cols)
-  const cellWidth = (width - margin * 2) / cols
-  const cellHeight = (height - margin * 2) / rows
+  if (isMobile) {
+    // 移动端：纵向布局，更分散
+    const margin = 60
+    const verticalSpacing = (height - margin * 2) / (count + 1)
 
-  for (let i = 0; i < count; i++) {
-    const col = i % cols
-    const row = Math.floor(i / cols)
+    for (let i = 0; i < count; i++) {
+      // 纵向均匀分布
+      const x = randomRange(margin, width - margin)
+      const y = margin + (i + 1) * verticalSpacing
+      const radius = randomRange(20, 35)
+      const colorScheme = NEBULA_COLOR_SCHEMES[i % NEBULA_COLOR_SCHEMES.length]
+      const name = NEBULA_NAMES[i % NEBULA_NAMES.length]
 
-    // 在网格单元内随机位置
-    const x = margin + col * cellWidth + randomRange(cellWidth * 0.2, cellWidth * 0.8)
-    const y = margin + row * cellHeight + randomRange(cellHeight * 0.2, cellHeight * 0.8)
-    const radius = randomRange(30, 50)
-    const colorScheme = NEBULA_COLOR_SCHEMES[i % NEBULA_COLOR_SCHEMES.length]
-    const name = NEBULA_NAMES[i % NEBULA_NAMES.length]
+      clusters.push(new NebulaCluster(x, y, radius, colorScheme, name))
+    }
+  } else {
+    // PC端：网格布局
+    const margin = 80
+    const cols = Math.ceil(Math.sqrt(count))
+    const rows = Math.ceil(count / cols)
+    const cellWidth = (width - margin * 2) / cols
+    const cellHeight = (height - margin * 2) / rows
 
-    clusters.push(new NebulaCluster(x, y, radius, colorScheme, name))
+    for (let i = 0; i < count; i++) {
+      const col = i % cols
+      const row = Math.floor(i / cols)
+
+      const x = margin + col * cellWidth + randomRange(cellWidth * 0.2, cellWidth * 0.8)
+      const y = margin + row * cellHeight + randomRange(cellHeight * 0.2, cellHeight * 0.8)
+      const radius = randomRange(30, 50)
+      const colorScheme = NEBULA_COLOR_SCHEMES[i % NEBULA_COLOR_SCHEMES.length]
+      const name = NEBULA_NAMES[i % NEBULA_NAMES.length]
+
+      clusters.push(new NebulaCluster(x, y, radius, colorScheme, name))
+    }
   }
 
   return clusters
