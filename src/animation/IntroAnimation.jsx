@@ -59,6 +59,8 @@ export default function IntroAnimation({
       }
       if (newPhase === PHASES.BUTTON) {
         setShowExploreButton(true)
+        // 暂停时间轴，等待用户点击
+        timeline.isWaitingForUser = true
       }
       if (newPhase === PHASES.FAST_TRAVERSE) {
         setShowHUD(false)
