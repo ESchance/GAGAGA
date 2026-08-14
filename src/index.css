@@ -9,11 +9,8 @@
    1. 字体系统
    ======================================== */
 :root {
-  /* 字体族 */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
-
-  /* 字体大小 */
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-base: 1rem;
@@ -22,29 +19,20 @@
   --text-2xl: 1.5rem;
   --text-3xl: 1.875rem;
   --text-4xl: 2.25rem;
-
-  /* 字体权重 */
-  --font-normal: 400;
-  --font-medium: 500;
-  --font-semibold: 600;
-  --font-bold: 700;
-
-  /* 行高 */
-  --leading-tight: 1.25;
-  --leading-normal: 1.5;
-  --leading-relaxed: 1.75;
 }
 
 /* ========================================
-   2. 色彩体系（Light Mode）
+   2. 浅色模式（默认）
    ======================================== */
-:root {
-  /* 主色调 - 参考 Linear 的蓝紫色 */
+:root,
+[data-theme="light"] {
+  /* 主色调 */
   --color-primary: #5E6AD2;
   --color-primary-hover: #4F5BC0;
   --color-primary-light: #E8E9F8;
+  --color-secondary: #764ba2;
 
-  /* 中性色 */
+  /* 背景色 - 浅色模式 */
   --color-bg: #FFFFFF;
   --color-bg-secondary: #F9FAFB;
   --color-bg-tertiary: #F3F4F6;
@@ -67,66 +55,56 @@
   --color-error: #EF4444;
   --color-info: #3B82F6;
 
-  /* 渐变色 */
-  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --gradient-accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-
-  /* 阴影 */
+  /* 阴影 - 浅色模式 */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 
-  /* 圆角 */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-2xl: 24px;
-  --radius-full: 9999px;
-
-  /* 间距 */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
-
-  /* 过渡 */
-  --transition-fast: 150ms ease;
-  --transition-normal: 200ms ease;
-  --transition-slow: 300ms ease;
+  /* 渐变色 - 浅色模式 */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
 }
 
 /* ========================================
    3. 暗色模式
    ======================================== */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #0F0F0F;
-    --color-bg-secondary: #1A1A1A;
-    --color-bg-tertiary: #252525;
-    --color-surface: #1A1A1A;
-    --color-surface-hover: #252525;
+[data-theme="dark"],
+.dark {
+  /* 主色调 - 暗色模式 */
+  --color-primary: #818CF8;
+  --color-primary-hover: #6366F1;
+  --color-primary-light: #1E1B4B;
+  --color-secondary: #A78BFA;
 
-    --color-border: #2D2D2D;
-    --color-border-light: #1F1F1F;
+  /* 背景色 - 暗色模式 */
+  --color-bg: #0F0F0F;
+  --color-bg-secondary: #1A1A1A;
+  --color-bg-tertiary: #252525;
+  --color-surface: #1A1A1A;
+  --color-surface-hover: #252525;
 
-    --color-text-primary: #F9FAFB;
-    --color-text-secondary: #9CA3AF;
-    --color-text-tertiary: #6B7280;
-    --color-text-inverse: #111827;
+  /* 边框 - 暗色模式 */
+  --color-border: #2D2D2D;
+  --color-border-light: #1F1F1F;
 
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
-  }
+  /* 文字 - 暗色模式 */
+  --color-text-primary: #F9FAFB;
+  --color-text-secondary: #9CA3AF;
+  --color-text-tertiary: #6B7280;
+  --color-text-inverse: #111827;
+
+  /* 阴影 - 暗色模式 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+
+  /* 渐变色 - 暗色模式 */
+  --gradient-primary: linear-gradient(135deg, #818CF8 0%, #A78BFA 100%);
+  --gradient-secondary: linear-gradient(135deg, #F472B6 0%, #EC4899 100%);
+  --gradient-accent: linear-gradient(135deg, #38BDF8 0%, #06B6D4 100%);
 }
 
 /* ========================================
@@ -140,14 +118,14 @@ body {
   margin: 0;
   font-family: var(--font-sans);
   font-size: var(--text-base);
-  line-height: var(--leading-normal);
+  line-height: 1.5;
   color: var(--color-text-primary);
   background-color: var(--color-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  transition: background-color var(--transition-slow), color var(--transition-slow);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #root {
@@ -172,35 +150,30 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-@media (prefers-color-scheme: dark) {
-  .glass-effect {
-    background: rgba(26, 26, 26, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+[data-theme="dark"] .glass-effect,
+.dark .glass-effect {
+  background: rgba(26, 26, 26, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* ========================================
    7. 卡片效果
    ======================================== */
-/* 移动端 */
 @media (max-width: 640px) {
   .card-hover {
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-    border-radius: var(--radius-lg);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    border-radius: 12px;
   }
-
   .card-hover:active {
     transform: scale(0.98);
   }
 }
 
-/* PC端 */
 @media (min-width: 641px) {
   .card-hover {
-    transition: all var(--transition-slow) cubic-bezier(0.34, 1.56, 0.64, 1);
-    border-radius: var(--radius-xl);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-radius: 16px;
   }
-
   .card-hover:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-xl);
@@ -210,18 +183,17 @@ body {
 /* ========================================
    8. 按钮效果
    ======================================== */
-/* 基础按钮 */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
   line-height: 1.5;
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
+  border-radius: 8px;
+  transition: all 0.15s ease;
   cursor: pointer;
   border: none;
   outline: none;
@@ -231,7 +203,6 @@ body {
   transform: scale(0.98);
 }
 
-/* 主要按钮 */
 .btn-primary {
   background: var(--color-primary);
   color: var(--color-text-inverse);
@@ -242,7 +213,6 @@ body {
   box-shadow: 0 4px 12px rgba(94, 106, 210, 0.4);
 }
 
-/* 次要按钮 */
 .btn-secondary {
   background: var(--color-bg-tertiary);
   color: var(--color-text-primary);
@@ -253,7 +223,6 @@ body {
   background: var(--color-surface-hover);
 }
 
-/* 危险按钮 */
 .btn-danger {
   background: var(--color-error);
   color: var(--color-text-inverse);
@@ -263,7 +232,6 @@ body {
   background: #DC2626;
 }
 
-/* 渐变按钮 */
 .btn-gradient {
   background: var(--gradient-primary);
   color: var(--color-text-inverse);
@@ -273,15 +241,14 @@ body {
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
-/* 按钮尺寸 */
 .btn-sm {
-  padding: var(--space-1) var(--space-3);
-  font-size: var(--text-xs);
+  padding: 6px 12px;
+  font-size: 13px;
 }
 
 .btn-lg {
-  padding: var(--space-3) var(--space-6);
-  font-size: var(--text-base);
+  padding: 12px 24px;
+  font-size: 16px;
 }
 
 /* ========================================
@@ -289,14 +256,14 @@ body {
    ======================================== */
 .input {
   width: 100%;
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--text-base);
+  padding: 8px 12px;
+  font-size: 16px;
   line-height: 1.5;
   color: var(--color-text-primary);
   background-color: var(--color-bg);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
+  border-radius: 8px;
+  transition: all 0.15s ease;
   outline: none;
 }
 
@@ -318,63 +285,13 @@ body {
 }
 
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes spin {
@@ -382,22 +299,9 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* 动画类 */
 .animate-fade-in { animation: fadeIn 0.3s ease forwards; }
 .animate-fade-in-up { animation: fadeInUp 0.4s ease forwards; }
-.animate-fade-in-down { animation: fadeInDown 0.4s ease forwards; }
 .animate-scale-in { animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-.animate-slide-in-right { animation: slideInRight 0.4s ease forwards; }
-.animate-slide-in-left { animation: slideInLeft 0.4s ease forwards; }
-.animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-.animate-spin { animation: spin 1s linear infinite; }
-
-/* 延迟动画 */
-.delay-100 { animation-delay: 100ms; }
-.delay-200 { animation-delay: 200ms; }
-.delay-300 { animation-delay: 300ms; }
-.delay-400 { animation-delay: 400ms; }
-.delay-500 { animation-delay: 500ms; }
 
 /* ========================================
    11. 导航栏
@@ -410,13 +314,13 @@ body {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border-light);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-@media (prefers-color-scheme: dark) {
-  .navbar {
-    background: rgba(15, 15, 15, 0.9);
-    border-bottom: 1px solid var(--color-border);
-  }
+[data-theme="dark"] .navbar,
+.dark .navbar {
+  background: rgba(15, 15, 15, 0.9);
+  border-bottom-color: var(--color-border);
 }
 
 /* ========================================
@@ -424,16 +328,16 @@ body {
    ======================================== */
 .post-card {
   background: var(--color-surface);
-  border-radius: var(--radius-xl);
-  padding: var(--space-4);
+  border-radius: 16px;
+  padding: 16px;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--color-border-light);
-  transition: all var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
 @media (min-width: 640px) {
   .post-card {
-    padding: var(--space-6);
+    padding: 24px;
   }
 }
 
@@ -443,8 +347,8 @@ body {
 .comment-input {
   background: var(--color-bg-secondary);
   border: 2px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  transition: all var(--transition-fast);
+  border-radius: 12px;
+  transition: all 0.2s ease;
 }
 
 .comment-input:focus {
@@ -454,21 +358,7 @@ body {
 }
 
 /* ========================================
-   14. 空状态
-   ======================================== */
-.empty-state-icon {
-  font-size: 48px;
-  opacity: 0.4;
-}
-
-@media (min-width: 640px) {
-  .empty-state-icon {
-    font-size: 64px;
-  }
-}
-
-/* ========================================
-   15. 加载动画
+   14. 加载动画
    ======================================== */
 .loading-spinner {
   width: 40px;
@@ -480,7 +370,7 @@ body {
 }
 
 /* ========================================
-   16. 滚动条
+   15. 滚动条
    ======================================== */
 ::-webkit-scrollbar {
   width: 6px;
@@ -501,7 +391,7 @@ body {
 }
 
 /* ========================================
-   17. 文本截断
+   16. 文本截断
    ======================================== */
 .line-clamp-2 {
   display: -webkit-box;
@@ -518,45 +408,53 @@ body {
 }
 
 /* ========================================
-   18. 移动端优化
+   17. 移动端优化
    ======================================== */
 @media (max-width: 640px) {
   body {
-    font-size: var(--text-sm);
+    font-size: 14px;
   }
-
   .page-container {
-    padding-left: var(--space-3);
-    padding-right: var(--space-3);
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
 
 /* ========================================
-   19. PC端优化
+   18. PC端优化
    ======================================== */
 @media (min-width: 1024px) {
   .page-container {
-    padding-left: var(--space-8);
-    padding-right: var(--space-8);
+    padding-left: 32px;
+    padding-right: 32px;
   }
 }
 
 /* ========================================
-   20. 暗色模式支持
+   19. 公告滚动动画
    ======================================== */
-@media (prefers-color-scheme: dark) {
-  .post-card {
-    background: var(--color-surface);
-    border-color: var(--color-border);
-  }
+@keyframes announcement-scroll {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
 
-  .comment-input {
-    background: var(--color-bg-secondary);
-    border-color: var(--color-border);
-  }
+.announcement-scroll {
+  animation: announcement-scroll 30s linear infinite;
+  will-change: transform;
+  display: inline-block;
+}
 
-  .glass-effect {
-    background: rgba(26, 26, 26, 0.8);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
+/* ========================================
+   20. 暗色模式特殊样式
+   ======================================== */
+[data-theme="dark"] .post-card,
+.dark .post-card {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .comment-input,
+.dark .comment-input {
+  background: var(--color-bg-secondary);
+  border-color: var(--color-border);
 }
