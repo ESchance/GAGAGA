@@ -162,27 +162,51 @@ export default function IntroAnimation({
         <HUDOverlay visible={showHUD} />
       )}
 
-      {/* "开始探索" 按钮 */}
+      {/* "开始探索" 按钮 + 穿梭动画 */}
       {!isLoading && showExploreButton && (
         <div className="absolute inset-0 flex items-center justify-center z-40">
           <div className="text-center animate-fade-in">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{
+            {/* 穿梭星空动画背景 */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div className="absolute inset-0" style={{
+                background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.5) 100%)'
+              }} />
+              {/* 穿梭粒子效果 */}
+              {Array.from({ length: 20 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute bg-cyan-400 rounded-full opacity-60"
+                  style={{
+                    width: `${Math.random() * 3 + 1}px`,
+                    height: `${Math.random() * 20 + 10}px`,
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                    animation: `traverseStar ${Math.random() * 2 + 1}s linear infinite`,
+                    animationDelay: `${Math.random() * 2}s`
+                  }}
+                />
+              ))}
+            </div>
+
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 relative" style={{
               background: 'linear-gradient(135deg, #00ffff 0%, #00bfff 30%, #e0ffff 60%, #9370db 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               fontFamily: 'Orbitron, sans-serif',
-              letterSpacing: '0.15em'
+              letterSpacing: '0.15em',
+              textShadow: '0 0 30px rgba(0, 255, 255, 0.3)'
             }}>
               宇宙探索者
             </h2>
-            <p className="text-cyan-300 text-sm tracking-widest mb-8" style={{
-              fontFamily: 'JetBrains Mono, monospace'
+            <p className="text-cyan-300 text-sm tracking-widest mb-8 relative" style={{
+              fontFamily: 'JetBrains Mono, monospace',
+              textShadow: '0 0 10px rgba(0, 255, 255, 0.3)'
             }}>
               深空探索系统已激活 · 准备进入宇宙
             </p>
             <button
               onClick={handleExploreClick}
-              className="px-10 py-4 bg-white/10 backdrop-blur-sm text-cyan-300 border border-cyan-400/40 rounded-lg text-lg font-medium hover:bg-white/20 hover:border-cyan-400/80 hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-300"
+              className="relative px-10 py-4 bg-white/10 backdrop-blur-sm text-cyan-300 border border-cyan-400/40 rounded-lg text-lg font-medium hover:bg-white/20 hover:border-cyan-400/80 hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-300"
               style={{
                 fontFamily: 'Orbitron, sans-serif',
                 letterSpacing: '0.2em',
@@ -191,7 +215,7 @@ export default function IntroAnimation({
             >
               开始探索
             </button>
-            <p className="text-gray-500 text-xs mt-4 tracking-widest">
+            <p className="text-gray-500 text-xs mt-4 tracking-widest relative">
               点击进入深空
             </p>
           </div>

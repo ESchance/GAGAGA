@@ -1,6 +1,6 @@
 /**
- * HUD覆盖层组件 - 动态版
- * 显示科幻风格的数据界面，带鼠标交互
+ * HUD覆盖层组件 - 科技感浮动设计
+ * 无边框、无方块，纯文字+图标
  */
 
 import { useState, useEffect, useCallback } from 'react'
@@ -57,7 +57,6 @@ export default function HUDOverlay({ visible = false }) {
     const xPercent = (mousePos.x / width * 100).toFixed(1)
     const yPercent = (mousePos.y / height * 100).toFixed(1)
 
-    // 根据位置生成星云名称
     const regions = [
       '猎户座星云', '仙女座星系', '蟹状星云', '鹰状星云',
       '马头星云', '玫瑰星云', '礁湖星云', '螺旋星云'
@@ -74,127 +73,104 @@ export default function HUDOverlay({ visible = false }) {
 
   return (
     <div className="fixed inset-0 z-30 pointer-events-none opacity-0 animate-fade-in" style={{ animationDelay: '0.5s', animationDuration: '2s', animationFillMode: 'forwards' }}>
-      {/* 扫描线效果 */}
-      <div className="absolute inset-0 opacity-20" style={{
-        background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 255, 0.015) 2px, rgba(0, 255, 255, 0.015) 4px)'
-      }} />
-
       {/* 暗角效果 */}
       <div className="absolute inset-0" style={{
-        background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.3) 80%, rgba(0, 0, 0, 0.6) 100%)'
+        background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.4) 85%, rgba(0, 0, 0, 0.7) 100%)'
       }} />
 
-      {/* HUD角标 */}
-      <div className="absolute top-5 left-5 w-6 h-6 border-l-2 border-t-2 border-cyan-400 opacity-40" />
-      <div className="absolute top-5 right-5 w-6 h-6 border-r-2 border-t-2 border-cyan-400 opacity-40" />
-      <div className="absolute bottom-5 left-5 w-6 h-6 border-l-2 border-b-2 border-cyan-400 opacity-40" />
-      <div className="absolute bottom-5 right-5 w-6 h-6 border-r-2 border-b-2 border-cyan-400 opacity-40" />
-
-      {/* 左侧 - 鼠标位置信息 */}
+      {/* 左侧 - 星云坐标（浮动式） */}
       <div className="absolute top-1/2 left-8 transform -translate-y-1/2">
-        <div className="bg-black bg-opacity-40 backdrop-blur-sm border border-cyan-400 border-opacity-20 rounded-lg p-4 w-52">
-          <div className="text-cyan-400 text-xs font-mono font-bold tracking-widest mb-3">
-            ◆ 星域坐标
+        <div className="space-y-4">
+          {/* 星云名称 */}
+          <div className="animate-fade-in" style={{ animationDelay: '0.5s' }}>
+            <div className="text-cyan-400 text-xs font-mono tracking-widest opacity-60 mb-1">
+              SECTOR
+            </div>
+            <div className="text-cyan-200 text-lg font-mono font-bold" style={{ textShadow: '0 0 10px rgba(0, 255, 255, 0.5)' }}>
+              {starRegion.region}
+            </div>
           </div>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-cyan-300 text-xs font-mono opacity-70">X坐标</span>
-              <span className="text-cyan-200 text-sm font-mono font-bold">{starRegion.xPercent}%</span>
+
+          {/* 坐标 */}
+          <div className="animate-fade-in" style={{ animationDelay: '0.7s' }}>
+            <div className="text-cyan-400 text-xs font-mono tracking-widest opacity-60 mb-1">
+              COORDINATES
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-cyan-300 text-xs font-mono opacity-70">Y坐标</span>
-              <span className="text-cyan-200 text-sm font-mono font-bold">{starRegion.yPercent}%</span>
+            <div className="text-cyan-200 text-sm font-mono" style={{ textShadow: '0 0 8px rgba(0, 255, 255, 0.3)' }}>
+              <div>X: <span className="text-cyan-100 font-bold">{starRegion.xPercent}</span></div>
+              <div>Y: <span className="text-cyan-100 font-bold">{starRegion.yPercent}</span></div>
+              <div>Z: <span className="text-cyan-100 font-bold">0.00</span></div>
             </div>
-            <div className="border-t border-cyan-400 border-opacity-20 pt-2 mt-2">
-              <div className="text-cyan-300 text-xs font-mono opacity-70 mb-1">所在星云</div>
-              <div className="text-cyan-200 text-sm font-mono font-bold">{starRegion.region}</div>
+          </div>
+
+          {/* 传感器数据 */}
+          <div className="animate-fade-in" style={{ animationDelay: '0.9s' }}>
+            <div className="text-cyan-400 text-xs font-mono tracking-widest opacity-60 mb-1">
+              SENSORS
+            </div>
+            <div className="text-cyan-300 text-xs font-mono space-y-1 opacity-70">
+              <div>引力波: <span className="text-cyan-200">检测中</span></div>
+              <div>暗物质: <span className="text-cyan-200">27.4%</span></div>
+              <div>量子场: <span className="text-cyan-200">稳定</span></div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 右侧 - 系统负荷 */}
+      {/* 右侧 - 系统负荷（浮动式） */}
       <div className="absolute top-1/2 right-8 transform -translate-y-1/2">
-        <div className="bg-black bg-opacity-40 backdrop-blur-sm border border-cyan-400 border-opacity-20 rounded-lg p-4 w-52">
-          <div className="text-cyan-400 text-xs font-mono font-bold tracking-widest mb-3">
-            ◆ 系统负荷
-          </div>
-          <div className="space-y-3">
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-cyan-300 text-xs font-mono opacity-70">CPU</span>
-                <span className="text-cyan-200 text-xs font-mono">{Math.round(loadValues.cpu)}%</span>
-              </div>
-              <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full transition-all duration-1000"
-                  style={{ width: `${loadValues.cpu}%` }}
-                />
-              </div>
+        <div className="space-y-4">
+          {/* 时间码 */}
+          <div className="animate-fade-in text-right" style={{ animationDelay: '0.5s' }}>
+            <div className="text-cyan-400 text-xs font-mono tracking-widest opacity-60 mb-1">
+              TIMECODE
             </div>
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-cyan-300 text-xs font-mono opacity-70">内存</span>
-                <span className="text-cyan-200 text-xs font-mono">{Math.round(loadValues.memory)}%</span>
-              </div>
-              <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-green-400 to-cyan-500 rounded-full transition-all duration-1000"
-                  style={{ width: `${loadValues.memory}%` }}
-                />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-cyan-300 text-xs font-mono opacity-70">网络</span>
-                <span className="text-cyan-200 text-xs font-mono">{Math.round(loadValues.network)}%</span>
-              </div>
-              <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-purple-400 to-pink-500 rounded-full transition-all duration-1000"
-                  style={{ width: `${loadValues.network}%` }}
-                />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-cyan-300 text-xs font-mono opacity-70">能量</span>
-                <span className="text-cyan-200 text-xs font-mono">{Math.round(loadValues.energy)}%</span>
-              </div>
-              <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full transition-all duration-1000"
-                  style={{ width: `${loadValues.energy}%` }}
-                />
-              </div>
+            <div className="text-cyan-200 text-lg font-mono font-bold" style={{ textShadow: '0 0 10px rgba(0, 255, 255, 0.5)' }}>
+              {time}
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* 左下角 - 传感器 */}
-      <div className="absolute bottom-20 left-8">
-        <div className="bg-black bg-opacity-40 backdrop-blur-sm border border-cyan-400 border-opacity-20 rounded-lg p-3">
-          <div className="text-cyan-400 text-xs font-mono font-bold tracking-widest mb-2">
-            传感器
+          {/* 负荷指标 */}
+          <div className="animate-fade-in" style={{ animationDelay: '0.7s' }}>
+            <div className="text-cyan-400 text-xs font-mono tracking-widest opacity-60 mb-2 text-right">
+              SYSTEM LOAD
+            </div>
+            <div className="space-y-2">
+              {[
+                { label: 'CPU', value: loadValues.cpu },
+                { label: 'MEM', value: loadValues.memory },
+                { label: 'NET', value: loadValues.network },
+                { label: 'PWR', value: loadValues.energy }
+              ].map((item) => (
+                <div key={item.label} className="flex items-center space-x-2">
+                  <span className="text-cyan-400 text-xs font-mono w-8">{item.label}</span>
+                  <div className="w-24 h-1 bg-gray-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-1000"
+                      style={{
+                        width: `${item.value}%`,
+                        background: 'linear-gradient(90deg, #00ffff, #00bfff)'
+                      }}
+                    />
+                  </div>
+                  <span className="text-cyan-200 text-xs font-mono w-10 text-right">
+                    {Math.round(item.value)}%
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="text-cyan-300 text-xs font-mono space-y-1 opacity-80">
-            <div>◆ 引力波: <span className="text-cyan-200">检测中</span></div>
-            <div>◆ 辐射: <span className="text-cyan-200">正常</span></div>
-            <div>◆ 暗物质: <span className="text-cyan-200">27.4%</span></div>
-          </div>
-        </div>
-      </div>
 
-      {/* 右下角 - 时间码 */}
-      <div className="absolute bottom-20 right-8">
-        <div className="bg-black bg-opacity-40 backdrop-blur-sm border border-cyan-400 border-opacity-20 rounded-lg p-3">
-          <div className="text-cyan-400 text-xs font-mono font-bold tracking-widest mb-2">
-            时间码
-          </div>
-          <div className="text-cyan-300 text-xs font-mono space-y-1 opacity-80">
-            <div>UTC: <span className="text-cyan-200">{time}</span></div>
-            <div>扇区: <span className="text-cyan-200">ALPHA-7</span></div>
+          {/* 状态 */}
+          <div className="animate-fade-in text-right" style={{ animationDelay: '0.9s' }}>
+            <div className="text-cyan-400 text-xs font-mono tracking-widest opacity-60 mb-1">
+              STATUS
+            </div>
+            <div className="text-cyan-300 text-xs font-mono space-y-1 opacity-70">
+              <div>系统: <span className="text-cyan-200">在线</span></div>
+              <div>信号: <span className="text-cyan-200">85%</span></div>
+              <div>扇区: <span className="text-cyan-200">ALPHA-7</span></div>
+            </div>
           </div>
         </div>
       </div>
