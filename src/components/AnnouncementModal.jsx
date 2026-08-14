@@ -51,11 +51,9 @@ export default function AnnouncementModal() {
       // 只在首页（/）时检查
       if (location.pathname !== '/') return
 
-      // 检查动画是否已完成（通过URL参数判断）
-      const params = new URLSearchParams(location.search)
-      const showIntroParam = params.get('showIntro')
-      if (showIntroParam === 'true') {
-        // 动画正在进行，不显示公告
+      // 检查动画是否正在进行
+      const introComplete = localStorage.getItem('gagaga_intro_complete')
+      if (!introComplete) {
         return
       }
 
@@ -77,7 +75,7 @@ export default function AnnouncementModal() {
     }
 
     checkAndShow()
-  }, [location.pathname, location.search])
+  }, [location.pathname])
 
   const handleClose = useCallback(() => {
     setShow(false)

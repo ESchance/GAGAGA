@@ -81,6 +81,9 @@ function AnimationManager({ children }) {
     setShowIntro(false)
     setAnimationPhase('complete')
 
+    // 标记动画已完成（用于公告显示）
+    localStorage.setItem('gagaga_intro_complete', 'true')
+
     // 如果是新用户，显示种族选择
     if (isNewUser) {
       setShowRaceSelector(true)
