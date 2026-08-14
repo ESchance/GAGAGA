@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { isEmailAllowed, allowedEmails } from '../lib/allowedEmails'
+import { validateEmail, validateUsername, validatePassword, isDangerous } from '../lib/validation'
 
 export default function AuthForm({ type = 'login' }) {
   const [email, setEmail] = useState('')
@@ -69,14 +70,30 @@ export default function AuthForm({ type = 'login' }) {
 
     try {
       if (type === 'register') {
+        // 输入验证
+        const emailValidation = validateEmail(email)
+        if (!emailValidation.valid) {
+          throw new Error(emailValidation.message)
+        }
+
+        const usernameValidation = validateUsername(username)
+        if (!usernameValidation.valid) {
+          throw new Error(usernameValidation.message)
+        }
+
+        const passwordValidation = validatePassword(password)
+        if (!passwordValidation.valid) {
+          throw new Error(passwordValidation.message)
+        }
+
+        // 检查危险内容
+        if (isDangerous(username) || isDangerous(email)) {
+          throw new Error('输入包含非法内容')
+        }
+
         // 检查邮箱是否在白名单中
         if (!isEmailAllowed(email)) {
           throw new Error('该邮箱未被授权注册，请使用指定的邮箱地址')
-        }
-
-        // 检查密码强度
-        if (!validatePassword(password)) {
-          throw new Error('密码必须包含大写字母、小写字母和数字')
         }
 
         // 检查该用户名是否已被使用

@@ -1,0 +1,10 @@
+# 嘎宇宙 - robots.txt
+User-agent: *
+Allow: /
+
+# 禁止爬取私有页面
+Disallow: /admin/
+Disallow: /api/
+
+# 站点地图
+Sitemap: https://gagaga-d99.pages.dev/sitemap.xml
