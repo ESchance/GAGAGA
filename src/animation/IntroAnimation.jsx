@@ -24,9 +24,9 @@ export default function IntroAnimation({
   const [showTitle, setShowTitle] = useState(false)
   const timelineRef = useRef(null)
 
-  // 初始化动画时间轴（36秒）
+  // 初始化动画时间轴（34秒）
   useEffect(() => {
-    timelineRef.current = new AnimationTimeline(36000)
+    timelineRef.current = new AnimationTimeline(34000)
 
     // 模拟加载过程
     let progress = 0
@@ -159,7 +159,7 @@ export default function IntroAnimation({
 
       {/* HUD覆盖层 */}
       {!isLoading && showHUD && (
-        <HUDOverlay visible={showHUD} phase={phase} />
+        <HUDOverlay visible={showHUD} />
       )}
 
       {/* "开始探索" 按钮 */}

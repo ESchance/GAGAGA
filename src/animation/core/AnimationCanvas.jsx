@@ -194,20 +194,20 @@ function drawBirthPhase(ctx, width, height, centerX, centerY, state, timeline) {
   }
 }
 
-// 阶段3：大爆发（8-14s）
+// 阶段3：大爆发（6-12s）
 function drawExplosionPhase(ctx, width, height, centerX, centerY, state, timeline, dt) {
   const progress = timeline.getEasedProgress(PHASES.EXPLOSION)
 
-  // 闪光效果
-  if (progress < 0.1) {
-    const flashAlpha = 1 - (progress / 0.1)
+  // 闪光效果（更平滑）
+  if (progress < 0.15) {
+    const flashAlpha = Math.pow(1 - (progress / 0.15), 2)
     ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha})`
     ctx.fillRect(0, 0, width, height)
   }
 
-  // 触发粒子爆炸
-  if (progress > 0.05 && progress < 0.3 && state.particleSystem.count === 0) {
-    state.particleSystem.emitExplosion(centerX, centerY, 2000)
+  // 触发粒子爆炸（减少数量，更平滑）
+  if (progress > 0.05 && progress < 0.2 && state.particleSystem.count === 0) {
+    state.particleSystem.emitExplosion(centerX, centerY, 600)
   }
 
   // 绘制粒子
@@ -215,10 +215,10 @@ function drawExplosionPhase(ctx, width, height, centerX, centerY, state, timelin
     state.particleSystem.draw(ctx)
   }
 
-  // 星云开始形成
-  if (progress > 0.3 && state.nebulaSystem) {
-    const nebulaAlpha = (progress - 0.3) / 0.7
-    ctx.globalAlpha = nebulaAlpha
+  // 星云开始形成（更渐进）
+  if (progress > 0.4 && state.nebulaSystem) {
+    const nebulaAlpha = (progress - 0.4) / 0.6
+    ctx.globalAlpha = nebulaAlpha * 0.8
     state.nebulaSystem.draw(ctx)
     ctx.globalAlpha = 1
   }

@@ -119,7 +119,8 @@ function AnimationManager({ children }) {
         <RaceSelector onSelect={handleRaceSelect} />
       )}
 
-      {children}
+      {/* 动画播放时隐藏主内容 */}
+      {!showIntro && children}
     </>
   )
 }

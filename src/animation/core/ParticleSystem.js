@@ -110,14 +110,17 @@ export class ExplosionParticle {
   update(dt) {
     if (!this.active) return
 
-    this.x += this.vx
-    this.y += this.vy
+    // 使用 dt 进行时间归一化
+    const dtFactor = dt / 16 // 假设 16ms 为标准帧时间
+
+    this.x += this.vx * dtFactor
+    this.y += this.vy * dtFactor
 
     // 速度衰减
-    this.vx *= this.drag
-    this.vy *= this.drag
+    this.vx *= Math.pow(this.drag, dtFactor)
+    this.vy *= Math.pow(this.drag, dtFactor)
 
-    this.life -= this.decay
+    this.life -= this.decay * dtFactor
 
     // 尺寸随生命变化
     this.size = this.originalSize * (0.2 + this.life * 0.8)
@@ -173,22 +176,20 @@ export class ParticleSystem {
     this.maxParticles = options.maxParticles || 2000
   }
 
-  // 触发爆炸
-  emitExplosion(x, y, count = 2000) {
+  // 触发爆炸（优化性能）
+  emitExplosion(x, y, count = 800) {
     for (let i = 0; i < count; i++) {
       if (this.particles.length >= this.maxParticles) break
 
-      // 延迟时间分布
+      // 延迟时间分布（更平滑）
       let delay
       const delayRand = Math.random()
-      if (delayRand > 0.95) {
-        delay = Math.random() * 800 + 400
-      } else if (delayRand > 0.80) {
-        delay = Math.random() * 300 + 200
-      } else if (delayRand > 0.50) {
-        delay = Math.random() * 150 + 50
-      } else if (delayRand > 0.20) {
-        delay = Math.random() * 50
+      if (delayRand > 0.90) {
+        delay = Math.random() * 500 + 200
+      } else if (delayRand > 0.70) {
+        delay = Math.random() * 200 + 100
+      } else if (delayRand > 0.40) {
+        delay = Math.random() * 100 + 50
       } else {
         delay = 0
       }

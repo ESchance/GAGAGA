@@ -30,14 +30,14 @@ export class AnimationTimeline {
 
     // 阶段时间点（毫秒）
     this.phaseTimes = {
-      [PHASES.DARKNESS]: { start: 0, end: 4000 },           // 4秒：虚空
-      [PHASES.BIRTH]: { start: 4000, end: 8000 },           // 4秒：奇点诞生
-      [PHASES.EXPLOSION]: { start: 8000, end: 14000 },      // 6秒：大爆发
-      [PHASES.TRAVERSE]: { start: 14000, end: 20000 },      // 6秒：穿越停留
-      [PHASES.BUTTON]: { start: 20000, end: 26000 },        // 6秒：按钮出现
-      [PHASES.RACE_SELECTION]: { start: 26000, end: 26000 }, // 用户操作
-      [PHASES.TRAVERSE_2]: { start: 26000, end: 32000 },    // 6秒：再次穿越
-      [PHASES.ENTER]: { start: 32000, end: 36000 }          // 4秒：进入首页
+      [PHASES.DARKNESS]: { start: 0, end: 2000 },           // 2秒：虚空（减半）
+      [PHASES.BIRTH]: { start: 2000, end: 6000 },           // 4秒：奇点诞生
+      [PHASES.EXPLOSION]: { start: 6000, end: 12000 },      // 6秒：大爆发
+      [PHASES.TRAVERSE]: { start: 12000, end: 18000 },      // 6秒：穿越停留
+      [PHASES.BUTTON]: { start: 18000, end: 24000 },        // 6秒：按钮出现
+      [PHASES.RACE_SELECTION]: { start: 24000, end: 24000 }, // 用户操作
+      [PHASES.TRAVERSE_2]: { start: 24000, end: 30000 },    // 6秒：再次穿越
+      [PHASES.ENTER]: { start: 30000, end: 34000 }          // 4秒：进入首页
     }
 
     // 回调函数
