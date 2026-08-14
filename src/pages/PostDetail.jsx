@@ -252,8 +252,9 @@ export default function PostDetail() {
               )}
             </div>
           </div>
-        </div>
+        </article>
 
+        {/* 评论区 */}
         <CommentList postId={id} />
       </div>
     </div>
