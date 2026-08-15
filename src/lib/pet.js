@@ -278,3 +278,13 @@ export const getIntimacyDescription = (intimacy) => {
   if (intimacy >= 30) return { text: '普通', emoji: '😐', color: 'text-gray-500' }
   return { text: '陌生', emoji: '😶', color: 'text-gray-400' }
 }
+
+// 判断消息是否重要（需要记住）
+export const isImportantMessage = (message) => {
+  const importantKeywords = [
+    '喜欢', '讨厌', '爱', '恨', '开心', '难过', '生日', '纪念日',
+    '工作', '学习', '考试', '比赛', '旅行', '搬家', '升职', '加薪',
+    '朋友', '家人', '宠物', '梦想', '目标', '计划'
+  ]
+  return importantKeywords.some(keyword => message.includes(keyword))
+}

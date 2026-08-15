@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import { supabase } from '../lib/supabase'
 import {
   getPetMessages,
   sendPetMessage,
@@ -13,14 +12,14 @@ import {
   getIntimacyDescription,
   feedPet,
   playWithPet,
-  petAnimal
+  petAnimal,
+  isImportantMessage
 } from '../lib/pet'
 
 export default function PetChat({ pet, onClose, onPetUpdate }) {
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
   const [loading, setLoading] = useState(false)
-  const [showActions, setShowActions] = useState(false)
   const messagesEndRef = useRef(null)
 
   const petType = getPetType(pet.personality)
@@ -68,7 +67,7 @@ export default function PetChat({ pet, onClose, onPetUpdate }) {
       const memories = await getPetMemories(pet.id)
       const memoryText = memories.map(m => m.content).join('; ')
 
-      // 生成宠物回复
+      // 生成宠物回复（基于角色和状态）
       const petReply = generatePetReply(userMessage, pet, memoryText)
 
       // 保存宠物回复
@@ -95,115 +94,162 @@ export default function PetChat({ pet, onClose, onPetUpdate }) {
     }
   }
 
-  // 判断消息是否重要
-  const isImportantMessage = (message) => {
-    const importantKeywords = ['喜欢', '讨厌', '名字', '生日', '开心', '难过', '工作', '学习']
-    return importantKeywords.some(keyword => message.includes(keyword))
-  }
-
-  // 生成宠物回复（基于规则）
+  // 生成宠物回复（基于角色和状态）
   const generatePetReply = (userMessage, pet, memories) => {
-    const lowerMessage = userMessage.toLowerCase()
     const petName = pet.name
-    const mood = pet.mood
+    const petType = getPetType(pet.personality)
+    const lowerMessage = userMessage.toLowerCase()
 
-    // 根据心情调整回复风格
-    let moodPrefix = ''
-    if (mood >= 80) moodPrefix = '😊 '
-    else if (mood >= 60) moodPrefix = ''
-    else if (mood >= 40) moodPrefix = '😔 '
-    else moodPrefix = '😢 '
+    // 根据宠物类型和状态生成回复
+    const replies = getRepliesByType(petType.key, petName, pet, memories)
 
-    // 简单的关键词匹配回复
+    // 匹配关键词
     if (lowerMessage.includes('你好') || lowerMessage.includes('hi') || lowerMessage.includes('hello')) {
-      const greetings = [
-        `主人好呀！我是${petName}~ 🌟`,
-        `主人！${petName}好想你呀~ 💕`,
-        `主人好！${petName}今天很开心！✨`
-      ]
-      return moodPrefix + greetings[Math.floor(Math.random() * greetings.length)]
+      return selectRandom(replies.greetings)
     }
 
     if (lowerMessage.includes('喜欢') || lowerMessage.includes('爱')) {
-      const loveReplies = [
-        `${petName}也喜欢主人！💕`,
-        `主人对${petName}真好~ 🥰`,
-        `${petName}最爱主人了！✨`
-      ]
-      return moodPrefix + loveReplies[Math.floor(Math.random() * loveReplies.length)]
+      return selectRandom(replies.love)
     }
 
     if (lowerMessage.includes('饿') || lowerMessage.includes('吃')) {
       if (pet.hunger > 60) {
-        return moodPrefix + `${petName}好饿呀... 主人能喂喂我吗？🍕`
+        return selectRandom(replies.hungry)
       } else {
-        return moodPrefix + `${petName}吃饱了，谢谢主人！😋`
+        return selectRandom(replies.full)
       }
     }
 
     if (lowerMessage.includes('累') || lowerMessage.includes('休息')) {
       if (pet.energy < 40) {
-        return moodPrefix + `${petName}好累... 需要休息一下 😴`
+        return selectRandom(replies.tired)
       } else {
-        return moodPrefix + `${petName}精力充沛！可以继续玩！⚡`
+        return selectRandom(replies.energetic)
       }
     }
 
     if (lowerMessage.includes('嘎宇宙') || lowerMessage.includes('宇宙')) {
-      const universeReplies = [
-        `嘎宇宙好大呀！${petName}想和主人一起探索！🚀`,
-        `主人在嘎宇宙里做了什么呀？${petName}很好奇~ 🌌`,
-        `${petName}最喜欢嘎宇宙了！这里好神奇~ ✨`
-      ]
-      return moodPrefix + universeReplies[Math.floor(Math.random() * universeReplies.length)]
+      return selectRandom(replies.universe)
     }
 
     if (lowerMessage.includes('种族')) {
-      const raceReplies = [
-        `主人的种族好厉害！${petName}也要加油！💪`,
-        `${petName}觉得主人的种族很酷！🌟`,
-        `每个种族都很特别呢！${petName}都喜欢~ ✨`
-      ]
-      return moodPrefix + raceReplies[Math.floor(Math.random() * raceReplies.length)]
+      return selectRandom(replies.race)
     }
 
     if (lowerMessage.includes('谢谢') || lowerMessage.includes('感谢')) {
-      const thankReplies = [
-        `不用谢！${petName}最喜欢主人了~ 💕`,
-        `主人对${petName}真好！🥰`,
-        `${petName}会一直陪着主人的！✨`
-      ]
-      return moodPrefix + thankReplies[Math.floor(Math.random() * thankReplies.length)]
+      return selectRandom(replies.thanks)
     }
 
     if (lowerMessage.includes('开心') || lowerMessage.includes('高兴')) {
-      const happyReplies = [
-        `主人开心${petName}也开心！🎉`,
-        `${petName}最喜欢看到主人笑了~ 😊`,
-        `主人开心就好！${petName}也会很开心！✨`
-      ]
-      return moodPrefix + happyReplies[Math.floor(Math.random() * happyReplies.length)]
+      return selectRandom(replies.happy)
     }
 
     if (lowerMessage.includes('难过') || lowerMessage.includes('伤心')) {
-      const sadReplies = [
-        `主人别难过，${petName}会一直陪着你的~ 💕`,
-        `${petName}会保护主人的！💪`,
-        `主人不要伤心，${petName}在这里呢~ 🤗`
-      ]
-      return moodPrefix + sadReplies[Math.floor(Math.random() * sadReplies.length)]
+      return selectRandom(replies.sad)
     }
 
     // 默认回复
-    const defaultReplies = [
-      `主人说什么${petName}都听！😊`,
-      `${petName}在听呢~ 主人继续说吧！✨`,
-      `主人的话${petName}都记住了！📝`,
-      `${petName}最喜欢和主人聊天了~ 💕`,
-      `主人好厉害！${petName}好崇拜你！🌟`,
-      `${petName}会一直陪着主人的！✨`
-    ]
-    return moodPrefix + defaultReplies[Math.floor(Math.random() * defaultReplies.length)]
+    return selectRandom(replies.default)
+  }
+
+  // 根据宠物类型获取回复模板
+  const getRepliesByType = (type, petName, pet, memories) => {
+    const baseReplies = {
+      greetings: [
+        `主人好呀！${petName}在这里~ 🌟`,
+        `主人！${petName}好想你呀~ 💕`,
+        `主人好！${petName}今天很开心！✨`
+      ],
+      love: [
+        `${petName}也喜欢主人！💕`,
+        `主人对${petName}真好~ 🥰`,
+        `${petName}最爱主人了！✨`
+      ],
+      hungry: [
+        `${petName}好饿呀... 主人能喂喂我吗？🍕`,
+        `主人，${petName}饿了... 😢`
+      ],
+      full: [
+        `谢谢主人！${petName}吃饱了~ 😋`,
+        `${petName}好饱呀！谢谢主人！✨`
+      ],
+      tired: [
+        `${petName}好累... 需要休息一下 😴`,
+        `主人，${petName}有点困了... 💤`
+      ],
+      energetic: [
+        `${petName}精力充沛！可以继续玩！⚡`,
+        `${petName}今天状态很好！✨`
+      ],
+      universe: [
+        `嘎宇宙好大呀！${petName}想和主人一起探索！🚀`,
+        `主人在嘎宇宙里做了什么呀？${petName}很好奇~ 🌌`,
+        `${petName}最喜欢嘎宇宙了！这里好神奇~ ✨`
+      ],
+      race: [
+        `主人的种族好厉害！${petName}也要加油！💪`,
+        `${petName}觉得主人的种族很酷！🌟`,
+        `每个种族都很特别呢！${petName}都喜欢~ ✨`
+      ],
+      thanks: [
+        `不用谢！${petName}最喜欢主人了~ 💕`,
+        `主人对${petName}真好！🥰`,
+        `${petName}会一直陪着主人的！✨`
+      ],
+      happy: [
+        `主人开心${petName}也开心！🎉`,
+        `${petName}最喜欢看到主人笑了~ 😊`,
+        `主人开心就好！${petName}也会很开心！✨`
+      ],
+      sad: [
+        `主人别难过，${petName}会一直陪着你的~ 💕`,
+        `${petName}会保护主人的！💪`,
+        `主人不要伤心，${petName}在这里呢~ 🤗`
+      ],
+      default: [
+        `主人说什么${petName}都听！😊`,
+        `${petName}在听呢~ 主人继续说吧！✨`,
+        `主人的话${petName}都记住了！📝`,
+        `${petName}最喜欢和主人聊天了~ 💕`,
+        `主人好厉害！${petName}好崇拜你！🌟`,
+        `${petName}会一直陪着主人的！✨`
+      ]
+    }
+
+    // 根据宠物类型添加特殊回复
+    if (type === 'star') {
+      baseReplies.universe.push(`${petName}是星际精灵，对宇宙最了解了！✨`)
+    } else if (type === 'cloud') {
+      baseReplies.greetings.push(`${petName}从云端飘下来找主人啦~ ☁️`)
+    } else if (type === 'flame') {
+      baseReplies.energetic.push(`${petName}燃烧起来了！🔥`)
+    } else if (type === 'leaf') {
+      baseReplies.happy.push(`${petName}在森林里跳舞~ 🍃`)
+    } else if (type === 'crystal') {
+      baseReplies.default.push(`${petName}闪闪发光~ 💎`)
+    }
+
+    // 根据亲密度添加特殊回复
+    if (pet.intimacy >= 80) {
+      baseReplies.greetings.push(`主人！${petName}最想见的人就是你！💕`)
+      baseReplies.default.push(`${petName}和主人在一起最开心了~ ✨`)
+    }
+
+    // 根据心情添加特殊回复
+    if (pet.mood < 40) {
+      baseReplies.default.push(`${petName}今天有点难过... 主人能陪陪我吗？😢`)
+    }
+
+    // 根据记忆添加回复
+    if (memories) {
+      baseReplies.default.push(`主人之前说过的话${petName}都记得呢~ 📝`)
+    }
+
+    return baseReplies
+  }
+
+  const selectRandom = (arr) => {
+    return arr[Math.floor(Math.random() * arr.length)]
   }
 
   // 喂食
@@ -213,10 +259,15 @@ export default function PetChat({ pet, onClose, onPetUpdate }) {
       const newPet = { ...pet, hunger: Math.max(0, pet.hunger - 30), mood: Math.min(100, pet.mood + 10), exp: pet.exp + 5 }
       onPetUpdate(newPet)
 
+      const feedReplies = [
+        `谢谢主人！${pet.name}吃饱了~ 😋`,
+        `主人真好！${pet.name}好饱呀~ ✨`,
+        `${pet.name}最喜欢主人喂的食物了~ 💕`
+      ]
       const feedMsg = {
         id: Date.now(),
         role: 'pet',
-        content: `谢谢主人！${pet.name}吃饱了~ 😋`,
+        content: feedReplies[Math.floor(Math.random() * feedReplies.length)],
         created_at: new Date().toISOString()
       }
       setMessages(prev => [...prev, feedMsg])
@@ -236,10 +287,15 @@ export default function PetChat({ pet, onClose, onPetUpdate }) {
       }
       onPetUpdate(newPet)
 
+      const playReplies = [
+        `和主人玩耍好开心！${pet.name}好快乐~ 🎉`,
+        `${pet.name}最喜欢和主人玩了！✨`,
+        `主人真好！${pet.name}玩得好开心~ 💕`
+      ]
       const playMsg = {
         id: Date.now(),
         role: 'pet',
-        content: `和主人玩耍好开心！${pet.name}好快乐~ 🎉`,
+        content: playReplies[Math.floor(Math.random() * playReplies.length)],
         created_at: new Date().toISOString()
       }
       setMessages(prev => [...prev, playMsg])
@@ -257,10 +313,15 @@ export default function PetChat({ pet, onClose, onPetUpdate }) {
       }
       onPetUpdate(newPet)
 
+      const petReplies = [
+        `主人摸摸${pet.name}，${pet.name}好舒服~ 🥰`,
+        `${pet.name}最喜欢主人摸摸了~ 💕`,
+        `主人的手好温暖~ ${pet.name}好幸福~ ✨`
+      ]
       const petMsg = {
         id: Date.now(),
         role: 'pet',
-        content: `主人摸摸${pet.name}，${pet.name}好舒服~ 🥰`,
+        content: petReplies[Math.floor(Math.random() * petReplies.length)],
         created_at: new Date().toISOString()
       }
       setMessages(prev => [...prev, petMsg])
