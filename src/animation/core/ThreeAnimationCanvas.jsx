@@ -210,9 +210,9 @@ export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady,
       singularity.group.visible =
         phase === PHASES.DARKNESS || phase === PHASES.BIRTH
 
-      // 星云：爆炸吸聚后期开始成形，后段阶段可见
-      let showNebulae =
-        phase === PHASES.BUTTON || phase === PHASES.FAST_TRAVERSE || phase === PHASES.ENTER
+      // 星云：爆炸后期成形，快速穿梭/结尾可见
+      // 探索按钮阶段不显示星云（避免其"强光团"挡在按钮背后）
+      let showNebulae = phase === PHASES.FAST_TRAVERSE || phase === PHASES.ENTER
       if (phase === PHASES.EXPLOSION) {
         showNebulae = timeline.getEasedProgress(PHASES.EXPLOSION) > 0.5
       }
