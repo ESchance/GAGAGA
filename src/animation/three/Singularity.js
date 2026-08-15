@@ -9,6 +9,9 @@ export class Singularity {
 
     const positions = new Float32Array(count * 3)
     const sizes = new Float32Array(count)
+    // 保存初始位置，供 CPU 坍缩插值使用
+    this.basePositions = new Float32Array(count * 3)
+    this.positions = positions
     for (let i = 0; i < count; i++) {
       // 球壳分布（中心空心），形成"一圈/一簇"粒子而非实心光团
       const r = 8 + Math.random() * 8
@@ -17,6 +20,9 @@ export class Singularity {
       positions[i * 3] = r * Math.sin(phi) * Math.cos(theta)
       positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta)
       positions[i * 3 + 2] = r * Math.cos(phi)
+      this.basePositions[i * 3] = positions[i * 3]
+      this.basePositions[i * 3 + 1] = positions[i * 3 + 1]
+      this.basePositions[i * 3 + 2] = positions[i * 3 + 2]
       sizes[i] = 0.35 + Math.random() * 0.5
     }
 
@@ -39,9 +45,8 @@ export class Singularity {
         uniform float uCollapse;
         varying float vAlpha;
         void main() {
-          // 坍缩：粒子向屏幕中心前方聚拢成一个清晰的小亮点
-          vec3 target = vec3(0.0, 0.0, -20.0);
-          vec3 p = mix(position, target, uCollapse);
+          // 位置已由 CPU 更新为坍缩位置（不再在此处做 mix，确保确定性生效）
+          vec3 p = position;
           float breathe = 0.85 + 0.15 * sin(uTime * 2.0 + position.x * 1.5);
           // 坍缩时保持亮度与尺寸，让环收缩成亮点的过程清晰可见
           vAlpha = breathe * (0.08 + 0.5 * uProgress);
@@ -79,6 +84,17 @@ export class Singularity {
     const collapse = Math.max(0, Math.min(1, (progress - 0.3) / 0.4))
     this.material.uniforms.uCollapse.value = collapse
     this.group.rotation.z = time * 0.04
+
+    // CPU 确定性更新粒子位置：从球壳向中心前方 (0,0,-20) 插值收缩
+    const targetZ = -20
+    const pos = this.geometry.attributes.position.array
+    for (let i = 0; i < this.count; i++) {
+      const k = 1 - collapse
+      pos[i * 3] = this.basePositions[i * 3] * k
+      pos[i * 3 + 1] = this.basePositions[i * 3 + 1] * k
+      pos[i * 3 + 2] = this.basePositions[i * 3 + 2] * k + targetZ * collapse
+    }
+    this.geometry.attributes.position.needsUpdate = true
   }
 
   dispose() {

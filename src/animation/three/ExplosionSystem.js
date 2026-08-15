@@ -174,6 +174,27 @@ export class ExplosionSystem {
     })
   }
 
+  // 快速淡出所有粒子（星云成形后融入，避免吸聚粒子静止成"一圈不动"）
+  fadeAll() {
+    for (let i = 0; i < this.count; i++) {
+      this.lifes[i] = Math.min(this.lifes[i], 0.02)
+    }
+  }
+
+  // 立即隐藏所有粒子
+  clear() {
+    const pos = this.positions
+    for (let i = 0; i < this.count; i++) {
+      if (this.active[i]) {
+        pos[i * 3] = 9999
+        pos[i * 3 + 1] = 9999
+        pos[i * 3 + 2] = 9999
+        this.active[i] = 0
+      }
+    }
+    this.geometry.attributes.position.needsUpdate = true
+  }
+
   dispose() {
     this.geometry.dispose()
     this.material.dispose()

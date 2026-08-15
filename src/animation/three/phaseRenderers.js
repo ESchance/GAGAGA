@@ -75,11 +75,18 @@ export function renderPhase(phase, ctx) {
         nebulae.forEach((n) => n.group.scale.setScalar(0.01 + nebulaFade * 0.99))
       }
 
+      // 星云成形后，爆炸粒子快速淡出融入（避免吸聚残留静止成"一圈不动"）
+      if (explosion && progress > 0.7) {
+        explosion.fadeAll()
+      }
+
       if (bloom) bloom.setStrength(0.55)
       break
     }
 
     case PHASES.TRAVERSE: {
+      // 清空爆炸残留粒子，只保留星云
+      if (explosion) explosion.clear()
       if (traverse) {
         traverse.update(dt, 1)
         traverse.hideLines()
