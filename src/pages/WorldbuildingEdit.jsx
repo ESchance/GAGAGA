@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { getWorldbuildingDetail, updateWorldbuilding } from '../lib/worldbuilding'
+import { validateTitle, validateContent } from '../lib/validation'
 
 const TYPE_OPTIONS = [
   { value: 'story', label: '📖 故事', description: '创作嘎宇宙中的故事' },
@@ -51,7 +52,19 @@ export default function WorldbuildingEdit() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!user || !title.trim() || !content.trim()) return
+    if (!user) return
+
+    // 输入校验
+    const titleCheck = validateTitle(title)
+    if (!titleCheck.valid) {
+      setMessage(titleCheck.message)
+      return
+    }
+    const contentCheck = validateContent(content)
+    if (!contentCheck.valid) {
+      setMessage(contentCheck.message)
+      return
+    }
 
     setSaving(true)
     setMessage('')

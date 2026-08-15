@@ -23,3 +23,6 @@ BEGIN
   RETURN new_code;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 授权给登录用户调用（选择种族时生成编号需要）
+GRANT EXECUTE ON FUNCTION get_next_member_code() TO authenticated;

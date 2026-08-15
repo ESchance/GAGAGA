@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { validateTitle, validateContent } from '../lib/validation'
 
 export default function CreatePost() {
   const [title, setTitle] = useState('')
@@ -24,6 +25,18 @@ export default function CreatePost() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!user) return
+
+    // 输入校验
+    const titleCheck = validateTitle(title)
+    if (!titleCheck.valid) {
+      setMessage(titleCheck.message)
+      return
+    }
+    const contentCheck = validateContent(content)
+    if (!contentCheck.valid) {
+      setMessage(contentCheck.message)
+      return
+    }
 
     setLoading(true)
     setMessage('')

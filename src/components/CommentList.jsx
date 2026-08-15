@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { checkIsAdmin, adminDeleteComment } from '../lib/admin'
 import { RACES } from '../lib/worldbuilding'
+import { validateComment } from '../lib/validation'
 import Avatar from './Avatar'
 
 export default function CommentList({ postId, requireRace = false }) {
@@ -80,7 +81,14 @@ export default function CommentList({ postId, requireRace = false }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!newComment.trim() || !user) return
+    if (!user) return
+
+    // 输入校验
+    const commentCheck = validateComment(newComment)
+    if (!commentCheck.valid) {
+      alert(commentCheck.message)
+      return
+    }
 
     setLoading(true)
     try {

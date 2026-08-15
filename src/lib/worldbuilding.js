@@ -430,11 +430,20 @@ export const addWorldbuildingComment = async (userId, worldbuildingId, content) 
 
     if (error) throw error
 
-    // 更新评论数
-    await supabase
+    // 更新评论数（读取当前值 +1 后写回，避免把 Promise 当作值写入）
+    const { data: current, error: fetchCountError } = await supabase
       .from('worldbuilding')
-      .update({ comments_count: supabase.rpc('increment', { x: 1 }) })
+      .select('comments_count')
       .eq('id', worldbuildingId)
+      .single()
+
+    if (!fetchCountError) {
+      const newCount = (current?.comments_count || 0) + 1
+      await supabase
+        .from('worldbuilding')
+        .update({ comments_count: newCount })
+        .eq('id', worldbuildingId)
+    }
 
     return data
   } catch (error) {

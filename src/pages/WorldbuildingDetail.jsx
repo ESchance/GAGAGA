@@ -11,6 +11,7 @@ import {
   RACES
 } from '../lib/worldbuilding'
 import { checkIsAdmin } from '../lib/admin'
+import { validateComment } from '../lib/validation'
 import Avatar from '../components/Avatar'
 
 export default function WorldbuildingDetail() {
@@ -104,7 +105,14 @@ export default function WorldbuildingDetail() {
 
   const handleComment = async (e) => {
     e.preventDefault()
-    if (!newComment.trim() || !user) return
+    if (!user) return
+
+    // 输入校验
+    const commentCheck = validateComment(newComment)
+    if (!commentCheck.valid) {
+      alert(commentCheck.message)
+      return
+    }
 
     setSubmitting(true)
     const result = await addWorldbuildingComment(user.id, id, newComment)

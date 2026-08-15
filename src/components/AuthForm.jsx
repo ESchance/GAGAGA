@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { isEmailAllowed, allowedEmails } from '../lib/allowedEmails'
-import { validateEmail, validateUsername, validatePassword, isDangerous } from '../lib/validation'
+import { validateEmail, validateUsername, validatePassword } from '../lib/validation'
 
 export default function AuthForm({ type = 'login' }) {
   const [email, setEmail] = useState('')
@@ -39,14 +39,6 @@ export default function AuthForm({ type = 'login' }) {
     }
   }
 
-  // 密码验证
-  const validatePassword = (pwd) => {
-    const hasUpperCase = /[A-Z]/.test(pwd)
-    const hasLowerCase = /[a-z]/.test(pwd)
-    const hasNumber = /[0-9]/.test(pwd)
-    return hasUpperCase && hasLowerCase && hasNumber
-  }
-
   // 密码强度提示
   const getPasswordStrength = (pwd) => {
     if (!pwd) return { level: 0, text: '', color: '' }
@@ -72,18 +64,15 @@ export default function AuthForm({ type = 'login' }) {
 
     try {
       if (type === 'register') {
-        // 简化的输入验证
-        if (!email || email.length < 5) {
-          throw new Error('请输入有效的邮箱地址')
-        }
+        // 使用统一的校验工具
+        const emailCheck = validateEmail(email)
+        if (!emailCheck.valid) throw new Error(emailCheck.message)
 
-        if (!username || username.length < 2) {
-          throw new Error('用户名至少需要2个字符')
-        }
+        const usernameCheck = validateUsername(username)
+        if (!usernameCheck.valid) throw new Error(usernameCheck.message)
 
-        if (!password || password.length < 6) {
-          throw new Error('密码至少需要6个字符')
-        }
+        const passwordCheck = validatePassword(password)
+        if (!passwordCheck.valid) throw new Error(passwordCheck.message)
 
         // 检查邮箱是否在白名单中
         console.log('检查邮箱白名单...')

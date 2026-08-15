@@ -88,13 +88,17 @@ export const validateUsername = (username) => {
 
 /**
  * 验证密码强度
+ * 规则与注册页展示的提示保持一致：至少6位，且包含大写字母、小写字母和数字
  */
 export const validatePassword = (password) => {
-  if (password.length < 6) {
+  if (!password || password.length < 6) {
     return { valid: false, message: '密码至少需要6个字符' }
   }
   if (password.length > MAX_LENGTHS.password) {
     return { valid: false, message: '密码过长' }
+  }
+  if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+    return { valid: false, message: '密码需包含大写字母、小写字母和数字' }
   }
   return { valid: true }
 }
