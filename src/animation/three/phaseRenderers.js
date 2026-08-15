@@ -50,24 +50,14 @@ export function renderPhase(phase, ctx) {
       const elapsed = time * 1000 - ctx.state.explosionStart
       if (explosion) {
         explosion.update(elapsed, dt)
-        explosion.updateShockRings(progress, time)
+        explosion.updateShockRings(progress)
         if (progress > 0.3) {
           explosion.setAttractTargets(ctx.nebulaCenters)
         }
       }
 
-      // 白光从爆炸中心向全屏扩散（0~0.35，伴随粒子炸开）
-      if (flash) {
-        if (progress < 0.35) {
-          flash.visible = true
-          const spread = progress / 0.35
-          const s = 2 + spread * 45
-          flash.scale.set(s, s, 1)
-          flash.material.opacity = 0.85 * (1 - spread)
-        } else {
-          flash.visible = false
-        }
-      }
+      // 电磁雾爆炸：不再使用刺眼白光与大面积光晕
+      if (flash) flash.visible = false
 
       // 星云在爆炸吸聚后期开始成形（scale 0→1）
       if (nebulae) {
@@ -80,7 +70,8 @@ export function renderPhase(phase, ctx) {
         explosion.fadeAll()
       }
 
-      if (bloom) bloom.setStrength(0.55)
+      // 电磁雾：低泛光，避免大面积光晕
+      if (bloom) bloom.setStrength(0.15)
       break
     }
 

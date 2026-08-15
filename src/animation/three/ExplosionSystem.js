@@ -31,11 +31,11 @@ export class ExplosionSystem {
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute('position', new THREE.BufferAttribute(this.positions, 3))
 
-    // 粒子颜色（固定调色板）
+    // 粒子颜色（电磁雾：青、蓝、紫为主，无刺眼白/橙）
     const colors = new Float32Array(count * 3)
     const palette = [
-      [1, 1, 1], [0.88, 1, 1], [0, 0.81, 0.82], [0, 0.75, 1],
-      [0.25, 0.41, 0.88], [0.58, 0.44, 0.86], [1, 0.39, 0.28], [1, 0.27, 0]
+      [0.4, 0.8, 1.0], [0.3, 0.7, 1.0], [0.5, 0.4, 1.0], [0.6, 0.3, 1.0],
+      [0.0, 0.9, 0.9], [0.4, 0.6, 1.0], [0.3, 0.5, 0.9], [0.5, 0.5, 1.0]
     ]
     for (let i = 0; i < count; i++) {
       const c = palette[Math.floor(Math.random() * palette.length)]
@@ -57,13 +57,18 @@ export class ExplosionSystem {
     this.points = new THREE.Points(geometry, material)
     this.group.add(this.points)
 
-    // 冲击波环（位于相机前方 z=-12 的屏幕特效，面向相机）
+    // 冲击波环（立体化：3 个正交朝向的环，扩散时形成三维球面冲击波）
     this.shockRings = []
+    this.shockOrientations = [
+      new THREE.Euler(Math.PI / 2, 0, 0), // XY 平面（水平）
+      new THREE.Euler(0, Math.PI / 2, 0), // XZ 平面
+      new THREE.Euler(0, 0, 0)            // YZ 平面
+    ]
     for (let i = 0; i < 3; i++) {
       const ring = new THREE.Mesh(
         new THREE.RingGeometry(0.96, 1, 64),
         new THREE.MeshBasicMaterial({
-          color: 0xaac4ff,
+          color: 0x7fa8ff,
           transparent: true,
           side: THREE.DoubleSide,
           depthWrite: false,
@@ -71,6 +76,7 @@ export class ExplosionSystem {
         })
       )
       ring.position.set(0, 0, -12)
+      ring.rotation.copy(this.shockOrientations[i])
       ring.visible = false
       this.group.add(ring)
       this.shockRings.push(ring)
@@ -159,15 +165,14 @@ export class ExplosionSystem {
     this.geometry.attributes.position.needsUpdate = true
   }
 
-  // 冲击波环扩散（progress 0~0.35 期间）
-  updateShockRings(progress, time) {
+  // 冲击波环扩散（progress 0~0.35 期间；保持固定立体朝向，只扩散尺寸与透明度）
+  updateShockRings(progress) {
     this.shockRings.forEach((ring, i) => {
       const rp = progress <= 0.35 ? Math.max(0, (progress - i * 0.06) / 0.3) : 1
       if (progress <= 0.35 && rp > 0 && rp < 1) {
         ring.visible = true
         ring.scale.setScalar(0.5 + rp * 14)
-        ring.material.opacity = (1 - rp) * 0.7
-        ring.rotation.z = time * 0.3 + i
+        ring.material.opacity = (1 - rp) * 0.6
       } else {
         ring.visible = false
       }
@@ -221,11 +226,12 @@ export class ExplosionSystem {
   }
 
   randomSpeed() {
+    // 电磁雾：缓慢弥漫扩散（低速度，形成雾团而非猛烈炸飞）
     const r = Math.random()
-    if (r > 0.95) return Math.random() * 15 + 20
-    if (r > 0.75) return Math.random() * 10 + 10
-    if (r > 0.45) return Math.random() * 6 + 4
-    if (r > 0.15) return Math.random() * 3 + 1
-    return Math.random() * 1 + 0.2
+    if (r > 0.9) return Math.random() * 4 + 5
+    if (r > 0.7) return Math.random() * 3 + 3
+    if (r > 0.4) return Math.random() * 2.5 + 1.5
+    if (r > 0.15) return Math.random() * 1.5 + 0.5
+    return Math.random() * 0.8 + 0.1
   }
 }
