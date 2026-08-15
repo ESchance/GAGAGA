@@ -560,3 +560,27 @@ body {
   0% { top: -12%; }
   100% { top: 112%; }
 }
+
+/* ========================================
+   23. 标题平滑浮现（淡入 + 上移 + 缩放）
+   ======================================== */
+.title-fade-in {
+  animation: titleFadeIn 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.title-fade-in-delayed {
+  opacity: 0;
+  animation: titleFadeIn 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: 0.45s;
+}
+
+@keyframes titleFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

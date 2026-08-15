@@ -33,21 +33,35 @@ export default function IntroAnimation({
   // 假加载进度条（期间并行预加载渲染器 + 科技感字体）
   useEffect(() => {
     // 按需加载 Orbitron / JetBrains Mono 字体（自托管，符合 CSP）
-    Promise.allSettled([
+    // 并等待字体实际下载完成，避免标题先用系统字体显示、随后切换导致"抽动"
+    const fontReady = Promise.allSettled([
       import('@fontsource/orbitron/400.css'),
       import('@fontsource/orbitron/700.css'),
       import('@fontsource/orbitron/900.css'),
       import('@fontsource/jetbrains-mono/400.css'),
       import('@fontsource/jetbrains-mono/500.css')
-    ])
+    ]).then(() => document.fonts.ready).then(() => Promise.all([
+      document.fonts.load('700 72px Orbitron'),
+      document.fonts.load('900 72px Orbitron'),
+      document.fonts.load('400 16px "JetBrains Mono"')
+    ]))
 
     let progress = 0
+    let finished = false
+    const finish = () => {
+      if (finished) return
+      finished = true
+      clearInterval(loadInterval)
+      setIsLoading(false)
+    }
+
     const loadInterval = setInterval(() => {
       progress += Math.random() * 10 + 3
       if (progress >= 100) {
         progress = 100
-        setIsLoading(false)
-        clearInterval(loadInterval)
+        // 字体就绪后才结束加载；最多兜底等待 6 秒
+        fontReady.then(finish).catch(finish)
+        setTimeout(finish, 6000)
       }
       setLoadProgress(Math.min(progress, 100))
     }, 150)
@@ -154,23 +168,25 @@ export default function IntroAnimation({
       {/* 标题 */}
       {!isLoading && showTitle && (
         <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
-          <div className="text-center animate-fade-in relative">
+          <div className="text-center relative">
             {/* 深色遮罩：压暗背景，保证标题清晰可读 */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] aspect-square rounded-full bg-black/60 blur-3xl" />
             <div className="relative">
-              <h1 className="text-5xl md:text-7xl font-bold text-white mb-4" style={{
+              {/* 主标题：平滑浮现（淡入 + 上移 + 缩放） */}
+              <h1 className="title-fade-in text-5xl md:text-7xl font-bold text-white mb-4" style={{
                 textShadow: '0 0 40px rgba(0, 255, 255, 0.6), 0 0 80px rgba(0, 191, 255, 0.3)',
                 fontFamily: 'Orbitron, sans-serif',
                 letterSpacing: '0.2em'
               }}>
                 嘎宇宙
               </h1>
-              <p className="text-cyan-300 text-lg tracking-widest opacity-80" style={{
+              {/* 副标题：错峰淡入，更平缓 */}
+              <p className="title-fade-in-delayed text-cyan-300 text-lg tracking-widest opacity-80" style={{
                 fontFamily: 'JetBrains Mono, monospace'
               }}>
                 GAGA UNIVERSE
               </p>
-              <p className="text-gray-400 text-sm mt-2 tracking-widest">
+              <p className="title-fade-in-delayed text-gray-400 text-sm mt-2 tracking-widest" style={{ animationDelay: '0.7s' }}>
                 初始化宇宙创生协议
               </p>
             </div>
