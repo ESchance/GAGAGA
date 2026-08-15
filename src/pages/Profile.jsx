@@ -8,10 +8,12 @@ import Avatar from '../components/Avatar'
 import AvatarUpload from '../components/AvatarUpload'
 import RaceSelector from '../components/RaceSelector'
 import WorldInfo from '../components/WorldInfo'
+import { useToast } from '../components/Toast'
 
 export default function Profile() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { showToast } = useToast()
   const [profile, setProfile] = useState(null)
   const [worldInfo, setWorldInfo] = useState(null)
   const [posts, setPosts] = useState([])
@@ -116,7 +118,7 @@ export default function Profile() {
       // 跳转到首页
       navigate('/')
     } else {
-      alert('选择种族失败：' + result.error)
+      showToast('选择种族失败：' + result.error, 'error')
     }
   }
 
@@ -129,7 +131,7 @@ export default function Profile() {
       setEditingBackstory(false)
       setProfile(prev => ({ ...prev, custom_backstory: backstoryText }))
     } else {
-      alert('保存失败')
+      showToast('保存失败', 'error')
     }
   }
 

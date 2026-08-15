@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { checkIsAdmin } from '../lib/admin'
+import { useToast } from './Toast'
 
 export default function AnnouncementBar() {
+  const { showToast } = useToast()
   const [announcement, setAnnouncement] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const [user, setUser] = useState(null)
@@ -71,7 +73,7 @@ export default function AnnouncementBar() {
       setShowEditModal(false)
     } catch (error) {
       console.error('保存公告失败:', error)
-      alert('保存失败：' + error.message)
+      showToast('保存失败：' + error.message, 'error')
     } finally {
       setSaving(false)
     }

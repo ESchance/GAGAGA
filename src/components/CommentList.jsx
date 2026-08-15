@@ -3,9 +3,11 @@ import { supabase } from '../lib/supabase'
 import { checkIsAdmin, adminDeleteComment } from '../lib/admin'
 import { RACES } from '../lib/worldbuilding'
 import { validateComment } from '../lib/validation'
+import { useToast } from './Toast'
 import Avatar from './Avatar'
 
 export default function CommentList({ postId, requireRace = false }) {
+  const { showToast } = useToast()
   const [comments, setComments] = useState([])
   const [newComment, setNewComment] = useState('')
   const [loading, setLoading] = useState(false)
@@ -86,7 +88,7 @@ export default function CommentList({ postId, requireRace = false }) {
     // 输入校验
     const commentCheck = validateComment(newComment)
     if (!commentCheck.valid) {
-      alert(commentCheck.message)
+      showToast(commentCheck.message, 'error')
       return
     }
 

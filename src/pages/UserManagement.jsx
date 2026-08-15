@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { getUsersList, toggleAdmin, deleteUser, checkIsSuperAdmin } from '../lib/admin'
 import Avatar from '../components/Avatar'
+import { useToast } from '../components/Toast'
 
 export default function UserManagement() {
   const navigate = useNavigate()
+  const { showToast } = useToast()
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
@@ -42,7 +44,7 @@ export default function UserManagement() {
 
   const handleToggleAdmin = useCallback(async (userId, currentRole) => {
     if (currentRole === 'superadmin') {
-      alert('不能撤销超级管理员的身份')
+      showToast('不能撤销超级管理员的身份', 'warning')
       return
     }
 
@@ -52,18 +54,18 @@ export default function UserManagement() {
         u.id === userId ? { ...u, role: result.newRole } : u
       ))
     } else {
-      alert('操作失败：' + result.error)
+      showToast('操作失败：' + result.error, 'error')
     }
-  }, [])
+  }, [showToast])
 
   const handleDeleteClick = useCallback((userData) => {
     if (userData.role === 'superadmin') {
-      alert('不能删除超级管理员')
+      showToast('不能删除超级管理员', 'warning')
       return
     }
     setSelectedUser(userData)
     setShowDeleteModal(true)
-  }, [])
+  }, [showToast])
 
   const handleDeleteConfirm = useCallback(async () => {
     if (!selectedUser) return
@@ -77,9 +79,9 @@ export default function UserManagement() {
       setShowDeleteModal(false)
       setSelectedUser(null)
     } else {
-      alert('删除失败：' + result.error)
+      showToast('删除失败：' + result.error, 'error')
     }
-  }, [selectedUser])
+  }, [selectedUser, showToast])
 
   const filteredUsers = users.filter(u =>
     u.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||

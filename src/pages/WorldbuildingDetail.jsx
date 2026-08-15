@@ -12,11 +12,13 @@ import {
 } from '../lib/worldbuilding'
 import { checkIsAdmin } from '../lib/admin'
 import { validateComment } from '../lib/validation'
+import { useToast } from '../components/Toast'
 import Avatar from '../components/Avatar'
 
 export default function WorldbuildingDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { showToast } = useToast()
   const [post, setPost] = useState(null)
   const [comments, setComments] = useState([])
   const [loading, setLoading] = useState(true)
@@ -71,7 +73,7 @@ export default function WorldbuildingDetail() {
 
   const handleLike = async () => {
     if (!user) {
-      alert('请先登录')
+      showToast('请先登录', 'info')
       return
     }
 
@@ -98,7 +100,7 @@ export default function WorldbuildingDetail() {
     if (success) {
       navigate('/worldbuilding')
     } else {
-      alert('删除失败，请重试')
+      showToast('删除失败，请重试', 'error')
     }
     setShowDeleteModal(false)
   }
@@ -110,7 +112,7 @@ export default function WorldbuildingDetail() {
     // 输入校验
     const commentCheck = validateComment(newComment)
     if (!commentCheck.valid) {
-      alert(commentCheck.message)
+      showToast(commentCheck.message, 'error')
       return
     }
 

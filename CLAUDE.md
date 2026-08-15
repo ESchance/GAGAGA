@@ -54,8 +54,11 @@ CI 已配置：推送到 GitHub 会自动运行 lint + test + build（`.github/w
 - `src/lib/admin.js` - 管理员功能
 - `src/lib/worldbuilding.js` - 世界观功能
 - `src/lib/validation.js` - 输入校验（发帖/评论/创作/注册统一使用）
+- `src/components/Toast.jsx` - Toast 轻量提示条系统，用法：`const { showToast } = useToast()`，`showToast('消息', 'success'|'error'|'warning'|'info')`
 - `src/pages/UserManagement.jsx` - 用户管理
 - `src/animation/` - 入场动画
+
+> 提示约定：操作结果提示统一用 `showToast`；高风险操作的确认框保留原生 `confirm`（删除帖子/评论）。
 
 ## 数据库表
 

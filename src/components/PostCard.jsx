@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { memo, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { togglePinPost } from '../lib/admin'
+import { useToast } from './Toast'
 import Avatar from './Avatar'
 
 const formatDate = (dateString) => {
@@ -21,6 +22,7 @@ const formatDate = (dateString) => {
 }
 
 const PostCard = memo(function PostCard({ post, onDelete, onPinChange, isAdmin = false, currentUserId = null }) {
+  const { showToast } = useToast()
   const handleDelete = useCallback(async (e) => {
     e.preventDefault()
     e.stopPropagation()
@@ -43,9 +45,9 @@ const PostCard = memo(function PostCard({ post, onDelete, onPinChange, isAdmin =
       if (onDelete) onDelete(post.id)
     } catch (error) {
       console.error('删除帖子失败:', error)
-      alert('删除失败：' + error.message)
+      showToast('删除失败：' + error.message, 'error')
     }
-  }, [currentUserId, isAdmin, post.id, post.user_id, onDelete])
+  }, [currentUserId, isAdmin, post.id, post.user_id, onDelete, showToast])
 
   const handlePin = useCallback(async (e) => {
     e.preventDefault()

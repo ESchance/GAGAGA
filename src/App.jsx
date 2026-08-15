@@ -5,6 +5,7 @@ import ErrorBoundary from './components/ErrorBoundary'
 import AnnouncementModal from './components/AnnouncementModal'
 import IntroAnimation from './animation/IntroAnimation'
 import RaceSelector from './components/RaceSelector'
+import { ToastProvider } from './components/Toast'
 import './index.css'
 
 // 代码分割
@@ -107,6 +108,7 @@ function App() {
   return (
     <ErrorBoundary>
       <Router>
+        <ToastProvider>
         <AnimationManager>
           <AnnouncementModal />
           <div className="min-h-screen">
@@ -128,6 +130,7 @@ function App() {
             </Suspense>
           </div>
         </AnimationManager>
+        </ToastProvider>
       </Router>
     </ErrorBoundary>
   )

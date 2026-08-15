@@ -5,10 +5,12 @@ import { checkIsAdmin, togglePinPost } from '../lib/admin'
 import { RACES } from '../lib/worldbuilding'
 import CommentList from '../components/CommentList'
 import Avatar from '../components/Avatar'
+import { useToast } from '../components/Toast'
 
 export default function PostDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { showToast } = useToast()
   const [post, setPost] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -68,7 +70,7 @@ export default function PostDetail() {
       navigate('/')
     } catch (error) {
       console.error('删除帖子失败:', error)
-      alert('删除失败：' + error.message)
+      showToast('删除失败：' + error.message, 'error')
     }
   }
 
