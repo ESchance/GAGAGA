@@ -41,17 +41,23 @@ export class GalaxyStars {
       uniforms: {
         uTexture: { value: null },
         uTime: { value: 0 },
-        uRadius: { value: radius }
+        uRadius: { value: radius },
+        uCollapse: { value: 0 }
       },
       vertexShader: `
         attribute float aSize;
         attribute float aPhase;
         uniform float uTime;
         uniform float uRadius;
+        uniform float uCollapse;
         varying vec3 vColor;
         varying float vAlpha;
         void main() {
-          // 径向颜色：中心淡蓝 → 边缘暗橙（压低亮度，呈现细小星星而非光球）
+          // 坍缩：银河粒子向屏幕中心前方聚拢（爆炸前参与坍缩）
+          vec3 target = vec3(0.0, 0.0, -60.0);
+          vec3 p = mix(position, target, uCollapse);
+
+          // 径向颜色（基于原位置，坍缩过程颜色不变）
           float r = length(position.xy);
           float t = clamp(r / uRadius, 0.0, 1.0);
           vec3 centerColor = vec3(0.55, 0.62, 0.85);
@@ -61,7 +67,7 @@ export class GalaxyStars {
           float twinkle = 0.55 + 0.3 * sin(uTime * 2.0 + aPhase);
           vAlpha = twinkle * 0.5;
 
-          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          vec4 mvPosition = modelViewMatrix * vec4(p, 1.0);
           float starSize = aSize * (30.0 / max(-mvPosition.z, 0.1)) * twinkle;
           // 相机后方或过近的粒子隐藏；clamp 上限防止近距离粒子变成巨大光球
           if (mvPosition.z > -0.5) {
@@ -94,6 +100,11 @@ export class GalaxyStars {
   // 传入软圆点纹理
   setTexture(texture) {
     this.material.uniforms.uTexture.value = texture
+  }
+
+  // 设置坍缩进度（0=正常银河，1=全部聚拢到中心前方）
+  setCollapse(value) {
+    this.material.uniforms.uCollapse.value = value
   }
 
   update(time) {

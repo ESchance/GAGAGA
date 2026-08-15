@@ -7,6 +7,17 @@ export function renderPhase(phase, ctx) {
   const { timeline, systems, camera, bloom, time, dt } = ctx
   const { stars, singularity, explosion, shake, flash, traverse, nebulae } = systems
 
+  // 银河坍缩：BIRTH 后段收缩成亮点，EXPLOSION 前段重新展开
+  let galaxyCollapse = 0
+  if (phase === PHASES.BIRTH) {
+    const birthP = timeline.getEasedProgress(PHASES.BIRTH)
+    galaxyCollapse = Math.max(0, Math.min(1, (birthP - 0.35) / 0.25))
+  } else if (phase === PHASES.EXPLOSION) {
+    const explP = timeline.getEasedProgress(PHASES.EXPLOSION)
+    galaxyCollapse = Math.max(0, Math.min(1, 1 - explP / 0.3))
+  }
+  if (stars) stars.setCollapse(galaxyCollapse)
+
   // 星空始终更新
   if (stars) stars.update(time)
 
