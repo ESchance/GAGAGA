@@ -5,6 +5,9 @@ export class NebulaVolume {
   constructor({ x, y, z, radius, name, color, softTexture, spriteCount = 50 }) {
     this.name = name
     this.radius = radius
+    this.baseX = x
+    this.baseY = y
+    this.baseZ = z
     this.group = new THREE.Group()
     this.group.position.set(x, y, z)
 
@@ -52,9 +55,12 @@ export class NebulaVolume {
     return { x: u() * 2 - 1, y: u() * 2 - 1, z: u() * 2 - 1 }
   }
 
-  // 缓慢旋转 + 呼吸
+  // 缓慢旋转 + 漂移 + 呼吸，让星云"动起来"
   update(time) {
     this.group.rotation.y = time * 0.05
+    this.group.position.x = this.baseX + Math.sin(time * 0.08) * 2.5
+    this.group.position.y = this.baseY + Math.cos(time * 0.06) * 1.8
+    this.group.position.z = this.baseZ + Math.sin(time * 0.04 + 1) * 1.5
     this.sprites.forEach((s, i) => {
       const breathe = 0.75 + 0.25 * Math.sin(time * 0.6 + i * 0.5)
       s.scale.setScalar(breathe)

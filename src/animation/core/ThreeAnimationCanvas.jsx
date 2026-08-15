@@ -73,6 +73,8 @@ export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady,
     const camera = createCamera()
     camera.aspect = container.clientWidth / container.clientHeight
     camera.updateProjectionMatrix()
+    // 相机加入场景，使其子对象（如全屏光效）可被渲染
+    scene.add(camera)
     state.camera = camera
 
     // 软圆点纹理
@@ -115,18 +117,25 @@ export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady,
     const shake = new CameraShake()
     state.systems.shake = shake
 
-    // 全屏白闪（爆炸闪光 + ENTER 淡出）
-    const flash = new THREE.Mesh(
-      new THREE.PlaneGeometry(2, 2),
-      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, depthTest: false })
+    // 全屏扩散白光（径向渐变光，替代矩形白框；挂在相机上始终全屏）
+    const flash = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        map: softTexture,
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0,
+        depthTest: false,
+        blending: THREE.AdditiveBlending
+      })
     )
-    flash.position.set(0, 0, -1)
+    flash.scale.set(1, 1, 1)
+    flash.position.set(0, 0, -5)
     flash.frustumCulled = false
     flash.renderOrder = 999
     flash.visible = false
-    scene.add(flash)
+    camera.add(flash)
     state.systems.flash = flash
-    state.disposables.push(flash.geometry, flash.material)
+    state.disposables.push(flash.material)
 
     // 星云簇中心 + 星云体积（复用 2D 命名与配色，HUD 显示一致）
     state.nebulaCenters = generateNebulaCenters(quality === 'high' ? 6 : 4)
@@ -157,9 +166,11 @@ export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady,
         })
     }
 
-    // 星云悬停检测（屏幕投影）
+    // 星云悬停检测（屏幕投影；仅 BUTTON 阶段 + 状态变化时才回调，避免高频重渲染导致画面抽搐）
     const tempVec = new THREE.Vector3()
+    let lastHovered = null
     const handlePointerMove = (e) => {
+      if (timeline.currentPhase !== PHASES.BUTTON) return
       const rect = container.getBoundingClientRect()
       const mx = e.clientX - rect.left
       const my = e.clientY - rect.top
@@ -174,7 +185,10 @@ export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady,
           hovered = n.name
         }
       }
-      onNebulaHover?.(hovered)
+      if (hovered !== lastHovered) {
+        lastHovered = hovered
+        onNebulaHover?.(hovered)
+      }
     }
     window.addEventListener('pointermove', handlePointerMove)
 
@@ -192,12 +206,16 @@ export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady,
       // 相机震动衰减
       shake.update(dt)
 
-      // 奇点只在 BIRTH 可见
-      singularity.group.visible = phase === PHASES.BIRTH
+      // 奇点：DARKNESS 起即淡显，BIRTH 渐亮（平滑过渡，不再瞬切）
+      singularity.group.visible =
+        phase === PHASES.DARKNESS || phase === PHASES.BIRTH
 
-      // 星云只在后段阶段可见
-      const showNebulae =
+      // 星云：爆炸吸聚后期开始成形，后段阶段可见
+      let showNebulae =
         phase === PHASES.BUTTON || phase === PHASES.FAST_TRAVERSE || phase === PHASES.ENTER
+      if (phase === PHASES.EXPLOSION) {
+        showNebulae = timeline.getEasedProgress(PHASES.EXPLOSION) > 0.5
+      }
       nebulae.forEach((n) => {
         n.group.visible = showNebulae
       })

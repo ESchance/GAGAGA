@@ -19,7 +19,7 @@ export class TraverseField {
     geometry.setAttribute('position', new THREE.BufferAttribute(this.positions, 3))
     this.geometry = geometry
     const material = new THREE.PointsMaterial({
-      size: 2,
+      size: 1.5,
       map: softTexture,
       color: 0x88ccff,
       blending: THREE.AdditiveBlending,
@@ -38,7 +38,7 @@ export class TraverseField {
     const lineMat = new THREE.LineBasicMaterial({
       color: 0xaaddff,
       transparent: true,
-      opacity: 0.55,
+      opacity: 0.35,
       blending: THREE.AdditiveBlending,
       depthWrite: false
     })
@@ -58,9 +58,10 @@ export class TraverseField {
   }
 
   // 穿梭：粒子向相机（z 增大）移动，穿过 z>-2 重置
+  // 速度降低约 40%，更接近"巡航"而非一闪而过
   update(dt, speedScale = 1) {
     const pos = this.positions
-    const v = (1.2 + 6 * speedScale) * (dt / 16)
+    const v = (0.5 + 2.5 * speedScale) * (dt / 16)
     for (let i = 0; i < this.count; i++) {
       pos[i * 3 + 2] += v * this.speeds[i]
       if (pos[i * 3 + 2] > -2) {
