@@ -9,10 +9,11 @@ export class ExplosionSystem {
     this.count = count
     this.group = new THREE.Group()
 
-    // 粒子从中心向球壳目标点扩散
+    // 粒子从中心向球壳目标点扩散（扩散速度各不相同，无序散布，避免同心/银河结构）
     this.dir = new Float32Array(count * 3)   // 随机单位方向
     this.targetR = new Float32Array(count)   // 目标半径
     this.delay = new Float32Array(count)
+    this.duration = new Float32Array(count)  // 每个粒子的扩散时长（随机，造成无序）
     this.active = new Uint8Array(count)
     this.finished = new Uint8Array(count)
 
@@ -27,7 +28,9 @@ export class ExplosionSystem {
       this.targetR[i] = Math.random() < 0.85
         ? 30 + Math.random() * 40
         : 130 + Math.random() * 60
-      this.delay[i] = Math.random() * 250
+      this.delay[i] = Math.random() * 300
+      // 扩散时长随机（0.6s~2.4s），粒子快慢不一，无序弥漫
+      this.duration[i] = 600 + Math.random() * 1800
     }
 
     const geometry = new THREE.BufferGeometry()
@@ -83,8 +86,8 @@ export class ExplosionSystem {
       if (!this.active[i] || this.finished[i]) continue
 
       const ix = i * 3
-      // 扩散进度：从中心到目标，easeOut 加速扩散
-      const t = Math.min(1, (elapsed - this.delay[i]) / 1400)
+      // 扩散进度：每粒子时长随机，easeOut 加速扩散（无序散布）
+      const t = Math.min(1, (elapsed - this.delay[i]) / this.duration[i])
       const eased = 1 - (1 - t) * (1 - t)
       const r = this.targetR[i] * eased
       pos[ix] = this.dir[ix] * r
