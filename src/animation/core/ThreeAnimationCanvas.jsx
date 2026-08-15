@@ -217,9 +217,10 @@ export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady,
         n.group.visible = showNebulae
       })
 
-      // 穿梭粒子只在穿梭阶段可见（避免"预留粒子"从开头就显示而一直不动）
+      // 穿梭粒子：从穿梭阶段到探索按钮阶段一直保持存在
       traverse.group.visible =
         phase === PHASES.TRAVERSE ||
+        phase === PHASES.BUTTON ||
         phase === PHASES.FAST_TRAVERSE ||
         phase === PHASES.ENTER
 

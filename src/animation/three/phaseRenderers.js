@@ -86,7 +86,11 @@ export function renderPhase(phase, ctx) {
     }
 
     case PHASES.BUTTON: {
-      if (traverse) traverse.hideLines()
+      // 穿梭粒子保持存在并继续巡航
+      if (traverse) {
+        traverse.update(dt, 1)
+        traverse.hideLines()
+      }
       if (nebulae) {
         nebulae.forEach((n) => {
           n.group.scale.setScalar(1)
