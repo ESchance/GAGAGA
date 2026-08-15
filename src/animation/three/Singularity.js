@@ -91,8 +91,8 @@ export class Singularity {
     this.group.add(halo)
     this.halo = halo
 
-    // 粒子感光晕：三维球壳分布，无光晕的实心小点，更近更多，立体包裹核心
-    const haloCount = 320
+    // 粒子感光晕：三维球壳分布，无光晕的实心小点，更小更多，立体包裹核心
+    const haloCount = 500
     const haloPositions = new Float32Array(haloCount * 3)
     const haloSizes = new Float32Array(haloCount)
     for (let i = 0; i < haloCount; i++) {
@@ -103,7 +103,7 @@ export class Singularity {
       haloPositions[i * 3] = Math.cos(theta) * Math.sin(phi) * radius
       haloPositions[i * 3 + 1] = Math.sin(theta) * Math.sin(phi) * radius
       haloPositions[i * 3 + 2] = Math.cos(phi) * radius
-      haloSizes[i] = 0.3 + Math.random() * 0.5
+      haloSizes[i] = 0.2 + Math.random() * 0.3
     }
     const haloGeo = new THREE.BufferGeometry()
     haloGeo.setAttribute('position', new THREE.BufferAttribute(haloPositions, 3))
