@@ -91,21 +91,21 @@ export class Singularity {
     this.group.add(halo)
     this.halo = halo
 
-    // 粒子感光晕：密集微小白粒子贴近核心环绕，数量多、尺寸小，形成光晕质感
-    const haloCount = 90
+    // 粒子感光晕：更小、更贴近核心、数量更多的微小白粒子，形成细腻光晕
+    const haloCount = 160
     const haloPositions = new Float32Array(haloCount * 3)
     for (let i = 0; i < haloCount; i++) {
-      const angle = (i / haloCount) * Math.PI * 2 + Math.random() * 0.2
-      // 半径小而集中，紧贴核心
-      const radius = 2.2 + Math.random() * 1.6
+      const angle = (i / haloCount) * Math.PI * 2 + Math.random() * 0.15
+      // 半径更小更集中，紧贴核心
+      const radius = 1.6 + Math.random() * 1.2
       haloPositions[i * 3] = Math.cos(angle) * radius
       haloPositions[i * 3 + 1] = Math.sin(angle) * radius * 0.72
-      haloPositions[i * 3 + 2] = (Math.random() - 0.5) * 1.2
+      haloPositions[i * 3 + 2] = (Math.random() - 0.5) * 1.0
     }
     const haloGeo = new THREE.BufferGeometry()
     haloGeo.setAttribute('position', new THREE.BufferAttribute(haloPositions, 3))
     const haloMat = new THREE.PointsMaterial({
-      size: 0.55,
+      size: 0.35,
       map: softTexture || null,
       color: 0xffffff,
       transparent: true,
