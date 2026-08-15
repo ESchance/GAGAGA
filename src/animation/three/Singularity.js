@@ -87,24 +87,25 @@ export class Singularity {
       })
     )
     halo.position.set(0, 0, -20) // 与坍缩目标重合
-    halo.scale.set(2.2, 2.2, 1)
+    halo.scale.set(3.5, 3.5, 1)
     this.group.add(halo)
     this.halo = halo
 
-    // 粒子感光晕：一圈微小白粒子环绕核心亮点，随光晕一同呼吸旋转
-    const haloCount = 36
+    // 粒子感光晕：密集微小白粒子贴近核心环绕，数量多、尺寸小，形成光晕质感
+    const haloCount = 90
     const haloPositions = new Float32Array(haloCount * 3)
     for (let i = 0; i < haloCount; i++) {
-      const angle = (i / haloCount) * Math.PI * 2
-      const radius = 3.2 + Math.random() * 2.5
+      const angle = (i / haloCount) * Math.PI * 2 + Math.random() * 0.2
+      // 半径小而集中，紧贴核心
+      const radius = 2.2 + Math.random() * 1.6
       haloPositions[i * 3] = Math.cos(angle) * radius
       haloPositions[i * 3 + 1] = Math.sin(angle) * radius * 0.72
-      haloPositions[i * 3 + 2] = (Math.random() - 0.5) * 1.6
+      haloPositions[i * 3 + 2] = (Math.random() - 0.5) * 1.2
     }
     const haloGeo = new THREE.BufferGeometry()
     haloGeo.setAttribute('position', new THREE.BufferAttribute(haloPositions, 3))
     const haloMat = new THREE.PointsMaterial({
-      size: 1.3,
+      size: 0.55,
       map: softTexture || null,
       color: 0xffffff,
       transparent: true,
@@ -136,7 +137,7 @@ export class Singularity {
       this.halo.material.opacity = haloOpacity
       // 核心光点略微呼吸，增强"蓄势"感
       const breathe = 0.85 + 0.15 * Math.sin(time * 3.0)
-      this.halo.scale.setScalar(2.2 * breathe)
+      this.halo.scale.setScalar(3.5 * breathe)
     }
     // 粒子感光晕：围绕核心的微小白粒子渐显、缓慢旋转
     if (this.haloParticles) {
