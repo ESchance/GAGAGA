@@ -19,7 +19,7 @@ export class NebulaVolume {
         map: softTexture,
         color,
         transparent: true,
-        opacity: 0.12 + Math.random() * 0.26,
+        opacity: 0.1 + Math.random() * 0.2,
         depthWrite: false,
         blending: THREE.AdditiveBlending
       })
@@ -27,7 +27,7 @@ export class NebulaVolume {
       sprite.scale.set(size, size, 1)
       sprite.position.set(offset.x * radius, offset.y * radius, offset.z * radius * 0.6)
       this.group.add(sprite)
-      this.sprites.push(sprite)
+      this.sprites.push({ sprite, baseScale: size })
     }
 
     // 外圈大光晕壳（更大更淡）
@@ -61,14 +61,14 @@ export class NebulaVolume {
     this.group.position.x = this.baseX + Math.sin(time * 0.08) * 2.5
     this.group.position.y = this.baseY + Math.cos(time * 0.06) * 1.8
     this.group.position.z = this.baseZ + Math.sin(time * 0.04 + 1) * 1.5
-    this.sprites.forEach((s, i) => {
-      const breathe = 0.75 + 0.25 * Math.sin(time * 0.6 + i * 0.5)
-      s.scale.setScalar(breathe)
+    this.sprites.forEach((entry, i) => {
+      const breathe = 0.78 + 0.22 * Math.sin(time * 0.6 + i * 0.5)
+      entry.sprite.scale.set(entry.baseScale * breathe, entry.baseScale * breathe, 1)
     })
   }
 
   dispose() {
-    this.sprites.forEach((s) => s.material.dispose())
+    this.sprites.forEach((entry) => entry.sprite.material.dispose())
     this.shells.forEach((s) => s.material.dispose())
   }
 }

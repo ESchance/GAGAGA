@@ -1,23 +1,23 @@
 import * as THREE from 'three'
 
-// BIRTH 阶段：中心聚集的柔和粒子群（替代刺眼的实心发光白球）
-// 光点云在中心聚拢、轻微呼吸，光感柔和不刺眼
+// BIRTH 阶段：中心一圈清晰的蓝色小粒子（非发光光球）
+// 使用普通混合（NormalBlending），粒子叠加不增亮，保持"粒子云"质感
 export class Singularity {
-  constructor(count = 600, softTexture) {
+  constructor(count = 200, softTexture) {
     this.group = new THREE.Group()
     this.count = count
 
     const positions = new Float32Array(count * 3)
     const sizes = new Float32Array(count)
     for (let i = 0; i < count; i++) {
-      // 分散分布（半径大），形成稀疏星点而非光球
-      const r = Math.pow(Math.random(), 1 / 3) * 10
+      // 球壳分布（中心空心），形成"一圈/一簇"粒子而非实心光团
+      const r = 8 + Math.random() * 8
       const theta = Math.random() * Math.PI * 2
       const phi = Math.acos(2 * Math.random() - 1)
       positions[i * 3] = r * Math.sin(phi) * Math.cos(theta)
       positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta)
       positions[i * 3 + 2] = r * Math.cos(phi)
-      sizes[i] = 0.3 + Math.random() * 0.6
+      sizes[i] = 0.35 + Math.random() * 0.5
     }
 
     const geometry = new THREE.BufferGeometry()
@@ -35,30 +35,28 @@ export class Singularity {
         attribute float aSize;
         uniform float uTime;
         uniform float uProgress;
-        varying vec3 vColor;
         varying float vAlpha;
         void main() {
-          // 暗淡的冷色星点，透明度很低
-          vColor = mix(vec3(0.55, 0.65, 0.9), vec3(0.85, 0.82, 0.8), uProgress);
-          float breathe = 0.6 + 0.25 * sin(uTime * 2.5 + position.x * 2.0 + position.y * 1.5);
-          vAlpha = breathe * (0.15 + 0.25 * uProgress);
+          // 蓝色系小粒子，透明度低且随进度渐显
+          float breathe = 0.85 + 0.15 * sin(uTime * 2.0 + position.x * 1.5);
+          vAlpha = breathe * (0.04 + 0.38 * uProgress);
           vec4 mv = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = aSize * (90.0 / max(-mv.z, 0.1)) * breathe * (0.5 + 0.5 * uProgress);
+          gl_PointSize = aSize * (90.0 / max(-mv.z, 0.1)) * breathe;
           gl_Position = projectionMatrix * mv;
         }
       `,
       fragmentShader: `
         uniform sampler2D uTexture;
-        varying vec3 vColor;
         varying float vAlpha;
         void main() {
           vec4 tex = texture2D(uTexture, gl_PointCoord);
-          gl_FragColor = vec4(vColor, tex.a * vAlpha);
+          // 蓝色粒子
+          gl_FragColor = vec4(0.42, 0.62, 1.0, tex.a * vAlpha);
         }
       `,
       transparent: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending
+      depthWrite: false
+      // 默认 NormalBlending：粒子叠加不增亮，避免形成光球
     })
     this.material = material
 
@@ -69,7 +67,7 @@ export class Singularity {
   update(time, progress) {
     this.material.uniforms.uTime.value = time
     this.material.uniforms.uProgress.value = progress
-    this.group.rotation.z = time * 0.08
+    this.group.rotation.z = time * 0.04
   }
 
   dispose() {
