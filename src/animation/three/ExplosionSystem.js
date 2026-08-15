@@ -57,23 +57,35 @@ export class ExplosionSystem {
     this.points = new THREE.Points(geometry, material)
     this.group.add(this.points)
 
-    // 单个斜向冲击波环：倾斜立体扩散，并向相机扑面推进（纤细环，非实心盘）
-    this.shockRings = []
-    const ring = new THREE.Mesh(
-      new THREE.RingGeometry(0.95, 1, 64),
-      new THREE.MeshBasicMaterial({
-        color: 0x7fa8ff,
-        transparent: true,
-        side: THREE.DoubleSide,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending
-      })
-    )
-    ring.rotation.set(Math.PI * 0.32, Math.PI * 0.1, 0)
-    ring.position.set(0, 0, -8)
-    ring.visible = false
-    this.group.add(ring)
-    this.shockRings.push(ring)
+    // 尘土扑面：半透明尘埃粒子，扬起→扑面→停留（替代实心环）
+    this.dustCount = 420
+    this.dustPositions = new Float32Array(this.dustCount * 3)
+    this.dustVelocities = new Float32Array(this.dustCount * 3)
+    this.dustDelay = new Float32Array(this.dustCount)
+    this.dustActive = new Uint8Array(this.dustCount)
+    for (let i = 0; i < this.dustCount; i++) {
+      const theta = Math.random() * Math.PI * 2
+      const spread = 0.05 + Math.random() * 0.2
+      this.dustVelocities[i * 3] = Math.cos(theta) * spread
+      this.dustVelocities[i * 3 + 1] = (Math.random() - 0.35) * 0.25 // 微微上扬
+      this.dustVelocities[i * 3 + 2] = 0.25 + Math.random() * 0.65   // 向镜头扑面
+      this.dustDelay[i] = Math.random() * 400
+    }
+    const dustGeo = new THREE.BufferGeometry()
+    dustGeo.setAttribute('position', new THREE.BufferAttribute(this.dustPositions, 3))
+    this.dustGeometry = dustGeo
+    this.dustMaterial = new THREE.PointsMaterial({
+      size: 2.6,
+      color: 0x9fb4cc, // 淡灰蓝尘土色，半透明
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true
+    })
+    this.dustPoints = new THREE.Points(dustGeo, this.dustMaterial)
+    this.dustPoints.visible = false
+    this.group.add(this.dustPoints)
 
     this.exploded = false
     this.attractTriggered = false
@@ -86,6 +98,7 @@ export class ExplosionSystem {
 
   explode() {
     this.exploded = true
+    if (this.dustPoints) this.dustPoints.visible = true
   }
 
   // 设置吸聚目标（星云簇中心数组 [{x,y,z}]）
@@ -156,22 +169,46 @@ export class ExplosionSystem {
       }
     }
     this.geometry.attributes.position.needsUpdate = true
+    this.updateDust(elapsed, dt)
   }
 
-  // 冲击波扩散：向相机扑面推进并放大，掠过屏幕；单环斜向立体
-  updateShockRings(progress) {
-    const ring = this.shockRings[0]
-    if (!ring) return
-    const rp = progress <= 0.4 ? Math.max(0, progress / 0.35) : 1
-    if (progress <= 0.4 && rp > 0 && rp < 1) {
-      ring.visible = true
-      // 从远处向相机逼近（z 增大）并放大，形成扑面感
-      ring.position.z = -14 + rp * 13
-      ring.scale.setScalar(0.4 + rp * 3.5)
-      ring.material.opacity = (1 - rp) * 0.65
-    } else {
-      ring.visible = false
+  // 尘土扑面：扬起→扑面→停留，半透明尘埃
+  updateDust(elapsed, dt) {
+    if (!this.dustPoints) return
+    const f = dt / 16
+    const pos = this.dustPositions
+    const vel = this.dustVelocities
+    // 错峰扬起
+    for (let i = 0; i < this.dustCount; i++) {
+      if (!this.dustActive[i] && elapsed >= this.dustDelay[i]) {
+        this.dustActive[i] = 1
+      }
     }
+    // 扑面推进 + 停留减速
+    for (let i = 0; i < this.dustCount; i++) {
+      if (!this.dustActive[i]) continue
+      const ix = i * 3
+      pos[ix] += vel[ix] * f
+      pos[ix + 1] += vel[ix + 1] * f
+      pos[ix + 2] += vel[ix + 2] * f * 1.6
+      // 贴近镜头时减速（停留）
+      if (pos[ix + 2] > 0) {
+        vel[ix] *= 0.985
+        vel[ix + 1] *= 0.985
+        vel[ix + 2] *= 0.985
+      }
+      // 穿过镜头后隐藏
+      if (pos[ix + 2] > 2.5) {
+        pos[ix] = 9999
+        pos[ix + 1] = 9999
+        pos[ix + 2] = 9999
+        this.dustActive[i] = 0
+      }
+    }
+    this.dustGeometry.attributes.position.needsUpdate = true
+    // 透明度：扬起渐显 → 扑面保持 → 停留渐隐（半透明尘土感）
+    const phase = Math.min(1, elapsed / 2600)
+    this.dustMaterial.opacity = Math.max(0, Math.sin(phase * Math.PI) * 0.45)
   }
 
   // 快速淡出所有粒子（星云成形后融入，避免吸聚粒子静止成"一圈不动"）
@@ -181,7 +218,7 @@ export class ExplosionSystem {
     }
   }
 
-  // 立即隐藏所有粒子
+  // 立即隐藏所有粒子（含尘土）
   clear() {
     const pos = this.positions
     for (let i = 0; i < this.count; i++) {
@@ -193,15 +230,19 @@ export class ExplosionSystem {
       }
     }
     this.geometry.attributes.position.needsUpdate = true
+    if (this.dustPoints) {
+      this.dustPoints.visible = false
+      this.dustPositions.fill(9999)
+      this.dustActive.fill(0)
+      this.dustGeometry.attributes.position.needsUpdate = true
+    }
   }
 
   dispose() {
     this.geometry.dispose()
     this.material.dispose()
-    this.shockRings.forEach((r) => {
-      r.geometry.dispose()
-      r.material.dispose()
-    })
+    if (this.dustGeometry) this.dustGeometry.dispose()
+    if (this.dustMaterial) this.dustMaterial.dispose()
   }
 
   randomDelay() {

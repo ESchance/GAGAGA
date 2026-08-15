@@ -50,7 +50,6 @@ export function renderPhase(phase, ctx) {
       const elapsed = time * 1000 - ctx.state.explosionStart
       if (explosion) {
         explosion.update(elapsed, dt)
-        explosion.updateShockRings(progress)
         if (progress > 0.3) {
           explosion.setAttractTargets(ctx.nebulaCenters)
         }
