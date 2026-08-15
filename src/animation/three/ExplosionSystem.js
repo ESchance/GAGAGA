@@ -7,10 +7,9 @@ export class ExplosionSystem {
     this.count = count
     this.group = new THREE.Group()
 
-    // 每个粒子：先球状立体炸开，再收拢到旋涡银河目标点（旋臂结构）
-    this.dir3D = new Float32Array(count * 3)  // 球状炸开的 3D 方向
-    this.ballR = new Float32Array(count)       // 球状炸开半径
-    this.target = new Float32Array(count * 3)  // 旋臂目标
+    // 炸开即为银河：大部分粒子直接飞向旋臂银河目标，少部分飞出屏幕
+    this.target = new Float32Array(count * 3)  // 目标位置
+    this.flyOut = new Uint8Array(count)         // 是否飞出屏幕
     this.delay = new Float32Array(count)
     this.duration = new Float32Array(count)
     this.active = new Uint8Array(count)
@@ -19,24 +18,27 @@ export class ExplosionSystem {
     const arms = 3
     const positions = new Float32Array(count * 3)
     for (let i = 0; i < count; i++) {
-      // 球状炸开方向（3D 全向）
-      const btheta = Math.random() * Math.PI * 2
-      const bphi = Math.acos(2 * Math.random() - 1)
-      this.dir3D[i * 3] = Math.sin(bphi) * Math.cos(btheta)
-      this.dir3D[i * 3 + 1] = Math.sin(bphi) * Math.sin(btheta)
-      this.dir3D[i * 3 + 2] = Math.cos(bphi)
-      this.ballR[i] = 20 + Math.random() * 35
-
-      // 旋臂目标：XY 平面盘（正面朝向），旋臂螺旋清晰
-      const u = Math.random()
-      const r = 12 + Math.pow(u, 0.55) * 52 // 半径 12~64
-      const arm = i % arms
-      const theta = r * 0.6 + (arm * Math.PI * 2) / arms + (Math.random() - 0.5) * 0.55
-      this.target[i * 3] = r * Math.cos(theta)
-      this.target[i * 3 + 1] = r * Math.sin(theta)
-      this.target[i * 3 + 2] = -38 - Math.random() * 12
-      this.delay[i] = Math.random() * 300
-      this.duration[i] = 700 + Math.random() * 1800
+      this.delay[i] = Math.random() * 250
+      this.duration[i] = 800 + Math.random() * 1600
+      if (Math.random() < 0.2) {
+        // 20% 飞出屏幕：随机 3D 方向，半径很大
+        this.flyOut[i] = 1
+        const bt = Math.random() * Math.PI * 2
+        const bp = Math.acos(2 * Math.random() - 1)
+        const d = 150 + Math.random() * 60
+        this.target[i * 3] = Math.sin(bp) * Math.cos(bt) * d
+        this.target[i * 3 + 1] = Math.sin(bp) * Math.sin(bt) * d
+        this.target[i * 3 + 2] = Math.cos(bp) * d - 40
+      } else {
+        // 80% 旋臂银河：XY 平面盘，正面朝向的漩涡
+        const u = Math.random()
+        const r = 12 + Math.pow(u, 0.55) * 52 // 半径 12~64
+        const arm = i % arms
+        const theta = r * 0.6 + (arm * Math.PI * 2) / arms + (Math.random() - 0.5) * 0.4
+        this.target[i * 3] = r * Math.cos(theta)
+        this.target[i * 3 + 1] = r * Math.sin(theta)
+        this.target[i * 3 + 2] = -38 - Math.random() * 10
+      }
     }
 
     const geometry = new THREE.BufferGeometry()
@@ -90,19 +92,22 @@ export class ExplosionSystem {
       }
       if (!this.active[i] || this.finished[i]) continue
       const ix = i * 3
-      // 阶段1：球状立体炸开（0~0.5s，从中心向 3D 球面扩散，避免聚集光球）
-      const t1 = Math.min(1, elapsed / 500)
-      const ballEase = 1 - (1 - t1) * (1 - t1)
-      const bx = this.dir3D[ix] * this.ballR[i] * ballEase
-      const by = this.dir3D[ix + 1] * this.ballR[i] * ballEase
-      const bz = this.dir3D[ix + 2] * this.ballR[i] * ballEase
-      // 阶段2：从球面收拢聚成旋臂银河（0.5s 后，平滑过渡到旋臂目标）
-      const t2 = Math.max(0, Math.min(1, (elapsed - 500) / 1800))
-      const k2 = t2 * t2 * (3 - 2 * t2) // smoothstep
-      pos[ix] = bx + (this.target[ix] - bx) * k2
-      pos[ix + 1] = by + (this.target[ix + 1] - by) * k2
-      pos[ix + 2] = bz + (this.target[ix + 2] - bz) * k2
-      if (t2 >= 1) this.finished[i] = 1
+      // 直接从中心扩散到目标（炸开即为银河成形）
+      const t = Math.min(1, (elapsed - this.delay[i]) / this.duration[i])
+      const k = 1 - (1 - t) * (1 - t)
+      pos[ix] = this.target[ix] * k
+      pos[ix + 1] = this.target[ix + 1] * k
+      pos[ix + 2] = this.target[ix + 2] * k
+      if (t >= 1) {
+        if (this.flyOut[i]) {
+          // 飞出屏幕的粒子隐藏
+          pos[ix] = 9999
+          pos[ix + 1] = 9999
+          pos[ix + 2] = 9999
+          this.active[i] = 0
+        }
+        this.finished[i] = 1
+      }
     }
     this.geometry.attributes.position.needsUpdate = true
   }

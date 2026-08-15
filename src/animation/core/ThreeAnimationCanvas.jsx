@@ -93,8 +93,8 @@ export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady,
     state.systems.stars = stars
     state.disposables.push(stars)
 
-    // 奇点（中心稀疏星点，刻意少而暗，避免形成光球）
-    const singularity = new Singularity(quality === 'high' ? 150 : 80, softTexture)
+    // 奇点（中心蓝色粒子群，数量适中）
+    const singularity = new Singularity(quality === 'high' ? 400 : 200, softTexture)
     singularity.group.visible = false
     scene.add(singularity.group)
     state.systems.singularity = singularity
@@ -107,8 +107,8 @@ export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady,
     state.systems.explosion = explosion
     state.disposables.push(explosion)
 
-    // 穿梭粒子场
-    const traverse = new TraverseField(quality === 'high' ? 1200 : 600, softTexture)
+    // 穿梭粒子场（数量稀疏）
+    const traverse = new TraverseField(quality === 'high' ? 600 : 300, softTexture)
     scene.add(traverse.group)
     state.systems.traverse = traverse
     state.disposables.push(traverse)

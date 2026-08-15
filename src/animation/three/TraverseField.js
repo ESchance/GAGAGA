@@ -19,9 +19,9 @@ export class TraverseField {
     geometry.setAttribute('position', new THREE.BufferAttribute(this.positions, 3))
     this.geometry = geometry
     const material = new THREE.PointsMaterial({
-      size: 1.5,
+      size: 0.8,
       map: softTexture,
-      color: 0x88ccff,
+      color: 0x6b9eff, // 与奇点粒子相近的蓝色，更小
       blending: THREE.AdditiveBlending,
       depthWrite: false,
       transparent: true
@@ -58,10 +58,10 @@ export class TraverseField {
   }
 
   // 穿梭：粒子向相机（z 增大）移动，穿过 z>-2 重置
-  // 速度降低约 40%，更接近"巡航"而非一闪而过
+  // 速度进一步降低，缓慢巡航
   update(dt, speedScale = 1) {
     const pos = this.positions
-    const v = (0.5 + 2.5 * speedScale) * (dt / 16)
+    const v = (0.25 + 1.2 * speedScale) * (dt / 16)
     for (let i = 0; i < this.count; i++) {
       pos[i * 3 + 2] += v * this.speeds[i]
       if (pos[i * 3 + 2] > -2) {

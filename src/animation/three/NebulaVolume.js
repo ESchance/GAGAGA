@@ -19,7 +19,7 @@ export class NebulaVolume {
         map: softTexture,
         color,
         transparent: true,
-        opacity: 0.1 + Math.random() * 0.2,
+        opacity: 0.04 + Math.random() * 0.08,
         depthWrite: false,
         blending: THREE.AdditiveBlending
       })
@@ -37,7 +37,7 @@ export class NebulaVolume {
         map: softTexture,
         color,
         transparent: true,
-        opacity: 0.06,
+        opacity: 0.025,
         depthWrite: false,
         blending: THREE.AdditiveBlending
       })
