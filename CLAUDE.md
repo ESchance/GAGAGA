@@ -8,6 +8,16 @@ npm install
 npm run dev
 ```
 
+## 质量检查
+
+```bash
+npm run lint    # 代码检查（oxlint）
+npm run test    # 单元测试（vitest，src/lib/*.test.js）
+npm run build   # 生产构建
+```
+
+CI 已配置：推送到 GitHub 会自动运行 lint + test + build（`.github/workflows/ci.yml`）。
+
 ## 项目信息
 
 - **网站**: https://gagaga-d99.pages.dev

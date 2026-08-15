@@ -1,10 +1,14 @@
 -- 修改编号生成函数，避开不吉利数字 4 和 44
+-- v2: 增加咨询锁，防止并发下两人同时选种族拿到相同编号
 CREATE OR REPLACE FUNCTION get_next_member_code()
 RETURNS TEXT AS $$
 DECLARE
   next_number INTEGER;
   new_code TEXT;
 BEGIN
+  -- 咨询锁：保证同一时刻只有一个请求在计算编号（事务结束自动释放）
+  PERFORM pg_advisory_xact_lock(hashtext('member_code_generation'));
+
   -- 获取当前最大编号
   SELECT COALESCE(MAX(CAST(SUBSTRING(code FROM 5) AS INTEGER)), 0) + 1
   INTO next_number

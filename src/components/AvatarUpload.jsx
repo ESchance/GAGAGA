@@ -22,9 +22,18 @@ export default function AvatarUpload({ userId, currentAvatarUrl, onAvatarUpdate 
         throw new Error('用户未登录，无法上传头像')
       }
 
+      // 允许的图片扩展名白名单（防止伪装文件）
+      const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp']
+
       // 检查文件类型
       if (!file.type.startsWith('image/')) {
         throw new Error('请上传图片文件')
+      }
+
+      // 检查扩展名
+      const fileExt = (file.name.split('.').pop() || '').toLowerCase()
+      if (!ALLOWED_EXTENSIONS.includes(fileExt)) {
+        throw new Error('仅支持 JPG、PNG、GIF、WEBP 格式')
       }
 
       // 检查文件大小（最大 2MB）
@@ -33,7 +42,6 @@ export default function AvatarUpload({ userId, currentAvatarUrl, onAvatarUpdate 
       }
 
       // 生成文件名
-      const fileExt = file.name.split('.').pop()
       const fileName = `${userId}/${Date.now()}.${fileExt}`
 
       // 上传文件

@@ -4,7 +4,7 @@
  */
 
 // 最大长度限制
-const MAX_LENGTHS = {
+export const MAX_LENGTHS = {
   username: 20,
   email: 254,
   title: 100,
