@@ -74,6 +74,22 @@ export class Singularity {
 
     this.points = new THREE.Points(geometry, material)
     this.group.add(this.points)
+
+    // 中心白色光晕：坍缩成亮点时显示（小巧柔和）
+    const halo = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        map: softTexture || null,
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+      })
+    )
+    halo.position.set(0, 0, -20) // 与坍缩目标重合
+    halo.scale.set(5, 5, 1)
+    this.group.add(halo)
+    this.halo = halo
   }
 
   update(time, progress) {
@@ -84,6 +100,15 @@ export class Singularity {
     const collapse = Math.max(0, Math.min(1, (progress - 0.3) / 0.4))
     this.material.uniforms.uCollapse.value = collapse
     this.group.rotation.z = time * 0.04
+
+    // 白色光晕随坍缩渐显（坍缩完成、亮点停顿时刻最明显；小巧柔和不过曝）
+    if (this.halo) {
+      const haloOpacity = collapse * collapse * 0.5
+      this.halo.material.opacity = haloOpacity
+      // 光晕略微呼吸，增强"蓄势"感
+      const breathe = 0.85 + 0.15 * Math.sin(time * 3.0)
+      this.halo.scale.setScalar(5 * breathe)
+    }
 
     // CPU 确定性更新粒子位置：从球壳向中心前方 (0,0,-20) 插值收缩
     const targetZ = -20
@@ -100,5 +125,6 @@ export class Singularity {
   dispose() {
     this.geometry.dispose()
     this.material.dispose()
+    if (this.halo) this.halo.material.dispose()
   }
 }
