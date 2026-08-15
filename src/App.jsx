@@ -3,7 +3,6 @@ import { lazy, Suspense, useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
 import ErrorBoundary from './components/ErrorBoundary'
 import AnnouncementModal from './components/AnnouncementModal'
-import PetFloatButton from './components/PetFloatButton'
 import IntroAnimation from './animation/IntroAnimation'
 import RaceSelector from './components/RaceSelector'
 import { supabase } from './lib/supabase'
@@ -121,7 +120,6 @@ function App() {
       <Router>
         <AnimationManager>
           <AnnouncementModal />
-          <PetFloatButton />
           <div className="min-h-screen">
             <Navbar />
             <Suspense fallback={<LoadingFallback />}>
