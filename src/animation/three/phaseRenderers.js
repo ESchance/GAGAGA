@@ -5,7 +5,7 @@ import { PHASES } from '../timeline/AnimationTimeline'
 
 export function renderPhase(phase, ctx) {
   const { timeline, systems, camera, bloom, time, dt } = ctx
-  const { stars, singularity, explosion, shake, flash, traverse, nebulae } = systems
+  const { stars, singularity, explosion, shake, flash, traverse } = systems
 
   // 银河坍缩：BIRTH 后段收缩成亮点，EXPLOSION 前段重新展开
   let galaxyCollapse = 0
@@ -37,8 +37,6 @@ export function renderPhase(phase, ctx) {
     }
 
     case PHASES.EXPLOSION: {
-      const progress = timeline.getEasedProgress(PHASES.EXPLOSION)
-
       // 一次性触发：爆炸 + 震屏
       if (!ctx.state.explosionTriggered) {
         ctx.state.explosionTriggered = true
@@ -55,29 +53,20 @@ export function renderPhase(phase, ctx) {
       // 无刺眼白光
       if (flash) flash.visible = false
 
-      // 星云在爆炸后期开始成形（scale 0→1）
-      if (nebulae) {
-        const nebulaFade = Math.max(0, Math.min(1, (progress - 0.5) / 0.35))
-        nebulae.forEach((n) => n.group.scale.setScalar(0.01 + nebulaFade * 0.99))
-      }
-
       // 低泛光，避免大面积光晕
       if (bloom) bloom.setStrength(0.15)
       break
     }
 
     case PHASES.TRAVERSE: {
-      // 清空爆炸残留粒子，只保留星云
+      // 清空爆炸粒子（其聚成的星云已由穿梭阶段接管背景）
       if (explosion) explosion.clear()
       if (traverse) {
         traverse.update(dt, 1)
         traverse.hideLines()
-      }
-      if (nebulae) {
-        nebulae.forEach((n) => {
-          n.group.scale.setScalar(1)
-          n.update(time)
-        })
+        // 淡入过渡（穿梭阶段前 1/4 渐显，不硬切）
+        const tp = timeline.getPhaseProgress(PHASES.TRAVERSE)
+        traverse.setOpacity(Math.min(1, tp * 4))
       }
       if (flash) flash.visible = false
       if (bloom) bloom.setStrength(0.3)
@@ -86,16 +75,10 @@ export function renderPhase(phase, ctx) {
     }
 
     case PHASES.BUTTON: {
-      // 穿梭粒子保持存在并继续巡航
+      // 穿梭粒子保持存在并继续巡航（一直播放到用户点击）
       if (traverse) {
         traverse.update(dt, 1)
         traverse.hideLines()
-      }
-      if (nebulae) {
-        nebulae.forEach((n) => {
-          n.group.scale.setScalar(1)
-          n.update(time)
-        })
       }
       if (flash) flash.visible = false
       if (bloom) bloom.setStrength(0.45)
@@ -118,7 +101,12 @@ export function renderPhase(phase, ctx) {
     }
 
     case PHASES.ENTER: {
-      if (traverse) traverse.hideLines()
+      if (traverse) {
+        traverse.hideLines()
+        // 淡出过渡（结尾渐隐，不硬切）
+        const ep = timeline.getPhaseProgress(PHASES.ENTER)
+        traverse.setOpacity(Math.max(0, 1 - ep))
+      }
       // 去除满屏白光（动画自然结束，由父组件卸载切换首页）
       if (flash) flash.visible = false
       if (bloom) bloom.setStrength(0)

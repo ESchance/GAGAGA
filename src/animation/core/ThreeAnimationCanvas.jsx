@@ -12,12 +12,10 @@ import { Singularity } from '../three/Singularity'
 import { ExplosionSystem } from '../three/ExplosionSystem'
 import { CameraShake } from '../three/CameraShake'
 import { TraverseField } from '../three/TraverseField'
-import { NebulaVolume } from '../three/NebulaVolume'
 import { renderPhase } from '../three/phaseRenderers'
 import { PHASES } from '../timeline/AnimationTimeline'
-import { NEBULA_NAMES, NEBULA_COLOR_SCHEMES } from './NebulaCluster'
 
-// 生成星云簇中心（网格布局，相机前方 3D 空间）
+// 生成星云簇中心：网格 + 抖动，分散布局不拥挤，大小各异
 function generateNebulaCenters(count = 6) {
   const centers = []
   const cols = Math.ceil(Math.sqrt(count))
@@ -25,12 +23,14 @@ function generateNebulaCenters(count = 6) {
   for (let i = 0; i < count; i++) {
     const col = i % cols
     const row = Math.floor(i / cols)
-    const x = -0.8 + (col + 0.5) * (1.6 / cols)
-    const y = -0.8 + (row + 0.5) * (1.6 / rows)
+    // 网格单元内随机抖动，避免整齐排列与重叠
+    const x = -0.8 + (col + 0.5 + (Math.random() - 0.5) * 0.6) * (1.6 / cols)
+    const y = -0.8 + (row + 0.5 + (Math.random() - 0.5) * 0.6) * (1.6 / rows)
     centers.push({
-      x: x * 16,
-      y: y * 9,
-      z: -42 - Math.random() * 18
+      x: x * 20,
+      y: y * 12,
+      z: -30 - Math.random() * 25,
+      size: 9 + Math.random() * 15 // 各星云大小不同
     })
   }
   return centers
@@ -38,7 +38,7 @@ function generateNebulaCenters(count = 6) {
 
 // Three.js 渲染组件（PC 高/中配）
 // 与 AnimationCanvas 保持相同 props：{ timeline, onNebulaHover }，多一个 quality
-export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady, quality = 'high' }) {
+export default function ThreeAnimationCanvas({ timeline, _onNebulaHover, onReady, quality = 'high' }) {
   const containerRef = useRef(null)
   const stateRef = useRef(null)
 
@@ -100,8 +100,14 @@ export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady,
     state.systems.singularity = singularity
     state.disposables.push(singularity)
 
-    // 爆炸系统（数量大幅增多、粒子细小，形成球状尘雾）
-    const explosion = new ExplosionSystem(quality === 'high' ? 20000 : 10000)
+    // 星云簇中心（爆炸粒子聚集成星云的布局，不拥挤）
+    state.nebulaCenters = generateNebulaCenters(quality === 'high' ? 7 : 5)
+
+    // 爆炸系统：粒子炸开后分簇聚集成多个星云（更亮更多）
+    const explosion = new ExplosionSystem(
+      quality === 'high' ? 25000 : 12000,
+      state.nebulaCenters
+    )
     explosion.setTexture(softTexture)
     scene.add(explosion.group)
     state.systems.explosion = explosion
@@ -137,24 +143,6 @@ export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady,
     state.systems.flash = flash
     state.disposables.push(flash.material)
 
-    // 星云簇中心 + 星云体积（复用 2D 命名与配色，HUD 显示一致）
-    state.nebulaCenters = generateNebulaCenters(quality === 'high' ? 6 : 4)
-    const nebulae = state.nebulaCenters.map((c, i) => {
-      const nebula = new NebulaVolume({
-        ...c,
-        radius: quality === 'high' ? 14 : 11,
-        name: NEBULA_NAMES[i % NEBULA_NAMES.length],
-        color: new THREE.Color(NEBULA_COLOR_SCHEMES[i % NEBULA_COLOR_SCHEMES.length].main),
-        softTexture,
-        spriteCount: quality === 'high' ? 50 : 30
-      })
-      nebula.group.visible = false
-      scene.add(nebula.group)
-      return nebula
-    })
-    state.systems.nebulae = nebulae
-    nebulae.forEach((n) => state.disposables.push(n))
-
     // 泛光后处理（仅高配，动态加载）
     if (quality === 'high') {
       import('../three/bloom')
@@ -165,32 +153,6 @@ export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady,
           console.error('Bloom 后处理加载失败，降级为普通渲染:', error)
         })
     }
-
-    // 星云悬停检测（屏幕投影；仅 BUTTON 阶段 + 状态变化时才回调，避免高频重渲染导致画面抽搐）
-    const tempVec = new THREE.Vector3()
-    let lastHovered = null
-    const handlePointerMove = (e) => {
-      if (timeline.currentPhase !== PHASES.BUTTON) return
-      const rect = container.getBoundingClientRect()
-      const mx = e.clientX - rect.left
-      const my = e.clientY - rect.top
-      let hovered = null
-      for (const n of nebulae) {
-        if (!n.group.visible) continue
-        n.group.getWorldPosition(tempVec)
-        tempVec.project(camera)
-        const sx = (tempVec.x * 0.5 + 0.5) * rect.width
-        const sy = (-tempVec.y * 0.5 + 0.5) * rect.height
-        if (Math.hypot(sx - mx, sy - my) < 90) {
-          hovered = n.name
-        }
-      }
-      if (hovered !== lastHovered) {
-        lastHovered = hovered
-        onNebulaHover?.(hovered)
-      }
-    }
-    window.addEventListener('pointermove', handlePointerMove)
 
     // 主循环
     let lastTime = 0
@@ -209,13 +171,6 @@ export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady,
       // 奇点：DARKNESS 起即淡显，BIRTH 渐亮（平滑过渡，不再瞬切）
       singularity.group.visible =
         phase === PHASES.DARKNESS || phase === PHASES.BIRTH
-
-      // 星云：仅快速穿梭/结尾可见
-      // 爆炸后与探索按钮阶段都不显示星云（避免强光团）
-      const showNebulae = phase === PHASES.FAST_TRAVERSE || phase === PHASES.ENTER
-      nebulae.forEach((n) => {
-        n.group.visible = showNebulae
-      })
 
       // 穿梭粒子：从穿梭阶段到探索按钮阶段一直保持存在
       traverse.group.visible =
@@ -278,7 +233,6 @@ export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady,
 
     return () => {
       window.removeEventListener('resize', handleResize)
-      window.removeEventListener('pointermove', handlePointerMove)
       if (state.rafId) cancelAnimationFrame(state.rafId)
       // 释放 GPU 资源，防止 WebGL 上下文泄漏
       state.disposables.forEach((d) => {
@@ -293,7 +247,7 @@ export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady,
       }
       stateRef.current = null
     }
-  }, [timeline, quality, onReady, onNebulaHover])
+  }, [timeline, quality, onReady])
 
   return <div ref={containerRef} className="absolute inset-0" />
 }

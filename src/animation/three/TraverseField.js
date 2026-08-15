@@ -92,6 +92,13 @@ export class TraverseField {
     this.lines.visible = false
   }
 
+  // 设置粒子透明度（用于阶段切换时的淡入淡出过渡）
+  setOpacity(v) {
+    const o = Math.max(0, Math.min(1, v))
+    this.material.opacity = o
+    this.lineMat.opacity = o * 0.35
+  }
+
   dispose() {
     this.geometry.dispose()
     this.material.dispose()
