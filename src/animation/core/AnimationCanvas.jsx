@@ -214,8 +214,8 @@ export default function AnimationCanvas({ timeline, onNebulaHover }) {
 function drawBirthPhase(ctx, width, height, centerX, centerY, state, timeline) {
   const progress = timeline.getEasedProgress(PHASES.BIRTH)
 
-  // 坍缩进度：后半段向中心收缩（丝滑）
-  const collapse = Math.max(0, Math.min(1, (progress - 0.55) / 0.35))
+  // 坍缩进度：0.5~0.7 向中心收缩，完成后保持亮点停顿
+  const collapse = Math.max(0, Math.min(1, (progress - 0.5) / 0.2))
   const scale = 1 - collapse
 
   // 中心光点（调暗调小，避免刺眼光球；坍缩时收缩）

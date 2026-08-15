@@ -585,10 +585,10 @@ body {
   }
 }
 
-/* 标题向中心坍缩吸入（爆炸前），加速曲线营造"被吸入"感 */
+/* 标题向中心坍缩吸入（爆炸前），与粒子坍缩同步，加速曲线营造"被吸入"感 */
 .title-collapse {
-  animation: titleCollapse 1s cubic-bezier(0.7, 0, 0.84, 0) forwards;
-  animation-delay: 1.9s;
+  animation: titleCollapse 0.8s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+  animation-delay: 1.5s;
 }
 
 @keyframes titleCollapse {
