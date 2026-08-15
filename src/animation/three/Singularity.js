@@ -91,29 +91,45 @@ export class Singularity {
     this.group.add(halo)
     this.halo = halo
 
-    // 粒子感光晕：三维球壳分布，更小、更贴近、更多，立体包裹核心
-    const haloCount = 240
+    // 粒子感光晕：三维球壳分布，无光晕的实心小点，更近更多，立体包裹核心
+    const haloCount = 320
     const haloPositions = new Float32Array(haloCount * 3)
+    const haloSizes = new Float32Array(haloCount)
     for (let i = 0; i < haloCount; i++) {
       // 球面均匀分布（theta + phi），前后左右立体包裹
       const theta = Math.random() * Math.PI * 2
       const phi = Math.acos(2 * Math.random() - 1)
-      const radius = 1.4 + Math.random() * 1.0
+      const radius = 1.2 + Math.random() * 0.8
       haloPositions[i * 3] = Math.cos(theta) * Math.sin(phi) * radius
       haloPositions[i * 3 + 1] = Math.sin(theta) * Math.sin(phi) * radius
       haloPositions[i * 3 + 2] = Math.cos(phi) * radius
+      haloSizes[i] = 0.3 + Math.random() * 0.5
     }
     const haloGeo = new THREE.BufferGeometry()
     haloGeo.setAttribute('position', new THREE.BufferAttribute(haloPositions, 3))
-    const haloMat = new THREE.PointsMaterial({
-      size: 0.25,
-      map: softTexture || null,
-      color: 0xffffff,
+    haloGeo.setAttribute('aSize', new THREE.BufferAttribute(haloSizes, 1))
+    const haloMat = new THREE.ShaderMaterial({
+      uniforms: { uOpacity: { value: 0 } },
+      vertexShader: `
+        attribute float aSize;
+        void main() {
+          vec4 mv = modelViewMatrix * vec4(position, 1.0);
+          gl_PointSize = aSize * (130.0 / max(-mv.z, 0.1));
+          gl_Position = projectionMatrix * mv;
+        }
+      `,
+      fragmentShader: `
+        uniform float uOpacity;
+        void main() {
+          // 实心圆点（无光晕）：圆内实心、圆外透明
+          vec2 uv = gl_PointCoord * 2.0 - 1.0;
+          if (length(uv) > 1.0) discard;
+          gl_FragColor = vec4(1.0, 1.0, 1.0, uOpacity);
+        }
+      `,
       transparent: true,
-      opacity: 0,
       depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      sizeAttenuation: true
+      blending: THREE.NormalBlending
     })
     const haloParticles = new THREE.Points(haloGeo, haloMat)
     haloParticles.position.set(0, 0, -20)
@@ -140,10 +156,11 @@ export class Singularity {
       const breathe = 0.85 + 0.15 * Math.sin(time * 3.0)
       this.halo.scale.setScalar(3.5 * breathe)
     }
-    // 粒子感光晕：围绕核心的微小白粒子渐显、缓慢旋转
+    // 粒子感光晕：围绕核心的实心小粒子渐显、双轴缓慢旋转，立体感明显
     if (this.haloParticles) {
-      this.haloParticles.material.opacity = collapse * collapse * 0.65
+      this.haloParticles.material.uniforms.uOpacity.value = collapse * collapse * 0.85
       this.haloParticles.rotation.z = time * 0.25
+      this.haloParticles.rotation.y = time * 0.15
     }
 
     // CPU 确定性更新粒子位置：从球壳向中心前方 (0,0,-20) 插值收缩
