@@ -67,8 +67,29 @@ export default function PetChat({ pet, onClose, onPetUpdate }) {
       const memories = await getPetMemories(pet.id)
       const memoryText = memories.map(m => m.content).join('; ')
 
-      // 生成宠物回复（基于角色和状态）
-      const petReply = generatePetReply(userMessage, pet, memoryText)
+      // 调用 Edge Function 获取 AI 回复
+      const { supabase } = await import('../lib/supabase')
+      const { data: aiResponse, error: aiError } = await supabase.functions.invoke('ai-chat', {
+        body: {
+          pet_name: pet.name,
+          pet_type: pet.personality,
+          user_message: userMessage,
+          memories: memoryText,
+          mood: pet.mood,
+          hunger: pet.hunger,
+          energy: pet.energy,
+          intimacy: pet.intimacy
+        }
+      })
+
+      let petReply
+      if (aiError) {
+        console.error('AI 回复失败:', aiError)
+        // 使用本地备用回复
+        petReply = generatePetReply(userMessage, pet, memoryText)
+      } else {
+        petReply = aiResponse.reply
+      }
 
       // 保存宠物回复
       await savePetMessage(pet.id, pet.user_id, petReply)
