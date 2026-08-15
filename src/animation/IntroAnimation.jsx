@@ -27,7 +27,7 @@ export default function IntroAnimation({
 
   // 惰性初始化时间轴，保证任何渲染时都已存在
   if (!timelineRef.current) {
-    timelineRef.current = new AnimationTimeline(28000)
+    timelineRef.current = new AnimationTimeline(29000)
   }
 
   // 假加载进度条（期间并行预加载渲染器 + 科技感字体）
