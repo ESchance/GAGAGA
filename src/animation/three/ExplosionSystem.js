@@ -20,12 +20,12 @@ export class ExplosionSystem {
       const u = Math.random()
       const r = 12 + Math.pow(u, 0.55) * 52 // 半径 12~64
       const arm = i % arms
-      // 旋臂螺旋 + 抖动
-      const theta = r * 0.55 + (arm * Math.PI * 2) / arms + (Math.random() - 0.5) * 0.9
-      const z = -20 - r * 0.6 - Math.random() * 15 // 相机前方，随半径加深
+      // 旋臂螺旋 + 轻微抖动（正面朝向的旋涡盘）
+      const theta = r * 0.6 + (arm * Math.PI * 2) / arms + (Math.random() - 0.5) * 0.55
+      // 目标在 XY 平面盘上（z 固定前方），从正面看是清晰的旋涡银河
       this.target[i * 3] = r * Math.cos(theta)
-      this.target[i * 3 + 1] = (Math.random() - 0.5) * 14
-      this.target[i * 3 + 2] = z
+      this.target[i * 3 + 1] = r * Math.sin(theta)
+      this.target[i * 3 + 2] = -38 - Math.random() * 12
       this.delay[i] = Math.random() * 300
       this.duration[i] = 700 + Math.random() * 1800 // 无序扩散
     }
@@ -49,7 +49,7 @@ export class ExplosionSystem {
     this.geometry = geometry
 
     const material = new THREE.PointsMaterial({
-      size: 0.4,
+      size: 0.55,
       vertexColors: true,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
