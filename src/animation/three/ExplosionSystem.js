@@ -82,6 +82,12 @@ export class ExplosionSystem {
     this.exploded = true
   }
 
+  // 传入软圆点纹理（粒子圆点）
+  setTexture(texture) {
+    this.material.map = texture
+    this.material.needsUpdate = true
+  }
+
   update(elapsed) {
     if (!this.exploded) return
     const pos = this.geometry.attributes.position.array
