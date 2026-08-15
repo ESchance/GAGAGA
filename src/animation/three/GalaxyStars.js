@@ -8,26 +8,21 @@ export class GalaxyStars {
     this.group = new THREE.Group()
 
     const radius = 700
-    const arms = 2
-    const spiralTwist = 0.55
 
     const positions = new Float32Array(count * 3)
     const sizes = new Float32Array(count)
     const phases = new Float32Array(count)
 
     for (let i = 0; i < count; i++) {
-      // 对数半径：中心密、边缘疏
+      // 无序星空：随机散布（无旋臂/银河结构），中心密边缘疏
       const u = Math.random()
-      const r = -Math.log(1 - u) * (radius / 4.5)
-      const arm = i % arms
-      // 旋臂偏移 + 高斯抖动（近似）
-      const armOffset = (Math.random() - 0.5) * 0.9
-      const theta = r * spiralTwist + (arm * Math.PI) / arms + armOffset
+      const r = Math.pow(u, 0.5) * radius
+      const theta = Math.random() * Math.PI * 2
 
       positions[i * 3] = r * Math.cos(theta)
       positions[i * 3 + 1] = r * Math.sin(theta)
-      // 银河整体放在相机前方远处（z=-250），保证所有粒子可见
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 45 - 250
+      // 整体放在相机前方远处（z=-250），保证所有粒子可见
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 60 - 250
 
       sizes[i] = 0.3 + Math.random() * 1.1
       phases[i] = Math.random() * Math.PI * 2
