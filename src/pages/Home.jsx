@@ -10,7 +10,7 @@ export default function Home() {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [showAnnouncementAdmin, setShowAnnouncementAdmin] = useState(false)
-  const { user, isAdmin } = useAuth()
+  const { user, isAdmin, isSuperAdmin } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -101,7 +101,7 @@ export default function Home() {
                   <span>回放开场动画</span>
                 </button>
               )}
-              {isAdmin && (
+              {isSuperAdmin && (
                 <button
                   onClick={() => setShowAnnouncementAdmin(true)}
                   className="inline-flex items-center space-x-1.5 text-sm text-[var(--color-text-tertiary)] hover:text-[var(--color-primary)] transition-colors"

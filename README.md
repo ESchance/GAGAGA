@@ -142,7 +142,7 @@ git push -u origin main
 | handle_new_user() | 注册后自动创建 profiles（触发器） | `supabase/setup_profiles_trigger.sql` |
 
 > 💡 新环境快速初始化，可直接执行合并脚本 `supabase/p0_apply_all.sql`。
-> 弹出公告表初始化：执行 `supabase/setup_site_announcements.sql`；管理员在首页"管理公告"按钮中维护公告内容，无需改代码。
+> 弹出公告表初始化：执行 `supabase/setup_site_announcements.sql`；仅超级管理员可在首页"管理公告"按钮中维护公告内容，无需改代码。
 
 ---
 

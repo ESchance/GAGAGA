@@ -71,5 +71,5 @@ npm run dev
 4. 只有 user01 是超级管理员
 5. 密码规则：至少6位，须含大写字母、小写字母和数字（`validation.js` 强制）
 6. `PostCard` 不再自查管理员，由 Home/Profile 页面层通过 props 传入 `isAdmin` / `currentUserId`
-7. 两套公告：`announcements` 表=页面顶部公告条（警示语，AnnouncementBar 维护）；`site_announcements` 表=弹出公告（更新说明，首页"管理公告"入口维护），初始化执行 `supabase/setup_site_announcements.sql`
+7. 两套公告：`announcements` 表=页面顶部公告条（警示语，管理员可编辑）；`site_announcements` 表=弹出公告（更新说明，**仅超级管理员**可在首页"管理公告"入口维护），初始化执行 `supabase/setup_site_announcements.sql`
 8. 入场动画：新用户首次注册必看；老用户登录自动跳过，可在首页"回放开场动画"回顾（回顾时保留跳过按钮）

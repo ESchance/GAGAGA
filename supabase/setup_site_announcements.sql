@@ -24,20 +24,20 @@ ALTER TABLE site_announcements ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "site_announcements readable by all"
   ON site_announcements FOR SELECT USING (true);
 
--- 4. 仅管理员（admin / superadmin）可写
+-- 4. 仅超级管理员（superadmin）可写
 CREATE POLICY "admins can insert site_announcements"
   ON site_announcements FOR INSERT WITH CHECK (
-    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin'))
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'superadmin')
   );
 
 CREATE POLICY "admins can update site_announcements"
   ON site_announcements FOR UPDATE USING (
-    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin'))
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'superadmin')
   );
 
 CREATE POLICY "admins can delete site_announcements"
   ON site_announcements FOR DELETE USING (
-    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin'))
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'superadmin')
   );
 
 -- 5. 初始化当前公告内容（版本 3.0，可重复执行）

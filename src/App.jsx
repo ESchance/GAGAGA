@@ -49,7 +49,6 @@ function AnimationManager({ children }) {
     if (showIntroParam === 'true') {
       setShowIntro(true)
       setIsNewUser(newUserParam === 'true')
-      setAnimationPhase('playing')
       // 清除 URL 参数
       window.history.replaceState({}, '', location.pathname)
     }
@@ -71,7 +70,6 @@ function AnimationManager({ children }) {
   // 处理动画完成
   const handleIntroComplete = () => {
     setShowIntro(false)
-    setAnimationPhase('complete')
 
     // 标记动画已完成（用于公告显示）
     localStorage.setItem('gagaga_intro_complete', 'true')
