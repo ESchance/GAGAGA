@@ -50,6 +50,7 @@ export function renderPhase(phase, ctx) {
       const elapsed = time * 1000 - ctx.state.explosionStart
       if (explosion) {
         explosion.update(elapsed, dt)
+        explosion.updateDust(progress)
         if (progress > 0.3) {
           explosion.setAttractTargets(ctx.nebulaCenters)
         }
@@ -116,27 +117,15 @@ export function renderPhase(phase, ctx) {
       // FOV 增大增强速度感
       camera.fov = 60 + 12 * progress
       camera.updateProjectionMatrix()
-      // 末段白色淡出（全屏扩散光）
-      if (flash) {
-        if (progress > 0.7) {
-          flash.visible = true
-          flash.scale.set(45, 45, 1)
-          flash.material.opacity = (progress - 0.7) / 0.3
-        } else {
-          flash.visible = false
-        }
-      }
+      // 去除满屏白光
+      if (flash) flash.visible = false
       break
     }
 
     case PHASES.ENTER: {
       if (traverse) traverse.hideLines()
-      // 全屏白光淡入进入首页
-      if (flash) {
-        flash.visible = true
-        flash.scale.set(45, 45, 1)
-        flash.material.opacity = timeline.getEasedProgress(PHASES.ENTER)
-      }
+      // 去除满屏白光（动画自然结束，由父组件卸载切换首页）
+      if (flash) flash.visible = false
       if (bloom) bloom.setStrength(0)
       break
     }
