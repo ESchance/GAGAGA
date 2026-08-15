@@ -57,30 +57,23 @@ export class ExplosionSystem {
     this.points = new THREE.Points(geometry, material)
     this.group.add(this.points)
 
-    // 冲击波环（立体化：3 个正交朝向的环，扩散时形成三维球面冲击波）
+    // 单个斜向冲击波环：倾斜立体扩散，并向相机扑面推进（纤细环，非实心盘）
     this.shockRings = []
-    this.shockOrientations = [
-      new THREE.Euler(Math.PI / 2, 0, 0), // XY 平面（水平）
-      new THREE.Euler(0, Math.PI / 2, 0), // XZ 平面
-      new THREE.Euler(0, 0, 0)            // YZ 平面
-    ]
-    for (let i = 0; i < 3; i++) {
-      const ring = new THREE.Mesh(
-        new THREE.RingGeometry(0.96, 1, 64),
-        new THREE.MeshBasicMaterial({
-          color: 0x7fa8ff,
-          transparent: true,
-          side: THREE.DoubleSide,
-          depthWrite: false,
-          blending: THREE.AdditiveBlending
-        })
-      )
-      ring.position.set(0, 0, -12)
-      ring.rotation.copy(this.shockOrientations[i])
-      ring.visible = false
-      this.group.add(ring)
-      this.shockRings.push(ring)
-    }
+    const ring = new THREE.Mesh(
+      new THREE.RingGeometry(0.95, 1, 64),
+      new THREE.MeshBasicMaterial({
+        color: 0x7fa8ff,
+        transparent: true,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+      })
+    )
+    ring.rotation.set(Math.PI * 0.32, Math.PI * 0.1, 0)
+    ring.position.set(0, 0, -8)
+    ring.visible = false
+    this.group.add(ring)
+    this.shockRings.push(ring)
 
     this.exploded = false
     this.attractTriggered = false
@@ -165,18 +158,20 @@ export class ExplosionSystem {
     this.geometry.attributes.position.needsUpdate = true
   }
 
-  // 冲击波环扩散（progress 0~0.35 期间；保持固定立体朝向，只扩散尺寸与透明度）
+  // 冲击波扩散：向相机扑面推进并放大，掠过屏幕；单环斜向立体
   updateShockRings(progress) {
-    this.shockRings.forEach((ring, i) => {
-      const rp = progress <= 0.35 ? Math.max(0, (progress - i * 0.06) / 0.3) : 1
-      if (progress <= 0.35 && rp > 0 && rp < 1) {
-        ring.visible = true
-        ring.scale.setScalar(0.5 + rp * 14)
-        ring.material.opacity = (1 - rp) * 0.6
-      } else {
-        ring.visible = false
-      }
-    })
+    const ring = this.shockRings[0]
+    if (!ring) return
+    const rp = progress <= 0.4 ? Math.max(0, progress / 0.35) : 1
+    if (progress <= 0.4 && rp > 0 && rp < 1) {
+      ring.visible = true
+      // 从远处向相机逼近（z 增大）并放大，形成扑面感
+      ring.position.z = -14 + rp * 13
+      ring.scale.setScalar(0.4 + rp * 3.5)
+      ring.material.opacity = (1 - rp) * 0.65
+    } else {
+      ring.visible = false
+    }
   }
 
   // 快速淡出所有粒子（星云成形后融入，避免吸聚粒子静止成"一圈不动"）
