@@ -1,42 +1,39 @@
 import * as THREE from 'three'
 
-// EXPLOSION：亮点粒子炸开，球状扩散成雾
-// - 粒子数量多、尺寸小，从中心向球壳目标点扩散
-// - 部分粒子飞出屏幕，部分停在远处（3~4 倍半径）围成立体球
-// - 粒子之间细线连接，模拟雾状尘雾
+// EXPLOSION：亮点粒子炸开，向"银河状"旋涡目标扩散成旋臂
+// 粒子无序地从中心弥散，最终聚成相机前方的旋涡银河（3 条旋臂）
 export class ExplosionSystem {
   constructor(count) {
     this.count = count
     this.group = new THREE.Group()
 
-    // 粒子从中心向球壳目标点扩散（扩散速度各不相同，无序散布，避免同心/银河结构）
-    this.dir = new Float32Array(count * 3)   // 随机单位方向
-    this.targetR = new Float32Array(count)   // 目标半径
+    // 每个粒子扩散到旋涡银河目标点（旋臂结构）
+    this.target = new Float32Array(count * 3)
     this.delay = new Float32Array(count)
-    this.duration = new Float32Array(count)  // 每个粒子的扩散时长（随机，造成无序）
+    this.duration = new Float32Array(count)
     this.active = new Uint8Array(count)
     this.finished = new Uint8Array(count)
 
-    const positions = new Float32Array(count * 3) // 初始在中心
+    const arms = 3
+    const positions = new Float32Array(count * 3)
     for (let i = 0; i < count; i++) {
-      const theta = Math.random() * Math.PI * 2
-      const phi = Math.acos(2 * Math.random() - 1)
-      this.dir[i * 3] = Math.sin(phi) * Math.cos(theta)
-      this.dir[i * 3 + 1] = Math.sin(phi) * Math.sin(theta)
-      this.dir[i * 3 + 2] = Math.cos(phi)
-      // 约 85% 停在 30~70（3~4 倍亮点半径，围球）；约 15% 飞出屏幕
-      this.targetR[i] = Math.random() < 0.85
-        ? 30 + Math.random() * 40
-        : 130 + Math.random() * 60
+      const u = Math.random()
+      const r = 12 + Math.pow(u, 0.55) * 52 // 半径 12~64
+      const arm = i % arms
+      // 旋臂螺旋 + 抖动
+      const theta = r * 0.55 + (arm * Math.PI * 2) / arms + (Math.random() - 0.5) * 0.9
+      const z = -20 - r * 0.6 - Math.random() * 15 // 相机前方，随半径加深
+      this.target[i * 3] = r * Math.cos(theta)
+      this.target[i * 3 + 1] = (Math.random() - 0.5) * 14
+      this.target[i * 3 + 2] = z
       this.delay[i] = Math.random() * 300
-      // 扩散时长随机（0.6s~2.4s），粒子快慢不一，无序弥漫
-      this.duration[i] = 600 + Math.random() * 1800
+      this.duration[i] = 700 + Math.random() * 1800 // 无序扩散
     }
 
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
 
-    // 电磁青紫色（细小粒子，非刺眼白）
+    // 电磁青紫色
     const colors = new Float32Array(count * 3)
     const palette = [
       [0.4, 0.8, 1.0], [0.3, 0.7, 1.0], [0.5, 0.4, 1.0], [0.6, 0.3, 1.0],
@@ -78,32 +75,19 @@ export class ExplosionSystem {
   update(elapsed) {
     if (!this.exploded) return
     const pos = this.geometry.attributes.position.array
-
     for (let i = 0; i < this.count; i++) {
       if (!this.active[i] && elapsed >= this.delay[i]) {
         this.active[i] = 1
       }
       if (!this.active[i] || this.finished[i]) continue
-
       const ix = i * 3
-      // 扩散进度：每粒子时长随机，easeOut 加速扩散（无序散布）
+      // 从中心向旋涡目标扩散（无序节奏）
       const t = Math.min(1, (elapsed - this.delay[i]) / this.duration[i])
       const eased = 1 - (1 - t) * (1 - t)
-      const r = this.targetR[i] * eased
-      pos[ix] = this.dir[ix] * r
-      pos[ix + 1] = this.dir[ix + 1] * r
-      pos[ix + 2] = this.dir[ix + 2] * r
-
-      if (t >= 1) {
-        if (this.targetR[i] > 100) {
-          // 飞出屏幕的粒子隐藏
-          pos[ix] = 9999
-          pos[ix + 1] = 9999
-          pos[ix + 2] = 9999
-          this.active[i] = 0
-        }
-        this.finished[i] = 1
-      }
+      pos[ix] = this.target[ix] * eased
+      pos[ix + 1] = this.target[ix + 1] * eased
+      pos[ix + 2] = this.target[ix + 2] * eased
+      if (t >= 1) this.finished[i] = 1
     }
     this.geometry.attributes.position.needsUpdate = true
   }

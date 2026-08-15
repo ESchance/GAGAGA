@@ -13,8 +13,8 @@ export class Singularity {
     this.basePositions = new Float32Array(count * 3)
     this.positions = positions
     for (let i = 0; i < count; i++) {
-      // 球壳分布（中心空心），形成"一圈/一簇"粒子而非实心光团
-      const r = 8 + Math.random() * 8
+      // 无序：中心附近球体内随机散布（无环状/球壳结构，一团乱粒子）
+      const r = Math.pow(Math.random(), 0.8) * 15
       const theta = Math.random() * Math.PI * 2
       const phi = Math.acos(2 * Math.random() - 1)
       positions[i * 3] = r * Math.sin(phi) * Math.cos(theta)
