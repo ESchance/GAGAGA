@@ -91,21 +91,22 @@ export class Singularity {
     this.group.add(halo)
     this.halo = halo
 
-    // 粒子感光晕：更小、更贴近核心、数量更多的微小白粒子，形成细腻光晕
-    const haloCount = 160
+    // 粒子感光晕：三维球壳分布，更小、更贴近、更多，立体包裹核心
+    const haloCount = 240
     const haloPositions = new Float32Array(haloCount * 3)
     for (let i = 0; i < haloCount; i++) {
-      const angle = (i / haloCount) * Math.PI * 2 + Math.random() * 0.15
-      // 半径更小更集中，紧贴核心
-      const radius = 1.6 + Math.random() * 1.2
-      haloPositions[i * 3] = Math.cos(angle) * radius
-      haloPositions[i * 3 + 1] = Math.sin(angle) * radius * 0.72
-      haloPositions[i * 3 + 2] = (Math.random() - 0.5) * 1.0
+      // 球面均匀分布（theta + phi），前后左右立体包裹
+      const theta = Math.random() * Math.PI * 2
+      const phi = Math.acos(2 * Math.random() - 1)
+      const radius = 1.4 + Math.random() * 1.0
+      haloPositions[i * 3] = Math.cos(theta) * Math.sin(phi) * radius
+      haloPositions[i * 3 + 1] = Math.sin(theta) * Math.sin(phi) * radius
+      haloPositions[i * 3 + 2] = Math.cos(phi) * radius
     }
     const haloGeo = new THREE.BufferGeometry()
     haloGeo.setAttribute('position', new THREE.BufferAttribute(haloPositions, 3))
     const haloMat = new THREE.PointsMaterial({
-      size: 0.35,
+      size: 0.25,
       map: softTexture || null,
       color: 0xffffff,
       transparent: true,
