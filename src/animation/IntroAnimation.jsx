@@ -168,7 +168,7 @@ export default function IntroAnimation({
       {/* 标题 */}
       {!isLoading && showTitle && (
         <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
-          <div className="text-center relative">
+          <div className="text-center title-collapse relative">
             {/* 深色遮罩：压暗背景，保证标题清晰可读 */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] aspect-square rounded-full bg-black/60 blur-3xl" />
             <div className="relative">

@@ -584,3 +584,20 @@ body {
     transform: translateY(0) scale(1);
   }
 }
+
+/* 标题向中心坍缩吸入（爆炸前），加速曲线营造"被吸入"感 */
+.title-collapse {
+  animation: titleCollapse 1s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+  animation-delay: 1.9s;
+}
+
+@keyframes titleCollapse {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.02);
+    opacity: 0;
+  }
+}

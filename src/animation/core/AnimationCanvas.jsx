@@ -210,32 +210,36 @@ export default function AnimationCanvas({ timeline, onNebulaHover }) {
   )
 }
 
-// 阶段2：奇点诞生
+// 阶段2：奇点诞生（前半段显现，后半段坍缩成亮点）
 function drawBirthPhase(ctx, width, height, centerX, centerY, state, timeline) {
   const progress = timeline.getEasedProgress(PHASES.BIRTH)
 
-  // 中心光点（调暗调小，避免刺眼光球）
-  const glowSize = lerp(0, 10, progress)
+  // 坍缩进度：后半段向中心收缩（丝滑）
+  const collapse = Math.max(0, Math.min(1, (progress - 0.55) / 0.35))
+  const scale = 1 - collapse
+
+  // 中心光点（调暗调小，避免刺眼光球；坍缩时收缩）
+  const glowSize = lerp(0, 10, progress) * scale
   const breathe = Math.sin(progress * Math.PI * 3) * 0.3 + 0.7
 
   const gradient = ctx.createRadialGradient(
     centerX, centerY, 0,
     centerX, centerY, glowSize * breathe
   )
-  gradient.addColorStop(0, `rgba(255, 255, 255, 0.35)`)
-  gradient.addColorStop(0.3, `rgba(200, 220, 255, 0.2)`)
-  gradient.addColorStop(0.6, `rgba(150, 180, 255, 0.1)`)
+  gradient.addColorStop(0, `rgba(255, 255, 255, ${0.35 * scale})`)
+  gradient.addColorStop(0.3, `rgba(200, 220, 255, ${0.2 * scale})`)
+  gradient.addColorStop(0.6, `rgba(150, 180, 255, ${0.1 * scale})`)
   gradient.addColorStop(1, 'rgba(100, 120, 200, 0)')
 
   ctx.beginPath()
-  ctx.arc(centerX, centerY, glowSize * breathe, 0, Math.PI * 2)
+  ctx.arc(centerX, centerY, Math.max(glowSize * breathe, 0.1), 0, Math.PI * 2)
   ctx.fillStyle = gradient
   ctx.fill()
 
   for (let i = 0; i < 3; i++) {
     const ringProgress = (progress + i * 0.3) % 1
-    const ringSize = ringProgress * 100
-    const ringAlpha = (1 - ringProgress) * 0.3
+    const ringSize = ringProgress * 100 * scale
+    const ringAlpha = (1 - ringProgress) * 0.3 * scale
 
     ctx.beginPath()
     ctx.arc(centerX, centerY, ringSize, 0, Math.PI * 2)

@@ -29,19 +29,22 @@ export class Singularity {
       uniforms: {
         uTexture: { value: softTexture || null },
         uTime: { value: 0 },
-        uProgress: { value: 0 }
+        uProgress: { value: 0 },
+        uCollapse: { value: 0 }
       },
       vertexShader: `
         attribute float aSize;
         uniform float uTime;
         uniform float uProgress;
+        uniform float uCollapse;
         varying float vAlpha;
         void main() {
-          // 蓝色系小粒子，透明度低且随进度渐显
+          // 坍缩：粒子位置向中心收缩，尺寸与透明度随之减小，聚成一个小亮点
+          vec3 p = position * (1.0 - uCollapse);
           float breathe = 0.85 + 0.15 * sin(uTime * 2.0 + position.x * 1.5);
-          vAlpha = breathe * (0.04 + 0.38 * uProgress);
-          vec4 mv = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = aSize * (90.0 / max(-mv.z, 0.1)) * breathe;
+          vAlpha = breathe * (0.04 + 0.38 * uProgress) * (1.0 - 0.7 * uCollapse);
+          vec4 mv = modelViewMatrix * vec4(p, 1.0);
+          gl_PointSize = aSize * (90.0 / max(-mv.z, 0.1)) * breathe * (1.0 - 0.85 * uCollapse);
           gl_Position = projectionMatrix * mv;
         }
       `,
@@ -67,6 +70,9 @@ export class Singularity {
   update(time, progress) {
     this.material.uniforms.uTime.value = time
     this.material.uniforms.uProgress.value = progress
+    // 坍缩进度：progress 0.55~0.9 之间从 0→1（丝滑收缩成亮点）
+    const collapse = Math.max(0, Math.min(1, (progress - 0.55) / 0.35))
+    this.material.uniforms.uCollapse.value = collapse
     this.group.rotation.z = time * 0.04
   }
 
