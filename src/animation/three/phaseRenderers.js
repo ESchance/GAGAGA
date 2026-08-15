@@ -49,28 +49,19 @@ export function renderPhase(phase, ctx) {
 
       const elapsed = time * 1000 - ctx.state.explosionStart
       if (explosion) {
-        explosion.update(elapsed, dt)
-        explosion.updateDust(progress)
-        if (progress > 0.3) {
-          explosion.setAttractTargets(ctx.nebulaCenters)
-        }
+        explosion.update(elapsed)
       }
 
-      // 电磁雾爆炸：不再使用刺眼白光与大面积光晕
+      // 无刺眼白光
       if (flash) flash.visible = false
 
-      // 星云在爆炸吸聚后期开始成形（scale 0→1）
+      // 星云在爆炸后期开始成形（scale 0→1）
       if (nebulae) {
         const nebulaFade = Math.max(0, Math.min(1, (progress - 0.5) / 0.35))
         nebulae.forEach((n) => n.group.scale.setScalar(0.01 + nebulaFade * 0.99))
       }
 
-      // 星云成形后，爆炸粒子快速淡出融入（避免吸聚残留静止成"一圈不动"）
-      if (explosion && progress > 0.7) {
-        explosion.fadeAll()
-      }
-
-      // 电磁雾：低泛光，避免大面积光晕
+      // 低泛光，避免大面积光晕
       if (bloom) bloom.setStrength(0.15)
       break
     }

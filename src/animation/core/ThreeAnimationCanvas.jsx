@@ -100,8 +100,8 @@ export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady,
     state.systems.singularity = singularity
     state.disposables.push(singularity)
 
-    // 爆炸系统
-    const explosion = new ExplosionSystem(quality === 'high' ? 8000 : 4000)
+    // 爆炸系统（数量大幅增多、粒子细小，形成球状尘雾）
+    const explosion = new ExplosionSystem(quality === 'high' ? 20000 : 10000)
     explosion.setTexture(softTexture)
     scene.add(explosion.group)
     state.systems.explosion = explosion
