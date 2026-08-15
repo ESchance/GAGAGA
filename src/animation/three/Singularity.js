@@ -75,7 +75,7 @@ export class Singularity {
     this.points = new THREE.Points(geometry, material)
     this.group.add(this.points)
 
-    // 中心白色光晕：坍缩成亮点时显示（小巧柔和）
+    // 核心小光点：坍缩成亮点时的中心白点（小巧）
     const halo = new THREE.Sprite(
       new THREE.SpriteMaterial({
         map: softTexture || null,
@@ -87,9 +87,38 @@ export class Singularity {
       })
     )
     halo.position.set(0, 0, -20) // 与坍缩目标重合
-    halo.scale.set(5, 5, 1)
+    halo.scale.set(2.2, 2.2, 1)
     this.group.add(halo)
     this.halo = halo
+
+    // 粒子感光晕：一圈微小白粒子环绕核心亮点，随光晕一同呼吸旋转
+    const haloCount = 36
+    const haloPositions = new Float32Array(haloCount * 3)
+    for (let i = 0; i < haloCount; i++) {
+      const angle = (i / haloCount) * Math.PI * 2
+      const radius = 3.2 + Math.random() * 2.5
+      haloPositions[i * 3] = Math.cos(angle) * radius
+      haloPositions[i * 3 + 1] = Math.sin(angle) * radius * 0.72
+      haloPositions[i * 3 + 2] = (Math.random() - 0.5) * 1.6
+    }
+    const haloGeo = new THREE.BufferGeometry()
+    haloGeo.setAttribute('position', new THREE.BufferAttribute(haloPositions, 3))
+    const haloMat = new THREE.PointsMaterial({
+      size: 1.3,
+      map: softTexture || null,
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true
+    })
+    const haloParticles = new THREE.Points(haloGeo, haloMat)
+    haloParticles.position.set(0, 0, -20)
+    this.group.add(haloParticles)
+    this.haloParticles = haloParticles
+    this.haloParticlesGeo = haloGeo
+    this.haloParticlesMat = haloMat
   }
 
   update(time, progress) {
@@ -105,9 +134,14 @@ export class Singularity {
     if (this.halo) {
       const haloOpacity = collapse * collapse * 0.5
       this.halo.material.opacity = haloOpacity
-      // 光晕略微呼吸，增强"蓄势"感
+      // 核心光点略微呼吸，增强"蓄势"感
       const breathe = 0.85 + 0.15 * Math.sin(time * 3.0)
-      this.halo.scale.setScalar(5 * breathe)
+      this.halo.scale.setScalar(2.2 * breathe)
+    }
+    // 粒子感光晕：围绕核心的微小白粒子渐显、缓慢旋转
+    if (this.haloParticles) {
+      this.haloParticles.material.opacity = collapse * collapse * 0.65
+      this.haloParticles.rotation.z = time * 0.25
     }
 
     // CPU 确定性更新粒子位置：从球壳向中心前方 (0,0,-20) 插值收缩
@@ -126,5 +160,7 @@ export class Singularity {
     this.geometry.dispose()
     this.material.dispose()
     if (this.halo) this.halo.material.dispose()
+    if (this.haloParticlesGeo) this.haloParticlesGeo.dispose()
+    if (this.haloParticlesMat) this.haloParticlesMat.dispose()
   }
 }
