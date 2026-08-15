@@ -15,27 +15,6 @@ import { TraverseField } from '../three/TraverseField'
 import { renderPhase } from '../three/phaseRenderers'
 import { PHASES } from '../timeline/AnimationTimeline'
 
-// 生成星云簇中心：网格 + 抖动，分散布局不拥挤，大小各异
-function generateNebulaCenters(count = 6) {
-  const centers = []
-  const cols = Math.ceil(Math.sqrt(count))
-  const rows = Math.ceil(count / cols)
-  for (let i = 0; i < count; i++) {
-    const col = i % cols
-    const row = Math.floor(i / cols)
-    // 网格单元内随机抖动，避免整齐排列与重叠
-    const x = -0.8 + (col + 0.5 + (Math.random() - 0.5) * 0.6) * (1.6 / cols)
-    const y = -0.8 + (row + 0.5 + (Math.random() - 0.5) * 0.6) * (1.6 / rows)
-    centers.push({
-      x: x * 20,
-      y: y * 12,
-      z: -30 - Math.random() * 25,
-      size: 9 + Math.random() * 15 // 各星云大小不同
-    })
-  }
-  return centers
-}
-
 // Three.js 渲染组件（PC 高/中配）
 // 与 AnimationCanvas 保持相同 props：{ timeline, onNebulaHover }，多一个 quality
 export default function ThreeAnimationCanvas({ timeline, _onNebulaHover, onReady, quality = 'high' }) {
@@ -56,8 +35,7 @@ export default function ThreeAnimationCanvas({ timeline, _onNebulaHover, onReady
       rafId: null,
       disposables: [],
       systems: {},
-      state: { explosionTriggered: false, explosionStart: 0 },
-      nebulaCenters: []
+      state: { explosionTriggered: false, explosionStart: 0 }
     }
     stateRef.current = state
 
@@ -100,14 +78,8 @@ export default function ThreeAnimationCanvas({ timeline, _onNebulaHover, onReady
     state.systems.singularity = singularity
     state.disposables.push(singularity)
 
-    // 星云簇中心（爆炸粒子聚集成星云的布局，不拥挤）
-    state.nebulaCenters = generateNebulaCenters(quality === 'high' ? 7 : 5)
-
-    // 爆炸系统：粒子炸开后分簇聚集成多个星云（更亮更多）
-    const explosion = new ExplosionSystem(
-      quality === 'high' ? 25000 : 12000,
-      state.nebulaCenters
-    )
+    // 爆炸系统：粒子炸开后飞向旋臂形成漩涡银河（更亮更多）
+    const explosion = new ExplosionSystem(quality === 'high' ? 25000 : 12000)
     explosion.setTexture(softTexture)
     scene.add(explosion.group)
     state.systems.explosion = explosion
@@ -191,8 +163,7 @@ export default function ThreeAnimationCanvas({ timeline, _onNebulaHover, onReady
         time,
         dt,
         quality,
-        state: state.state,
-        nebulaCenters: state.nebulaCenters
+        state: state.state
       })
 
       // 应用相机震动
