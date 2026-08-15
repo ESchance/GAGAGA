@@ -67,7 +67,6 @@ CI 已配置：推送到 GitHub 会自动运行 lint + test + build（`.github/w
   - 移动端 / 无 WebGL2 / 加载失败 → `AnimationCanvas`（Canvas 2D，原版）
   - 档位判定见 `src/animation/utils/webgl.js`
 - **Three.js 模块**（`src/animation/three/`）：GalaxyStars（银河星空）、Singularity（奇点）、ExplosionSystem（爆炸+冲击波）、TraverseField（穿梭）、NebulaVolume（星云体积）、bloom（泛光，仅高配）、CameraShake、phaseRenderers
-- **音效**：`src/animation/audio/SoundController.js` 按阶段播放程序化音效（Web Audio 生成，无音频文件）；需用户首次手势后 `arm()` 激活
 - **科技感字体**：Orbitron / JetBrains Mono 用 @fontsource 自托管，在动画播放时动态 import
 - **时间轴**：`AnimationTimeline` 是唯一控制器，7 阶段 28 秒，渲染层与叙事逻辑解耦
 

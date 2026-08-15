@@ -8,7 +8,6 @@ import SkipButton from './components/SkipButton'
 import HUDOverlay from './components/HUDOverlay'
 import MobileHUD from './components/MobileHUD'
 import { AnimationTimeline, PHASES } from './timeline/AnimationTimeline'
-import { SoundController } from './audio/SoundController'
 
 export default function IntroAnimation({
   onComplete,
@@ -25,14 +24,10 @@ export default function IntroAnimation({
   const [showTitle, setShowTitle] = useState(false)
   const [hoveredNebula, setHoveredNebula] = useState(null)
   const timelineRef = useRef(null)
-  const soundRef = useRef(null)
 
   // 惰性初始化时间轴，保证任何渲染时都已存在
   if (!timelineRef.current) {
     timelineRef.current = new AnimationTimeline(28000)
-  }
-  if (!soundRef.current) {
-    soundRef.current = new SoundController()
   }
 
   // 假加载进度条（期间并行预加载渲染器 + 科技感字体）
@@ -58,19 +53,6 @@ export default function IntroAnimation({
     }, 150)
 
     return () => clearInterval(loadInterval)
-  }, [])
-
-  // 首次用户手势后武装音频（浏览器自动播放限制）
-  useEffect(() => {
-    const armSound = () => soundRef.current.arm()
-    window.addEventListener('pointerdown', armSound)
-    window.addEventListener('keydown', armSound)
-    window.addEventListener('touchstart', armSound)
-    return () => {
-      window.removeEventListener('pointerdown', armSound)
-      window.removeEventListener('keydown', armSound)
-      window.removeEventListener('touchstart', armSound)
-    }
   }, [])
 
   // 渲染器就绪且 loading 完成后才开始动画（避免时间轴跳帧）
@@ -103,11 +85,6 @@ export default function IntroAnimation({
         setShowHUD(false)
         setShowExploreButton(false)
       }
-
-      // 阶段音效
-      if (soundRef.current) {
-        soundRef.current.onPhase(newPhase)
-      }
     }
 
     timeline.onComplete = () => {
@@ -129,11 +106,6 @@ export default function IntroAnimation({
   const handleExploreClick = useCallback(() => {
     setShowExploreButton(false)
     setShowHUD(false)
-
-    // 点击按钮也是用户手势，兜底武装音频
-    if (soundRef.current) {
-      soundRef.current.arm()
-    }
 
     if (timelineRef.current) {
       timelineRef.current.continueAfterUserAction()
