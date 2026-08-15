@@ -26,7 +26,8 @@ export class GalaxyStars {
 
       positions[i * 3] = r * Math.cos(theta)
       positions[i * 3 + 1] = r * Math.sin(theta)
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 45
+      // 银河整体放在相机前方远处（z=-250），保证所有粒子可见
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 45 - 250
 
       sizes[i] = 0.3 + Math.random() * 1.1
       phases[i] = Math.random() * Math.PI * 2
@@ -68,7 +69,8 @@ export class GalaxyStars {
           vAlpha = twinkle * 0.5;
 
           vec4 mvPosition = modelViewMatrix * vec4(p, 1.0);
-          float starSize = aSize * (30.0 / max(-mvPosition.z, 0.1)) * twinkle;
+          // 粒子位于相机前方 z≈-250，用对应系数得到适中尺寸
+          float starSize = aSize * (750.0 / max(-mvPosition.z, 0.1)) * twinkle;
           // 相机后方或过近的粒子隐藏；clamp 上限防止近距离粒子变成巨大光球
           if (mvPosition.z > -0.5) {
             starSize = 0.0;
