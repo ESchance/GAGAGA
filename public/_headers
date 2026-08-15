@@ -1,3 +1,10 @@
-# Cloudflare Pages 安全头配置 - 临时简化
+# Cloudflare Pages 安全响应头
+# 参考：https://developers.cloudflare.com/pages/configuration/headers/
+
+# 全局安全头
 /*
   X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'

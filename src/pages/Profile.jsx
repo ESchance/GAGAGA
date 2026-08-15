@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { getUserWorldInfo, checkRaceSelected, updateCustomBackstory } from '../lib/worldbuilding'
+import { checkIsAdmin } from '../lib/admin'
+import { getUserWorldInfo, updateCustomBackstory } from '../lib/worldbuilding'
 import PostCard from '../components/PostCard'
 import Avatar from '../components/Avatar'
 import AvatarUpload from '../components/AvatarUpload'
@@ -16,6 +17,7 @@ export default function Profile() {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [currentUser, setCurrentUser] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [showRaceSelector, setShowRaceSelector] = useState(false)
   const [editingBackstory, setEditingBackstory] = useState(false)
   const [backstoryText, setBackstoryText] = useState('')
@@ -25,6 +27,9 @@ export default function Profile() {
     // 获取当前登录用户
     supabase.auth.getSession().then(({ data: { session } }) => {
       setCurrentUser(session?.user ?? null)
+      if (session?.user) {
+        checkIsAdmin(session.user.id).then(setIsAdmin)
+      }
     })
 
     fetchProfile()
@@ -337,6 +342,8 @@ export default function Profile() {
                     post={post}
                     onDelete={handleDeletePost}
                     onPinChange={handlePinChange}
+                    isAdmin={isAdmin}
+                    currentUserId={currentUser?.id}
                   />
                 </div>
               ))}

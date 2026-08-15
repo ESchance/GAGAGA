@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { isEmailAllowed, allowedEmails } from '../lib/allowedEmails'
+import { isEmailAllowed } from '../lib/allowedEmails'
 import { validateEmail, validateUsername, validatePassword } from '../lib/validation'
 
 export default function AuthForm({ type = 'login' }) {
@@ -10,34 +10,7 @@ export default function AuthForm({ type = 'login' }) {
   const [username, setUsername] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
-  const [emailRegistered, setEmailRegistered] = useState(false)
-  const [checkingEmail, setCheckingEmail] = useState(false)
   const navigate = useNavigate()
-
-  // 检查邮箱是否已注册
-  const checkEmailRegistered = async (emailToCheck) => {
-    if (!emailToCheck || !isEmailAllowed(emailToCheck)) {
-      setEmailRegistered(false)
-      return
-    }
-
-    setCheckingEmail(true)
-    try {
-      // 查询 auth.users 表看是否有这个邮箱
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id')
-        .limit(1)
-
-      // 如果查询失败或有数据，说明可能已注册
-      // 由于无法直接查询 auth.users，我们在提交时检查
-      setEmailRegistered(false)
-    } catch (error) {
-      console.error('检查邮箱失败:', error)
-    } finally {
-      setCheckingEmail(false)
-    }
-  }
 
   // 密码强度提示
   const getPasswordStrength = (pwd) => {
@@ -114,8 +87,8 @@ export default function AuthForm({ type = 'login' }) {
         })
 
         if (error) throw error
-        // 登录成功，显示入场动画
-        navigate('/?showIntro=true')
+        // 登录成功，直接进入首页（老用户不再自动播放入场动画）
+        navigate('/')
       }
     } catch (error) {
       setMessage(error.message)
@@ -161,25 +134,12 @@ export default function AuthForm({ type = 'login' }) {
           <input
             type="email"
             value={email}
-            onChange={(e) => {
-              setEmail(e.target.value)
-              setEmailRegistered(false)
-            }}
-            onBlur={() => checkEmailRegistered(email)}
-            className={`w-full px-4 py-3 border-2 rounded-xl input-animate focus:outline-none ${
-              emailRegistered
-                ? 'border-red-500 focus:border-red-500'
-                : 'border-gray-200 focus:border-blue-500'
-            }`}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl input-animate focus:outline-none focus:border-blue-500"
             placeholder="请输入邮箱"
             required
           />
-          {emailRegistered && (
-            <p className="mt-2 text-sm text-red-500 line-through flex items-center">
-              <span className="mr-1">⚠️</span> 该邮箱已注册，请直接登录
-            </p>
-          )}
-          {type === 'register' && !emailRegistered && (
+          {type === 'register' && (
             <p className="mt-2 text-xs text-gray-500 flex items-center">
               <span className="mr-1">💡</span> 只能使用指定的邮箱注册
             </p>

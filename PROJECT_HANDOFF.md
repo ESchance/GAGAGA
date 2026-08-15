@@ -13,10 +13,10 @@
 
 | 层级 | 技术 | 版本 |
 |------|------|------|
-| 前端框架 | React | 18.x |
+| 前端框架 | React | 19.x |
 | 构建工具 | Vite | 8.x |
 | 样式框架 | Tailwind CSS | 4.x |
-| 路由 | React Router | 6.x |
+| 路由 | React Router | 7.x |
 | 后端/数据库 | Supabase | PostgreSQL + Realtime + Auth |
 | 部署 | Cloudflare Pages | 全球 CDN |
 
@@ -200,12 +200,27 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ---
 
+## 数据库函数与触发器
+
+| 名称 | 用途 | 权限 | 脚本位置 |
+|------|------|------|----------|
+| get_registered_emails() | 已注册邮箱列表 | anon | supabase/get_registered_emails.sql |
+| get_next_member_code() | 生成编号 GZ-XXXX | authenticated | supabase/fix_member_code_function.sql |
+| delete_user(UUID) | 删除用户，内部校验调用者为 superadmin | authenticated | supabase/fix_delete_user_function.sql |
+| handle_new_user() 触发器 | 注册后自动创建 profiles | - | supabase/setup_profiles_trigger.sql |
+
+> 新环境初始化：直接执行合并脚本 `supabase/p0_apply_all.sql`。
+
+---
+
 ## 关键注意事项
 
-1. **删除用户**：需要先删除关联数据，再删除 profiles，最后删除 auth.users
+1. **删除用户**：需要先删除关联数据，再删除 profiles，最后删除 auth.users；`delete_user` 函数内部已校验调用者必须是超级管理员
 2. **RLS 策略**：所有表都启用了 RLS，用户只能操作自己的数据
 3. **环境变量**：.env 文件不上传到 GitHub
 4. **管理员权限**：只有 user01 是超级管理员，可以删除用户
+5. **密码规则**：至少6位，须含大写字母、小写字母和数字（由 `src/lib/validation.js` 强制）
+6. **P0 修复记录**（2026-08-15）：修复创作评论计数、delete_user 越权、注册触发器缺失、编号函数授权缺失，并把输入校验接入全部提交入口
 
 ---
 

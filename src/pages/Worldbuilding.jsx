@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { getWorldbuildingList, RACES } from '../lib/worldbuilding'
 import Avatar from '../components/Avatar'
@@ -17,6 +18,7 @@ export default function Worldbuilding() {
   const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState(null)
   const [user, setUser] = useState(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -132,7 +134,7 @@ export default function Worldbuilding() {
                 key={post.id}
                 className="post-card card-hover animate-fade-in-up cursor-pointer"
                 style={{ animationDelay: `${index * 0.05}s` }}
-                onClick={() => window.location.href = `/worldbuilding/${post.id}`}
+                onClick={() => navigate(`/worldbuilding/${post.id}`)}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center space-x-2">

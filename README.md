@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![React](https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat&logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=flat&logo=tailwindcss&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-Database-3FCF8E?style=flat&logo=supabase&logoColor=white)
@@ -33,7 +33,7 @@
 ## 🛠️ 技术栈
 
 ```
-前端: React 18 + Vite + Tailwind CSS
+前端: React 19 + Vite 8 + React Router 7 + Tailwind CSS 4
 后端: Supabase (PostgreSQL + Realtime + Auth)
 部署: Cloudflare Pages
 ```
@@ -115,102 +115,52 @@ git push -u origin main
 
 ## 🗄️ 数据库配置
 
-### 创建数据库表
+> 所有数据库脚本统一存放在 `supabase/` 目录，在 Supabase **SQL Editor** 中执行。
 
-在 Supabase 的 **SQL Editor** 中执行以下 SQL：
+### 数据表一览
 
-```sql
--- 用户资料表
-CREATE TABLE profiles (
-  id UUID REFERENCES auth.users(id) PRIMARY KEY,
-  username TEXT,
-  avatar_url TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+| 表名 | 用途 | 关键字段 |
+|------|------|----------|
+| profiles | 用户资料 | id, username, avatar_url, role, race, member_code, title, race_selected, default_story_id, custom_backstory, achievements |
+| posts | 帖子 | id, title, content, user_id, is_pinned |
+| comments | 评论 | id, content, post_id, user_id |
+| worldbuilding | 嘎宇宙创作 | id, type, title, content, user_id, likes_count, comments_count, is_published |
+| worldbuilding_likes | 创作点赞 | id, user_id, worldbuilding_id |
+| worldbuilding_comments | 创作评论 | id, content, worldbuilding_id, user_id |
+| worldbuilding_stories | 种族背景故事 | id, race, story_index, title, content |
+| member_codes | 编号记录 | id, user_id, code |
+| announcements | 公告条（警示语） | id, content, is_active |
+| site_announcements | 弹出公告（更新说明） | id, version, title, sections(JSONB), is_active |
 
--- 帖子表
-CREATE TABLE posts (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  title TEXT NOT NULL,
-  content TEXT NOT NULL,
-  user_id UUID REFERENCES auth.users(id) NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+### 数据库函数与触发器
 
--- 评论表
-CREATE TABLE comments (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  content TEXT NOT NULL,
-  post_id UUID REFERENCES posts(id) ON DELETE CASCADE NOT NULL,
-  user_id UUID REFERENCES auth.users(id) NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+| 名称 | 用途 | 脚本位置 |
+|------|------|----------|
+| get_registered_emails() | 获取已注册邮箱列表 | `supabase/get_registered_emails.sql` |
+| get_next_member_code() | 生成用户编号 GZ-XXXX（避开 4、44） | `supabase/fix_member_code_function.sql` |
+| delete_user(UUID) | 删除用户（含超级管理员权限校验） | `supabase/fix_delete_user_function.sql` |
+| handle_new_user() | 注册后自动创建 profiles（触发器） | `supabase/setup_profiles_trigger.sql` |
 
--- 启用实时更新
-ALTER PUBLICATION supabase_realtime ADD TABLE posts;
-ALTER PUBLICATION supabase_realtime ADD TABLE comments;
-
--- 启用行级安全
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
-
--- 安全策略
-CREATE POLICY "Profiles are viewable by everyone" ON profiles FOR SELECT USING (true);
-CREATE POLICY "Users can insert own profile" ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
-CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
-
-CREATE POLICY "Posts are viewable by everyone" ON posts FOR SELECT USING (true);
-CREATE POLICY "Logged in users can insert posts" ON posts FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can delete own posts" ON posts FOR DELETE USING (auth.uid() = user_id);
-
-CREATE POLICY "Comments are viewable by everyone" ON comments FOR SELECT USING (true);
-CREATE POLICY "Logged in users can insert comments" ON comments FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can delete own comments" ON comments FOR DELETE USING (auth.uid() = user_id);
-```
-
-### 创建邮箱白名单函数
-
-```sql
-CREATE OR REPLACE FUNCTION get_registered_emails()
-RETURNS TABLE(email TEXT) AS $$
-BEGIN
-  RETURN QUERY
-  SELECT au.email::TEXT
-  FROM auth.users au;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-GRANT EXECUTE ON FUNCTION get_registered_emails() TO anon;
-```
+> 💡 新环境快速初始化，可直接执行合并脚本 `supabase/p0_apply_all.sql`。
+> 弹出公告表初始化：执行 `supabase/setup_site_announcements.sql`；管理员在首页"管理公告"按钮中维护公告内容，无需改代码。
 
 ---
 
 ## 📁 项目结构
 
 ```
-GAGAGA/
-├── public/                 # 静态资源
+forum-app/
+├── public/                 # 静态资源（含 _headers 安全头）
 ├── src/
-│   ├── components/         # 组件
-│   │   ├── AuthForm.jsx    # 登录/注册表单
-│   │   ├── CommentList.jsx # 评论列表
-│   │   ├── Navbar.jsx      # 导航栏
-│   │   └── PostCard.jsx    # 帖子卡片
-│   ├── pages/              # 页面
-│   │   ├── Home.jsx        # 首页
-│   │   ├── Login.jsx       # 登录页
-│   │   ├── Register.jsx    # 注册页
-│   │   ├── CreatePost.jsx  # 发帖页
-│   │   ├── PostDetail.jsx  # 帖子详情
-│   │   └── Profile.jsx     # 个人主页
-│   ├── lib/
-│   │   ├── supabase.js     # Supabase 配置
-│   │   └── allowedEmails.js # 邮箱白名单
-│   ├── App.jsx             # 路由配置
+│   ├── animation/          # 入场动画（Canvas 2D 粒子/星云系统）
+│   ├── components/         # 可复用组件（Navbar、PostCard、CommentList 等）
+│   ├── hooks/              # 自定义 Hook（useAuth）
+│   ├── lib/                # 核心逻辑（supabase、admin、worldbuilding、validation、allowedEmails）
+│   ├── pages/              # 页面（Home、Login、Register、Worldbuilding 系列等）
+│   ├── App.jsx             # 路由配置 + 动画/种族选择管理
 │   ├── main.jsx            # 入口文件
-│   └── index.css           # 全局样式
+│   └── index.css           # 全局样式（明暗主题设计系统）
+├── supabase/               # 数据库脚本 + Edge Function
 ├── .env.example            # 环境变量模板
 └── package.json
 ```

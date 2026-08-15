@@ -37,7 +37,7 @@ export default function CommentList({ postId, requireRace = false }) {
           table: 'comments',
           filter: `post_id=eq.${postId}`
         },
-        (payload) => {
+        (_payload) => {
           // 数据变化，重新获取列表
           fetchComments()
         }

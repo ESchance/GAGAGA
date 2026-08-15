@@ -1,11 +1,17 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../hooks/useAuth'
 import PostCard from '../components/PostCard'
 import AnnouncementBar from '../components/AnnouncementBar'
+import SiteAnnouncementAdmin from '../components/SiteAnnouncementAdmin'
 
 export default function Home() {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [showAnnouncementAdmin, setShowAnnouncementAdmin] = useState(false)
+  const { user, isAdmin } = useAuth()
+  const navigate = useNavigate()
 
   useEffect(() => {
     // 获取所有帖子
@@ -21,7 +27,7 @@ export default function Home() {
           schema: 'public',
           table: 'posts'
         },
-        (payload) => {
+        (_payload) => {
           // 数据变化，重新获取列表
           fetchPosts()
         }
@@ -84,6 +90,28 @@ export default function Home() {
               🌟 最新帖子
             </h1>
             <p className="text-gray-500">发现精彩内容，参与讨论</p>
+            <div className="mt-4 flex items-center justify-center space-x-5">
+              {user && (
+                <button
+                  onClick={() => navigate('/?showIntro=true')}
+                  className="inline-flex items-center space-x-1.5 text-sm text-[var(--color-text-tertiary)] hover:text-[var(--color-primary)] transition-colors"
+                  title="回放开场动画"
+                >
+                  <span>🎬</span>
+                  <span>回放开场动画</span>
+                </button>
+              )}
+              {isAdmin && (
+                <button
+                  onClick={() => setShowAnnouncementAdmin(true)}
+                  className="inline-flex items-center space-x-1.5 text-sm text-[var(--color-text-tertiary)] hover:text-[var(--color-primary)] transition-colors"
+                  title="管理更新公告"
+                >
+                  <span>📣</span>
+                  <span>管理公告</span>
+                </button>
+              )}
+            </div>
           </div>
 
           {posts.length === 0 ? (
@@ -106,6 +134,8 @@ export default function Home() {
                     post={post}
                     onDelete={handleDeletePost}
                     onPinChange={handlePinChange}
+                    isAdmin={isAdmin}
+                    currentUserId={user?.id}
                   />
                 </div>
               ))}
@@ -113,6 +143,11 @@ export default function Home() {
           )}
         </div>
       </div>
+
+      {/* 管理员管理公告弹窗 */}
+      {showAnnouncementAdmin && (
+        <SiteAnnouncementAdmin onClose={() => setShowAnnouncementAdmin(false)} />
+      )}
     </div>
   )
 }

@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom'
-import { useState, useEffect, memo, useCallback } from 'react'
+import { memo, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
-import { checkIsAdmin, togglePinPost } from '../lib/admin'
-import { RACES } from '../lib/worldbuilding'
+import { togglePinPost } from '../lib/admin'
 import Avatar from './Avatar'
 
 const formatDate = (dateString) => {
@@ -21,26 +20,14 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString('zh-CN')
 }
 
-const PostCard = memo(function PostCard({ post, onDelete, onPinChange }) {
-  const [user, setUser] = useState(null)
-  const [isAdmin, setIsAdmin] = useState(false)
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        checkIsAdmin(session.user.id).then(setIsAdmin)
-      }
-    })
-  }, [])
-
+const PostCard = memo(function PostCard({ post, onDelete, onPinChange, isAdmin = false, currentUserId = null }) {
   const handleDelete = useCallback(async (e) => {
     e.preventDefault()
     e.stopPropagation()
 
-    if (!user) return
+    if (!currentUserId) return
 
-    const confirmMessage = isAdmin && user.id !== post.user_id
+    const confirmMessage = isAdmin && currentUserId !== post.user_id
       ? '你是管理员，确定要删除这个帖子吗？'
       : '确定要删除这个帖子吗？'
 
@@ -58,7 +45,7 @@ const PostCard = memo(function PostCard({ post, onDelete, onPinChange }) {
       console.error('删除帖子失败:', error)
       alert('删除失败：' + error.message)
     }
-  }, [user, isAdmin, post.id, post.user_id, onDelete])
+  }, [currentUserId, isAdmin, post.id, post.user_id, onDelete])
 
   const handlePin = useCallback(async (e) => {
     e.preventDefault()
@@ -70,7 +57,7 @@ const PostCard = memo(function PostCard({ post, onDelete, onPinChange }) {
     }
   }, [post.id, post.is_pinned, onPinChange])
 
-  const canDelete = user && (user.id === post.user_id || isAdmin)
+  const canDelete = currentUserId && (currentUserId === post.user_id || isAdmin)
 
   return (
     <article className={`post-card card-hover animate-fade-in-up ${post.is_pinned ? 'ring-1 ring-yellow-400/50' : ''}`}>

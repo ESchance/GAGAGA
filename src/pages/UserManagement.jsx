@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { getUsersList, toggleAdmin, deleteUser, checkIsSuperAdmin } from '../lib/admin'
-import { RACES } from '../lib/worldbuilding'
 import Avatar from '../components/Avatar'
 
 export default function UserManagement() {

@@ -5,8 +5,6 @@ import ErrorBoundary from './components/ErrorBoundary'
 import AnnouncementModal from './components/AnnouncementModal'
 import IntroAnimation from './animation/IntroAnimation'
 import RaceSelector from './components/RaceSelector'
-import { supabase } from './lib/supabase'
-import { checkRaceSelected } from './lib/worldbuilding'
 import './index.css'
 
 // 代码分割
@@ -39,7 +37,6 @@ function AnimationManager({ children }) {
   const [showIntro, setShowIntro] = useState(false)
   const [isNewUser, setIsNewUser] = useState(false)
   const [showRaceSelector, setShowRaceSelector] = useState(false)
-  const [animationPhase, setAnimationPhase] = useState('idle') // idle, playing, waiting, complete
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -58,11 +55,6 @@ function AnimationManager({ children }) {
     }
   }, [location])
 
-  // 处理动画阶段变化
-  const handleAnimationPhaseChange = (phase) => {
-    setAnimationPhase(phase)
-  }
-
   // 处理"开始探索"按钮点击 - 让动画继续播放
   const handleExploreClick = () => {
     // 不做任何事，让动画继续播放（快速穿梭）
@@ -70,7 +62,7 @@ function AnimationManager({ children }) {
   }
 
   // 处理种族选择完成
-  const handleRaceSelect = (race) => {
+  const handleRaceSelect = (_race) => {
     setShowRaceSelector(false)
     // 选择种族后跳转到首页
     navigate('/')
@@ -98,7 +90,6 @@ function AnimationManager({ children }) {
           onComplete={handleIntroComplete}
           isFirstTime={!isNewUser}
           showSkip={!isNewUser}
-          onPhaseChange={handleAnimationPhaseChange}
           onExploreClick={handleExploreClick}
         />
       )}
