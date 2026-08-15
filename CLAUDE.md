@@ -68,7 +68,7 @@ CI 已配置：推送到 GitHub 会自动运行 lint + test + build（`.github/w
   - 档位判定见 `src/animation/utils/webgl.js`
 - **Three.js 模块**（`src/animation/three/`）：GalaxyStars（银河星空）、Singularity（奇点）、ExplosionSystem（爆炸+冲击波）、TraverseField（穿梭）、NebulaVolume（星云体积）、bloom（泛光，仅高配）、CameraShake、phaseRenderers
 - **科技感字体**：Orbitron / JetBrains Mono 用 @fontsource 自托管，在动画播放时动态 import
-- **时间轴**：`AnimationTimeline` 是唯一控制器，7 阶段 28 秒，渲染层与叙事逻辑解耦
+- **时间轴**：`AnimationTimeline` 是唯一控制器，7 阶段约 35 秒，渲染层与叙事逻辑解耦。阶段：黑暗(0-2s)→诞生(2-5s)→爆炸(5-10s)→HUD穿梭(10-18s)→探索按钮(18s起等待点击，穿梭持续循环)→快速穿梭→进入
 
 ## 数据库表
 

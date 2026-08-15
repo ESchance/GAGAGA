@@ -144,6 +144,9 @@ export default function ThreeAnimationCanvas({ timeline, _onNebulaHover, onReady
       singularity.group.visible =
         phase === PHASES.DARKNESS || phase === PHASES.BIRTH
 
+      // 背景星空：爆炸阶段隐藏（让位给旋臂银河，避免与无序星空混淆）
+      stars.group.visible = phase !== PHASES.EXPLOSION
+
       // 穿梭粒子：从穿梭阶段到探索按钮阶段一直保持存在
       traverse.group.visible =
         phase === PHASES.TRAVERSE ||

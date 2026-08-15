@@ -29,14 +29,14 @@ export class ExplosionSystem {
         this.target[i * 3 + 1] = Math.sin(bp) * Math.sin(bt) * d
         this.target[i * 3 + 2] = Math.cos(bp) * d - 40
       } else {
-        // 80% 旋臂银河（XY 平面盘，正面朝向的漩涡）
+        // 80% 旋臂银河（XY 平面盘，正面朝向的清晰漩涡；旋臂更紧更密）
         const u = Math.random()
-        const r = 12 + Math.pow(u, 0.55) * 52
+        const r = 8 + Math.pow(u, 0.6) * 56
         const arm = i % arms
-        const theta = r * 0.6 + (arm * Math.PI * 2) / arms + (Math.random() - 0.5) * 0.4
+        const theta = r * 0.55 + (arm * Math.PI * 2) / arms + (Math.random() - 0.5) * 0.25
         this.target[i * 3] = r * Math.cos(theta)
         this.target[i * 3 + 1] = r * Math.sin(theta)
-        this.target[i * 3 + 2] = -38 - Math.random() * 10
+        this.target[i * 3 + 2] = -38 - Math.random() * 6
       }
     }
 
@@ -58,7 +58,7 @@ export class ExplosionSystem {
     this.geometry = geometry
 
     const material = new THREE.PointsMaterial({
-      size: 0.8,
+      size: 1.1,
       vertexColors: true,
       blending: THREE.AdditiveBlending,
       depthWrite: false,

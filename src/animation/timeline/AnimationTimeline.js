@@ -17,7 +17,7 @@ export const PHASES = {
 }
 
 export class AnimationTimeline {
-  constructor(duration = 29000) {
+  constructor(duration = 35000) {
     this.duration = duration
     this.startTime = 0
     this.currentTime = 0
@@ -27,14 +27,15 @@ export class AnimationTimeline {
     this.isPaused = false
     this.isWaitingForUser = false
 
+    // HUD 穿梭阶段加长（8s），探索按钮阶段留 12s（穿梭循环，等待用户点击）
     this.phaseTimes = {
       [PHASES.DARKNESS]: { start: 0, end: 2000 },
-      [PHASES.BIRTH]: { start: 2000, end: 6000 },
-      [PHASES.EXPLOSION]: { start: 6000, end: 11000 },
-      [PHASES.TRAVERSE]: { start: 11000, end: 17000 },
-      [PHASES.BUTTON]: { start: 17000, end: 23000 },
-      [PHASES.FAST_TRAVERSE]: { start: 23000, end: 26000 },
-      [PHASES.ENTER]: { start: 26000, end: 29000 }
+      [PHASES.BIRTH]: { start: 2000, end: 5000 },
+      [PHASES.EXPLOSION]: { start: 5000, end: 10000 },
+      [PHASES.TRAVERSE]: { start: 10000, end: 18000 },
+      [PHASES.BUTTON]: { start: 18000, end: 30000 },
+      [PHASES.FAST_TRAVERSE]: { start: 30000, end: 33000 },
+      [PHASES.ENTER]: { start: 33000, end: 35000 }
     }
 
     this.onPhaseChange = null
