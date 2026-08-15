@@ -220,6 +220,15 @@ export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady,
         n.group.visible = showNebulae
       })
 
+      // 穿梭粒子只在穿梭阶段可见（避免"预留粒子"从开头就显示而一直不动）
+      traverse.group.visible =
+        phase === PHASES.TRAVERSE ||
+        phase === PHASES.FAST_TRAVERSE ||
+        phase === PHASES.ENTER
+
+      // 爆炸粒子只在爆炸阶段显示（初始粒子聚在原点，提前显示会成一个亮点）
+      explosion.group.visible = phase === PHASES.EXPLOSION
+
       // 阶段渲染
       renderPhase(phase, {
         timeline,
