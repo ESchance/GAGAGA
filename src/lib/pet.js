@@ -29,9 +29,9 @@ export const checkHasPet = async (userId) => {
       .from('pets')
       .select('id')
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()
 
-    if (error && error.code !== 'PGRST116') throw error
+    if (error) throw error
     return !!data
   } catch (error) {
     console.error('检查宠物失败:', error)
@@ -46,7 +46,7 @@ export const getPet = async (userId) => {
       .from('pets')
       .select('*')
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()
 
     if (error) throw error
     return data

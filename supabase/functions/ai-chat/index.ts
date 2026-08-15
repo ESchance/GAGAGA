@@ -48,6 +48,7 @@ ${memories ? `主人的重要信息：${memories}` : ''}
 请根据主人的消息和你的性格回复。回复要简短可爱，符合你的性格。`
 
     // 调用 Hugging Face API
+    console.log('Token length:', hfToken?.length)
     const response = await fetch(
       'https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium',
       {
@@ -68,8 +69,10 @@ ${memories ? `主人的重要信息：${memories}` : ''}
       }
     )
 
+    console.log('Response status:', response.status)
+
     if (!response.ok) {
-      // 如果 Hugging Face API 失败，使用备用回复
+      console.log('API error, using fallback')
       const fallbackReply = generateFallbackReply(pet_name, pet_type, user_message, mood, hunger, energy, intimacy, memories)
       return new Response(
         JSON.stringify({ reply: fallbackReply }),
@@ -77,16 +80,28 @@ ${memories ? `主人的重要信息：${memories}` : ''}
       )
     }
 
-    const result = await response.json()
+    // 尝试解析 JSON 响应
+    let reply = ''
+    try {
+      const responseText = await response.text()
+      console.log('Response text length:', responseText.length)
+      console.log('Response text preview:', responseText.substring(0, 200))
 
-    // 解析回复
-    let reply = result.generated_text || result[0]?.generated_text || ''
+      const result = JSON.parse(responseText)
+      console.log('Parsed result:', result)
 
-    // 清理回复
-    reply = reply
-      .replace(/<\|endothetext\|>/g, '')
-      .replace(/主人：.*$/m, '')
-      .replace(/${pet_name}：/g, '')
+      // 解析回复
+      reply = result.generated_text || result[0]?.generated_text || ''
+
+      // 清理回复
+      reply = reply
+        .replace(/<\|endothetext\|>/g, '')
+        .replace(/主人：.*$/m, '')
+        .replace(/${pet_name}：/g, '')
+    } catch (jsonError) {
+      console.log('JSON 解析失败，使用备用回复')
+      reply = ''
+    }
       .trim()
 
     // 如果回复为空或太短，使用备用回复
