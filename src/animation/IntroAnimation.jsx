@@ -154,22 +154,26 @@ export default function IntroAnimation({
       {/* 标题 */}
       {!isLoading && showTitle && (
         <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
-          <div className="text-center animate-fade-in">
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-4" style={{
-              textShadow: '0 0 40px rgba(0, 255, 255, 0.6), 0 0 80px rgba(0, 191, 255, 0.3)',
-              fontFamily: 'Orbitron, sans-serif',
-              letterSpacing: '0.2em'
-            }}>
-              嘎宇宙
-            </h1>
-            <p className="text-cyan-300 text-lg tracking-widest opacity-80" style={{
-              fontFamily: 'JetBrains Mono, monospace'
-            }}>
-              GAGA UNIVERSE
-            </p>
-            <p className="text-gray-400 text-sm mt-2 tracking-widest">
-              初始化宇宙创生协议
-            </p>
+          <div className="text-center animate-fade-in relative">
+            {/* 深色遮罩：压暗背景，保证标题清晰可读 */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] aspect-square rounded-full bg-black/60 blur-3xl" />
+            <div className="relative">
+              <h1 className="text-5xl md:text-7xl font-bold text-white mb-4" style={{
+                textShadow: '0 0 40px rgba(0, 255, 255, 0.6), 0 0 80px rgba(0, 191, 255, 0.3)',
+                fontFamily: 'Orbitron, sans-serif',
+                letterSpacing: '0.2em'
+              }}>
+                嘎宇宙
+              </h1>
+              <p className="text-cyan-300 text-lg tracking-widest opacity-80" style={{
+                fontFamily: 'JetBrains Mono, monospace'
+              }}>
+                GAGA UNIVERSE
+              </p>
+              <p className="text-gray-400 text-sm mt-2 tracking-widest">
+                初始化宇宙创生协议
+              </p>
+            </div>
           </div>
         </div>
       )}

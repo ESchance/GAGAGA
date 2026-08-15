@@ -214,16 +214,17 @@ export default function AnimationCanvas({ timeline, onNebulaHover }) {
 function drawBirthPhase(ctx, width, height, centerX, centerY, state, timeline) {
   const progress = timeline.getEasedProgress(PHASES.BIRTH)
 
-  const glowSize = lerp(0, 20, progress)
+  // 中心光点（调暗调小，避免刺眼光球）
+  const glowSize = lerp(0, 10, progress)
   const breathe = Math.sin(progress * Math.PI * 3) * 0.3 + 0.7
 
   const gradient = ctx.createRadialGradient(
     centerX, centerY, 0,
     centerX, centerY, glowSize * breathe
   )
-  gradient.addColorStop(0, `rgba(255, 255, 255, 0.9)`)
-  gradient.addColorStop(0.3, `rgba(200, 220, 255, 0.6)`)
-  gradient.addColorStop(0.6, `rgba(150, 180, 255, 0.3)`)
+  gradient.addColorStop(0, `rgba(255, 255, 255, 0.35)`)
+  gradient.addColorStop(0.3, `rgba(200, 220, 255, 0.2)`)
+  gradient.addColorStop(0.6, `rgba(150, 180, 255, 0.1)`)
   gradient.addColorStop(1, 'rgba(100, 120, 200, 0)')
 
   ctx.beginPath()
@@ -320,25 +321,7 @@ function drawExplosionPhase(ctx, width, height, centerX, centerY, state, timelin
     })
   }
 
-  // 呼吸光源
-  if (progress > 0.2) {
-    const breathe = Math.sin(state.time * 2) * 0.3 + 0.7
-    const glowAlpha = (1 - progress) * 0.5 * breathe
-    const glowSize = 30 + progress * 20
-
-    const glow = ctx.createRadialGradient(
-      centerX, centerY, 0,
-      centerX, centerY, glowSize
-    )
-    glow.addColorStop(0, `rgba(255, 255, 255, ${glowAlpha})`)
-    glow.addColorStop(0.5, `rgba(100, 120, 200, ${glowAlpha * 0.5})`)
-    glow.addColorStop(1, 'rgba(50, 60, 100, 0)')
-
-    ctx.beginPath()
-    ctx.arc(centerX, centerY, glowSize, 0, Math.PI * 2)
-    ctx.fillStyle = glow
-    ctx.fill()
-  }
+  // （移除呼吸光源：白色呼吸光球太刺眼，且会遮挡文字）
 }
 
 // 阶段4：HUD穿梭

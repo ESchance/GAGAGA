@@ -10,14 +10,14 @@ export class Singularity {
     const positions = new Float32Array(count * 3)
     const sizes = new Float32Array(count)
     for (let i = 0; i < count; i++) {
-      // 球内均匀随机分布（半径小，聚成一小团）
-      const r = Math.pow(Math.random(), 1 / 3) * 3
+      // 分散分布（半径大），形成稀疏星点而非光球
+      const r = Math.pow(Math.random(), 1 / 3) * 10
       const theta = Math.random() * Math.PI * 2
       const phi = Math.acos(2 * Math.random() - 1)
       positions[i * 3] = r * Math.sin(phi) * Math.cos(theta)
       positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta)
       positions[i * 3 + 2] = r * Math.cos(phi)
-      sizes[i] = 0.8 + Math.random() * 1.4
+      sizes[i] = 0.3 + Math.random() * 0.6
     }
 
     const geometry = new THREE.BufferGeometry()
@@ -38,12 +38,12 @@ export class Singularity {
         varying vec3 vColor;
         varying float vAlpha;
         void main() {
-          // 中心偏暖白，随进度微变
-          vColor = mix(vec3(0.65, 0.75, 1.0), vec3(0.95, 0.92, 0.9), uProgress);
-          float breathe = 0.7 + 0.3 * sin(uTime * 2.5 + position.x * 2.0 + position.y * 1.5);
-          vAlpha = breathe * (0.35 + 0.65 * uProgress);
+          // 暗淡的冷色星点，透明度很低
+          vColor = mix(vec3(0.55, 0.65, 0.9), vec3(0.85, 0.82, 0.8), uProgress);
+          float breathe = 0.6 + 0.25 * sin(uTime * 2.5 + position.x * 2.0 + position.y * 1.5);
+          vAlpha = breathe * (0.15 + 0.25 * uProgress);
           vec4 mv = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = aSize * (180.0 / max(-mv.z, 0.1)) * breathe * (0.5 + 0.5 * uProgress);
+          gl_PointSize = aSize * (90.0 / max(-mv.z, 0.1)) * breathe * (0.5 + 0.5 * uProgress);
           gl_Position = projectionMatrix * mv;
         }
       `,
