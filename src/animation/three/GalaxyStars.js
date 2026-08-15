@@ -28,7 +28,7 @@ export class GalaxyStars {
       positions[i * 3 + 1] = r * Math.sin(theta)
       positions[i * 3 + 2] = (Math.random() - 0.5) * 45
 
-      sizes[i] = 1 + Math.random() * 3
+      sizes[i] = 0.3 + Math.random() * 1.1
       phases[i] = Math.random() * Math.PI * 2
     }
 
@@ -51,18 +51,23 @@ export class GalaxyStars {
         varying vec3 vColor;
         varying float vAlpha;
         void main() {
-          // 径向颜色：中心白蓝 → 边缘橙黄
+          // 径向颜色：中心淡蓝 → 边缘暗橙（压低亮度，呈现细小星星而非光球）
           float r = length(position.xy);
           float t = clamp(r / uRadius, 0.0, 1.0);
-          vec3 centerColor = vec3(0.85, 0.90, 1.0);
-          vec3 edgeColor = vec3(1.0, 0.80, 0.50);
+          vec3 centerColor = vec3(0.55, 0.62, 0.85);
+          vec3 edgeColor = vec3(0.8, 0.62, 0.42);
           vColor = mix(centerColor, edgeColor, t);
 
-          float twinkle = 0.5 + 0.3 * sin(uTime * 2.0 + aPhase);
-          vAlpha = twinkle;
+          float twinkle = 0.55 + 0.3 * sin(uTime * 2.0 + aPhase);
+          vAlpha = twinkle * 0.5;
 
           vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = aSize * (150.0 / max(-mvPosition.z, 0.1)) * twinkle;
+          float starSize = aSize * (30.0 / max(-mvPosition.z, 0.1)) * twinkle;
+          // 相机后方或过近的粒子隐藏；clamp 上限防止近距离粒子变成巨大光球
+          if (mvPosition.z > -0.5) {
+            starSize = 0.0;
+          }
+          gl_PointSize = clamp(starSize, 0.5, 4.0);
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
@@ -77,7 +82,7 @@ export class GalaxyStars {
       `,
       transparent: true,
       depthWrite: false,
-      blending: THREE.AdditiveBlending
+      blending: THREE.NormalBlending
     })
 
     this.points = new THREE.Points(geometry, material)
