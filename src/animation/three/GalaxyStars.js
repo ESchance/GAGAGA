@@ -58,11 +58,11 @@ export class GalaxyStars {
           vec3 edgeColor = vec3(1.0, 0.80, 0.50);
           vColor = mix(centerColor, edgeColor, t);
 
-          float twinkle = 0.65 + 0.35 * sin(uTime * 2.0 + aPhase);
+          float twinkle = 0.5 + 0.3 * sin(uTime * 2.0 + aPhase);
           vAlpha = twinkle;
 
           vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = aSize * (220.0 / max(-mvPosition.z, 0.1)) * twinkle;
+          gl_PointSize = aSize * (150.0 / max(-mvPosition.z, 0.1)) * twinkle;
           gl_Position = projectionMatrix * mvPosition;
         }
       `,

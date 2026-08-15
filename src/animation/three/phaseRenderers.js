@@ -19,7 +19,7 @@ export function renderPhase(phase, ctx) {
     case PHASES.BIRTH: {
       const progress = timeline.getEasedProgress(PHASES.BIRTH)
       if (singularity) singularity.update(time, progress)
-      if (bloom) bloom.setStrength(progress)
+      if (bloom) bloom.setStrength(progress * 0.35)
       break
     }
 
@@ -53,7 +53,7 @@ export function renderPhase(phase, ctx) {
         }
       }
 
-      if (bloom) bloom.setStrength(1.5)
+      if (bloom) bloom.setStrength(0.55)
       break
     }
 
@@ -64,7 +64,7 @@ export function renderPhase(phase, ctx) {
       }
       if (nebulae) nebulae.forEach((n) => n.update(time))
       if (flash) flash.visible = false
-      if (bloom) bloom.setStrength(0.7)
+      if (bloom) bloom.setStrength(0.3)
       resetFov(camera)
       break
     }
@@ -73,7 +73,7 @@ export function renderPhase(phase, ctx) {
       if (traverse) traverse.hideLines()
       if (nebulae) nebulae.forEach((n) => n.update(time))
       if (flash) flash.visible = false
-      if (bloom) bloom.setStrength(1.1)
+      if (bloom) bloom.setStrength(0.45)
       break
     }
 
@@ -83,7 +83,7 @@ export function renderPhase(phase, ctx) {
         traverse.update(dt, 8)
         traverse.updateLines(dt, 8)
       }
-      if (bloom) bloom.setStrength(1.3)
+      if (bloom) bloom.setStrength(0.55)
       // FOV 增大增强速度感
       camera.fov = 60 + 12 * progress
       camera.updateProjectionMatrix()

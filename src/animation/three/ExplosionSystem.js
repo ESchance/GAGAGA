@@ -47,7 +47,7 @@ export class ExplosionSystem {
     this.geometry = geometry
 
     const material = new THREE.PointsMaterial({
-      size: 2.2,
+      size: 1.5,
       vertexColors: true,
       blending: THREE.AdditiveBlending,
       depthWrite: false,

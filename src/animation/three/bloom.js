@@ -11,9 +11,9 @@ export function setupBloom(renderer, scene, camera) {
 
   const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
-    0.7, // strength
-    0.7, // radius
-    0.1  // threshold（暗场低阈值，保证辉光充分）
+    0.35, // strength（克制，避免光污染）
+    0.6,  // radius
+    0.4   // threshold（只对高亮区域辉光，暗部不泛光）
   )
   composer.addPass(bloomPass)
 

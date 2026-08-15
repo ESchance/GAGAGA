@@ -1,85 +1,79 @@
 import * as THREE from 'three'
 
-// BIRTH 阶段：奇点光球 + 脉冲环
+// BIRTH 阶段：中心聚集的柔和粒子群（替代刺眼的实心发光白球）
+// 光点云在中心聚拢、轻微呼吸，光感柔和不刺眼
 export class Singularity {
-  constructor() {
+  constructor(count = 600, softTexture) {
     this.group = new THREE.Group()
+    this.count = count
 
-    // 奇点光球（fresnel 发光 + 呼吸）
-    const geometry = new THREE.SphereGeometry(1, 32, 32)
+    const positions = new Float32Array(count * 3)
+    const sizes = new Float32Array(count)
+    for (let i = 0; i < count; i++) {
+      // 球内均匀随机分布（半径小，聚成一小团）
+      const r = Math.pow(Math.random(), 1 / 3) * 3
+      const theta = Math.random() * Math.PI * 2
+      const phi = Math.acos(2 * Math.random() - 1)
+      positions[i * 3] = r * Math.sin(phi) * Math.cos(theta)
+      positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta)
+      positions[i * 3 + 2] = r * Math.cos(phi)
+      sizes[i] = 0.8 + Math.random() * 1.4
+    }
+
+    const geometry = new THREE.BufferGeometry()
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+    geometry.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1))
+    this.geometry = geometry
+
     const material = new THREE.ShaderMaterial({
-      uniforms: { uTime: { value: 0 } },
+      uniforms: {
+        uTexture: { value: softTexture || null },
+        uTime: { value: 0 },
+        uProgress: { value: 0 }
+      },
       vertexShader: `
-        varying vec3 vNormal;
-        varying vec3 vView;
+        attribute float aSize;
+        uniform float uTime;
+        uniform float uProgress;
+        varying vec3 vColor;
+        varying float vAlpha;
         void main() {
-          vNormal = normalize(normalMatrix * normal);
+          // 中心偏暖白，随进度微变
+          vColor = mix(vec3(0.65, 0.75, 1.0), vec3(0.95, 0.92, 0.9), uProgress);
+          float breathe = 0.7 + 0.3 * sin(uTime * 2.5 + position.x * 2.0 + position.y * 1.5);
+          vAlpha = breathe * (0.35 + 0.65 * uProgress);
           vec4 mv = modelViewMatrix * vec4(position, 1.0);
-          vView = normalize(-mv.xyz);
+          gl_PointSize = aSize * (180.0 / max(-mv.z, 0.1)) * breathe * (0.5 + 0.5 * uProgress);
           gl_Position = projectionMatrix * mv;
         }
       `,
       fragmentShader: `
-        uniform float uTime;
-        varying vec3 vNormal;
-        varying vec3 vView;
+        uniform sampler2D uTexture;
+        varying vec3 vColor;
+        varying float vAlpha;
         void main() {
-          float fresnel = pow(1.0 - abs(dot(vNormal, vView)), 3.0);
-          float pulse = 0.8 + 0.2 * sin(uTime * 3.0);
-          vec3 base = vec3(0.55, 0.65, 1.0);
-          vec3 hot = vec3(1.0, 1.0, 1.0);
-          vec3 color = mix(base, hot, fresnel) * (0.5 + fresnel * 1.4) * pulse;
-          gl_FragColor = vec4(color, 1.0);
+          vec4 tex = texture2D(uTexture, gl_PointCoord);
+          gl_FragColor = vec4(vColor, tex.a * vAlpha);
         }
-      `
+      `,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
     })
-    this.core = new THREE.Mesh(geometry, material)
-    this.group.add(this.core)
-
-    // 3 个脉冲环
-    this.rings = []
-    for (let i = 0; i < 3; i++) {
-      const ring = new THREE.Mesh(
-        new THREE.RingGeometry(0.92, 1, 48),
-        new THREE.MeshBasicMaterial({
-          color: 0x88aaff,
-          transparent: true,
-          side: THREE.DoubleSide,
-          depthWrite: false,
-          blending: THREE.AdditiveBlending
-        })
-      )
-      ring.rotation.x = Math.PI / 2
-      this.group.add(ring)
-      this.rings.push(ring)
-    }
-
     this.material = material
+
+    this.points = new THREE.Points(geometry, material)
+    this.group.add(this.points)
   }
 
   update(time, progress) {
     this.material.uniforms.uTime.value = time
-
-    // 光球长大 + 呼吸（progress 0→1）
-    const breathe = Math.sin(progress * Math.PI * 3) * 0.15 + 0.85
-    const scale = (0.5 + progress * 2.2) * breathe
-    this.core.scale.setScalar(scale)
-
-    // 脉冲环扩散
-    this.rings.forEach((ring, i) => {
-      const rp = (progress + i * 0.33) % 1
-      ring.scale.setScalar(rp * 7 + 1)
-      ring.material.opacity = (1 - rp) * 0.45
-      ring.rotation.z = time * 0.6 + i * 2.1
-    })
+    this.material.uniforms.uProgress.value = progress
+    this.group.rotation.z = time * 0.08
   }
 
   dispose() {
-    this.core.geometry.dispose()
-    this.core.material.dispose()
-    this.rings.forEach((r) => {
-      r.geometry.dispose()
-      r.material.dispose()
-    })
+    this.geometry.dispose()
+    this.material.dispose()
   }
 }

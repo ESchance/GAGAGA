@@ -91,8 +91,8 @@ export default function ThreeAnimationCanvas({ timeline, onNebulaHover, onReady,
     state.systems.stars = stars
     state.disposables.push(stars)
 
-    // 奇点
-    const singularity = new Singularity()
+    // 奇点（中心粒子群）
+    const singularity = new Singularity(quality === 'high' ? 800 : 400, softTexture)
     singularity.group.visible = false
     scene.add(singularity.group)
     state.systems.singularity = singularity

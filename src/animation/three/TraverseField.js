@@ -19,7 +19,7 @@ export class TraverseField {
     geometry.setAttribute('position', new THREE.BufferAttribute(this.positions, 3))
     this.geometry = geometry
     const material = new THREE.PointsMaterial({
-      size: 2.5,
+      size: 2,
       map: softTexture,
       color: 0x88ccff,
       blending: THREE.AdditiveBlending,
