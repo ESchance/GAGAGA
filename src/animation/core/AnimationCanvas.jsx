@@ -26,6 +26,7 @@ export default function AnimationCanvas({ timeline, onNebulaHover }) {
     explosionTriggered: false,
     attractTriggered: false,
     clustersVisible: false,
+    shakeTrauma: 0,
     mouseX: 0,
     mouseY: 0
   })
@@ -130,6 +131,16 @@ export default function AnimationCanvas({ timeline, onNebulaHover }) {
       ctx.fillStyle = '#000000'
       ctx.fillRect(0, 0, rect.width, rect.height)
 
+      // 屏幕震动（爆炸冲击）：trauma 衰减，震动强度 = trauma²
+      state.shakeTrauma = Math.max(0, state.shakeTrauma - dt * 0.00035)
+      const shakeT = state.shakeTrauma * state.shakeTrauma
+      const shakeX = shakeT > 0 ? (Math.random() * 2 - 1) * shakeT * 10 : 0
+      const shakeY = shakeT > 0 ? (Math.random() * 2 - 1) * shakeT * 7 : 0
+      if (shakeX !== 0 || shakeY !== 0) {
+        ctx.save()
+        ctx.translate(shakeX, shakeY)
+      }
+
       const phase = timeline.currentPhase
       const centerX = rect.width / 2
       const centerY = rect.height / 2
@@ -169,6 +180,11 @@ export default function AnimationCanvas({ timeline, onNebulaHover }) {
         case PHASES.ENTER:
           drawEnterPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
           break
+      }
+
+      // 恢复震动后的坐标变换
+      if (shakeX !== 0 || shakeY !== 0) {
+        ctx.restore()
       }
 
       if (!isComplete) {
@@ -239,10 +255,26 @@ function drawExplosionPhase(ctx, width, height, centerX, centerY, state, timelin
     ctx.fillRect(0, 0, width, height)
   }
 
-  // 触发粒子爆炸
+  // 触发粒子爆炸 + 屏幕震动
   if (!state.explosionTriggered && progress > 0.05) {
     state.particleSystem.emitExplosion(centerX, centerY, 1500)
     state.explosionTriggered = true
+    state.shakeTrauma = 1
+  }
+
+  // 冲击波环（屏幕扩散，爆炸前段）
+  if (progress < 0.35) {
+    for (let i = 0; i < 3; i++) {
+      const rp = Math.max(0, (progress - i * 0.06) / 0.3)
+      if (rp > 0 && rp < 1) {
+        const ringRadius = rp * Math.max(width, height) * 0.5
+        ctx.beginPath()
+        ctx.arc(centerX, centerY, ringRadius, 0, Math.PI * 2)
+        ctx.strokeStyle = `rgba(160, 190, 255, ${(1 - rp) * 0.6})`
+        ctx.lineWidth = 2 + rp * 3
+        ctx.stroke()
+      }
+    }
   }
 
   // 将粒子吸引到星云位置

@@ -45,6 +45,9 @@ export default function MobileHUD({ visible = false, hoveredNebula = null }) {
         background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.4) 85%, rgba(0, 0, 0, 0.7) 100%)'
       }} />
 
+      {/* 科技感扫描线 */}
+      <div className="absolute inset-0 hud-scanlines" />
+
       {/* 左上角 - 时间 */}
       <div className="absolute top-4 left-4">
         <div className="text-cyan-400 text-xs font-mono tracking-widest opacity-60 mb-1">

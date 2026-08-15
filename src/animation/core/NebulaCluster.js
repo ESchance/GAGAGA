@@ -6,7 +6,7 @@
 import { randomRange } from '../utils/MathUtils'
 
 // 星云名称列表
-const NEBULA_NAMES = [
+export const NEBULA_NAMES = [
   '猎户座星云',
   '仙女座星系',
   '蟹状星云',
@@ -22,7 +22,7 @@ const NEBULA_NAMES = [
 ]
 
 // 星云颜色方案（每个星云不同颜色）
-const NEBULA_COLOR_SCHEMES = [
+export const NEBULA_COLOR_SCHEMES = [
   { main: '#4169e1', light: '#6495ed', dark: '#2850a8' },  // 皇家蓝
   { main: '#9370db', light: '#b08ce8', dark: '#6a4c93' },  // 中紫色
   { main: '#00ced1', light: '#48d1cc', dark: '#008b8b' },  // 青色

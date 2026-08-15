@@ -93,6 +93,10 @@ export default function HUDOverlay({ visible = false, hoveredNebula = null }) {
         background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.4) 85%, rgba(0, 0, 0, 0.7) 100%)'
       }} />
 
+      {/* 科技感扫描线 + 扫描光带 */}
+      <div className="absolute inset-0 hud-scanlines" />
+      <div className="hud-scanbar" />
+
       {/* 左侧 - 星云坐标（浮动式） */}
       <div className="absolute top-1/2 left-8 transform -translate-y-1/2">
         <div className="space-y-4">

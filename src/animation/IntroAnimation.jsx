@@ -3,11 +3,12 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import AnimationCanvas from './core/AnimationCanvas'
+import RendererSwitch from './core/RendererSwitch'
 import SkipButton from './components/SkipButton'
 import HUDOverlay from './components/HUDOverlay'
 import MobileHUD from './components/MobileHUD'
 import { AnimationTimeline, PHASES } from './timeline/AnimationTimeline'
+import { SoundController } from './audio/SoundController'
 
 export default function IntroAnimation({
   onComplete,
@@ -18,14 +19,32 @@ export default function IntroAnimation({
   const [isLoading, setIsLoading] = useState(true)
   const [loadProgress, setLoadProgress] = useState(0)
   const [animationStarted, setAnimationStarted] = useState(false)
+  const [rendererReady, setRendererReady] = useState(false)
   const [showExploreButton, setShowExploreButton] = useState(false)
   const [showHUD, setShowHUD] = useState(false)
   const [showTitle, setShowTitle] = useState(false)
   const [hoveredNebula, setHoveredNebula] = useState(null)
   const timelineRef = useRef(null)
+  const soundRef = useRef(null)
 
-  useEffect(() => {
+  // 惰性初始化时间轴，保证任何渲染时都已存在
+  if (!timelineRef.current) {
     timelineRef.current = new AnimationTimeline(28000)
+  }
+  if (!soundRef.current) {
+    soundRef.current = new SoundController()
+  }
+
+  // 假加载进度条（期间并行预加载渲染器 + 科技感字体）
+  useEffect(() => {
+    // 按需加载 Orbitron / JetBrains Mono 字体（自托管，符合 CSP）
+    Promise.allSettled([
+      import('@fontsource/orbitron/400.css'),
+      import('@fontsource/orbitron/700.css'),
+      import('@fontsource/orbitron/900.css'),
+      import('@fontsource/jetbrains-mono/400.css'),
+      import('@fontsource/jetbrains-mono/500.css')
+    ])
 
     let progress = 0
     const loadInterval = setInterval(() => {
@@ -34,15 +53,31 @@ export default function IntroAnimation({
         progress = 100
         setIsLoading(false)
         clearInterval(loadInterval)
-        setTimeout(() => {
-          setAnimationStarted(true)
-        }, 500)
       }
       setLoadProgress(Math.min(progress, 100))
     }, 150)
 
     return () => clearInterval(loadInterval)
   }, [])
+
+  // 首次用户手势后武装音频（浏览器自动播放限制）
+  useEffect(() => {
+    const armSound = () => soundRef.current.arm()
+    window.addEventListener('pointerdown', armSound)
+    window.addEventListener('keydown', armSound)
+    window.addEventListener('touchstart', armSound)
+    return () => {
+      window.removeEventListener('pointerdown', armSound)
+      window.removeEventListener('keydown', armSound)
+      window.removeEventListener('touchstart', armSound)
+    }
+  }, [])
+
+  // 渲染器就绪且 loading 完成后才开始动画（避免时间轴跳帧）
+  useEffect(() => {
+    if (isLoading || !rendererReady) return
+    setAnimationStarted(true)
+  }, [isLoading, rendererReady])
 
   useEffect(() => {
     if (!timelineRef.current || !animationStarted) return
@@ -68,6 +103,11 @@ export default function IntroAnimation({
         setShowHUD(false)
         setShowExploreButton(false)
       }
+
+      // 阶段音效
+      if (soundRef.current) {
+        soundRef.current.onPhase(newPhase)
+      }
     }
 
     timeline.onComplete = () => {
@@ -89,6 +129,11 @@ export default function IntroAnimation({
   const handleExploreClick = useCallback(() => {
     setShowExploreButton(false)
     setShowHUD(false)
+
+    // 点击按钮也是用户手势，兜底武装音频
+    if (soundRef.current) {
+      soundRef.current.arm()
+    }
 
     if (timelineRef.current) {
       timelineRef.current.continueAfterUserAction()
@@ -126,13 +171,13 @@ export default function IntroAnimation({
         </div>
       )}
 
-      {/* 动画画布 */}
-      {!isLoading && (
-        <AnimationCanvas
-          timeline={timelineRef.current}
-          onNebulaHover={setHoveredNebula}
-        />
-      )}
+      {/* 动画画布（渲染器选择器：PC 高配 Three.js / 移动端及降级 2D）
+          始终挂载，loading 期间并行预加载渲染器 */}
+      <RendererSwitch
+        timeline={timelineRef.current}
+        onNebulaHover={setHoveredNebula}
+        onReady={() => setRendererReady(true)}
+      />
 
       {/* 标题 */}
       {!isLoading && showTitle && (
