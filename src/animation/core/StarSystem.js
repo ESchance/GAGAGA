@@ -43,7 +43,7 @@ class Star {
     this.glowSize = this.size * 3
   }
 
-  update(time) {
+  update(_time) {
     // 闪烁
     this.twinklePhase += this.twinkleSpeed
     this.opacity = this.baseOpacity * (0.6 + 0.4 * Math.sin(this.twinklePhase))

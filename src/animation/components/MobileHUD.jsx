@@ -3,7 +3,7 @@
  * 简化布局，适配小屏幕
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function MobileHUD({ visible = false, hoveredNebula = null }) {
   const [time, setTime] = useState('00:00:00')

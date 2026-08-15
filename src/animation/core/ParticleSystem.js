@@ -116,8 +116,8 @@ export class ExplosionParticle {
         this.vy = 0
       } else {
         // 向星云移动
-        this.vx = (dx / distance) * distance * this.attractSpeed
-        this.vy = (dy / distance) * distance * this.attractSpeed
+        this.vx = dx * this.attractSpeed
+        this.vy = dy * this.attractSpeed
         this.x += this.vx * dtFactor
         this.y += this.vy * dtFactor
       }

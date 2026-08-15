@@ -8,8 +8,8 @@ import { ParticleSystem, TraverseParticle, FastTraverseParticle } from './Partic
 import { StarSystem } from './StarSystem'
 import { NebulaSystem } from './NebulaSystem'
 import { createNebulaClusters } from './NebulaCluster'
-import { AnimationTimeline, PHASES } from '../timeline/AnimationTimeline'
-import { lerp, randomRange } from '../utils/MathUtils'
+import { PHASES } from '../timeline/AnimationTimeline'
+import { lerp } from '../utils/MathUtils'
 
 export default function AnimationCanvas({ timeline, onNebulaHover }) {
   const canvasRef = useRef(null)
@@ -107,7 +107,7 @@ export default function AnimationCanvas({ timeline, onNebulaHover }) {
       window.removeEventListener('resize', updateSize)
       window.removeEventListener('mousemove', handleMouseMove)
     }
-  }, [])
+  }, [onNebulaHover])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -310,9 +310,7 @@ function drawExplosionPhase(ctx, width, height, centerX, centerY, state, timelin
 }
 
 // 阶段4：HUD穿梭
-function drawTraversePhase(ctx, width, height, centerX, centerY, state, timeline, dt) {
-  const progress = timeline.getEasedProgress(PHASES.TRAVERSE)
-
+function drawTraversePhase(ctx, width, height, centerX, centerY, state, _timeline, dt) {
   // 绘制固定粒子
   if (state.particleSystem) {
     ctx.globalAlpha = 0.5
@@ -343,7 +341,7 @@ function drawTraversePhase(ctx, width, height, centerX, centerY, state, timeline
 }
 
 // 阶段5：按钮出现
-function drawButtonPhase(ctx, width, height, centerX, centerY, state, timeline) {
+function drawButtonPhase(ctx, width, height, centerX, centerY, state, _timeline) {
   if (state.particleSystem) {
     ctx.globalAlpha = 0.5
     state.particleSystem.draw(ctx)

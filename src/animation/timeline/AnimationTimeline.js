@@ -3,7 +3,7 @@
  * 宇宙大爆发叙事体验 - 最终版
  */
 
-import { lerp, easeInOut, easeOut, easeIn } from '../utils/MathUtils'
+import { easeInOut } from '../utils/MathUtils'
 
 // 动画阶段定义
 export const PHASES = {
