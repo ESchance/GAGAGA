@@ -43,12 +43,12 @@ export class Singularity {
           vec3 target = vec3(0.0, 0.0, -20.0);
           vec3 p = mix(position, target, uCollapse);
           float breathe = 0.85 + 0.15 * sin(uTime * 2.0 + position.x * 1.5);
-          // 坍缩时保持清晰（聚拢成亮点依然可见）
-          vAlpha = breathe * (0.06 + 0.5 * uProgress) * (1.0 - 0.1 * uCollapse);
+          // 坍缩时保持亮度与尺寸，让环收缩成亮点的过程清晰可见
+          vAlpha = breathe * (0.08 + 0.5 * uProgress);
           vec4 mv = modelViewMatrix * vec4(p, 1.0);
-          float starSize = aSize * (90.0 / max(-mv.z, 0.1)) * breathe * (1.0 - 0.4 * uCollapse);
-          // clamp 上限防止粒子靠近相机时放大成光球
-          gl_PointSize = clamp(starSize, 1.0, 6.0);
+          float starSize = aSize * (90.0 / max(-mv.z, 0.1)) * breathe * (1.0 - 0.2 * uCollapse);
+          // clamp 上限防止粒子靠近相机时放大成光球，同时保证坍缩后亮点可见
+          gl_PointSize = clamp(starSize, 1.0, 8.0);
           gl_Position = projectionMatrix * mv;
         }
       `,
@@ -74,9 +74,9 @@ export class Singularity {
   update(time, progress) {
     this.material.uniforms.uTime.value = time
     this.material.uniforms.uProgress.value = progress
-    // 坍缩进度：progress 0.35~0.6 之间从 0→1（较慢，环内粒子清晰聚拢成亮点）
-    // 完成后保持亮点停顿（0.6~1.0），营造"暴风雨前的宁静"
-    const collapse = Math.max(0, Math.min(1, (progress - 0.35) / 0.25))
+    // 坍缩进度：progress 0.3~0.7 之间从 0→1（1.6 秒，环清晰可见地收缩成亮点）
+    // 完成后保持亮点停顿（0.7~1.0），营造"暴风雨前的宁静"
+    const collapse = Math.max(0, Math.min(1, (progress - 0.3) / 0.4))
     this.material.uniforms.uCollapse.value = collapse
     this.group.rotation.z = time * 0.04
   }
