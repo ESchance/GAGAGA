@@ -59,22 +59,6 @@ export class ExplosionSystem {
     this.points = new THREE.Points(geometry, material)
     this.group.add(this.points)
 
-    // 粒子间细线（雾状尘雾）：采样一部分粒子，连接近邻
-    this.lineSample = 700
-    this.linePositions = new Float32Array(this.lineSample * 6)
-    const lineGeo = new THREE.BufferGeometry()
-    lineGeo.setAttribute('position', new THREE.BufferAttribute(this.linePositions, 3))
-    this.lineGeometry = lineGeo
-    this.lineMaterial = new THREE.LineBasicMaterial({
-      color: 0x9ac0ff,
-      transparent: true,
-      opacity: 0.14,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
-    })
-    this.lines = new THREE.LineSegments(lineGeo, this.lineMaterial)
-    this.group.add(this.lines)
-
     this.exploded = false
   }
 
@@ -119,46 +103,12 @@ export class ExplosionSystem {
       }
     }
     this.geometry.attributes.position.needsUpdate = true
-    this.updateLines()
   }
 
-  // 粒子间连线：采样近邻粒子对，形成雾状网络
-  updateLines() {
-    const pos = this.geometry.attributes.position.array
-    const lp = this.linePositions
-    const n = Math.min(this.lineSample, this.count)
-    const threshold2 = 9 * 9
-    let count = 0
-    const maxLines = 1200
-    for (let i = 0; i < n && count < maxLines; i++) {
-      if (!this.active[i] || this.finished[i]) continue
-      for (let j = i + 1; j < n && count < maxLines; j++) {
-        if (!this.active[j] || this.finished[j]) continue
-        const dx = pos[i * 3] - pos[j * 3]
-        const dy = pos[i * 3 + 1] - pos[j * 3 + 1]
-        const dz = pos[i * 3 + 2] - pos[j * 3 + 2]
-        if (dx * dx + dy * dy + dz * dz < threshold2) {
-          const li = count * 6
-          lp[li] = pos[i * 3]
-          lp[li + 1] = pos[i * 3 + 1]
-          lp[li + 2] = pos[i * 3 + 2]
-          lp[li + 3] = pos[j * 3]
-          lp[li + 4] = pos[j * 3 + 1]
-          lp[li + 5] = pos[j * 3 + 2]
-          count++
-        }
-      }
-    }
-    for (let k = count * 6; k < lp.length; k++) lp[k] = 9999
-    this.lineGeometry.attributes.position.needsUpdate = true
-    this.lines.visible = count > 0
-  }
-
-  // 立即隐藏所有粒子与连线
+  // 立即隐藏所有粒子
   clear() {
     this.geometry.attributes.position.array.fill(9999)
     this.geometry.attributes.position.needsUpdate = true
-    this.lines.visible = false
     this.active.fill(0)
     this.finished.fill(0)
   }
@@ -166,7 +116,5 @@ export class ExplosionSystem {
   dispose() {
     this.geometry.dispose()
     this.material.dispose()
-    this.lineGeometry.dispose()
-    this.lineMaterial.dispose()
   }
 }
