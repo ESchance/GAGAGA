@@ -21,6 +21,7 @@ export default function IntroAnimation({
   const [showExploreButton, setShowExploreButton] = useState(false)
   const [showHUD, setShowHUD] = useState(false)
   const [showTitle, setShowTitle] = useState(false)
+  const [titleCollapsed, setTitleCollapsed] = useState(false)
   const [hoveredNebula, setHoveredNebula] = useState(null)
   const timelineRef = useRef(null)
 
@@ -109,6 +110,16 @@ export default function IntroAnimation({
     }
   }, [animationStarted, onComplete])
 
+  // 标题出现 1.2s 后触发坍缩（向中心吸入），用 setTimeout 精确控制时机
+  useEffect(() => {
+    if (!showTitle) {
+      setTitleCollapsed(false)
+      return
+    }
+    const timer = setTimeout(() => setTitleCollapsed(true), 1200)
+    return () => clearTimeout(timer)
+  }, [showTitle])
+
   useEffect(() => {
     if (animationStarted && timelineRef.current) {
       timelineRef.current.start()
@@ -164,36 +175,47 @@ export default function IntroAnimation({
         onReady={() => setRendererReady(true)}
       />
 
-      {/* 标题 */}
-      {!isLoading && showTitle && (
-        <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
-          <div className="text-center title-collapse relative">
-            {/* 深色遮罩：压暗背景，保证标题清晰可读（径向渐变替代 blur，避免模糊计算导致星空卡顿） */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[160%] aspect-square" style={{
-              background: 'radial-gradient(circle, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.45) 50%, transparent 75%)'
-            }} />
-            <div className="relative">
-              {/* 主标题：平滑浮现（淡入 + 上移 + 缩放） */}
-              <h1 className="title-fade-in text-5xl md:text-7xl font-bold text-white mb-4" style={{
-                textShadow: '0 0 40px rgba(0, 255, 255, 0.6), 0 0 80px rgba(0, 191, 255, 0.3)',
-                fontFamily: 'Orbitron, sans-serif',
-                letterSpacing: '0.2em'
-              }}>
-                嘎宇宙
-              </h1>
-              {/* 副标题：错峰淡入，更平缓 */}
-              <p className="title-fade-in-delayed text-cyan-300 text-lg tracking-widest opacity-80" style={{
-                fontFamily: 'JetBrains Mono, monospace'
-              }}>
-                GAGA UNIVERSE
-              </p>
-              <p className="title-fade-in-delayed text-gray-400 text-sm mt-2 tracking-widest" style={{ animationDelay: '0.7s' }}>
-                初始化宇宙创生协议
-              </p>
-            </div>
+      {/* 标题：始终挂载（loading 阶段以 opacity:0 预渲染字体与阴影，避免动画中途首次渲染导致星空卡顿） */}
+      <div
+        className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none"
+        style={{
+          opacity: !isLoading && showTitle ? 1 : 0,
+          transition: 'opacity 0.4s ease'
+        }}
+      >
+        <div
+          className="text-center relative"
+          style={{
+            transform: titleCollapsed ? 'scale(0.02)' : 'scale(1)',
+            opacity: titleCollapsed ? 0 : 1,
+            transition: 'transform 0.9s cubic-bezier(0.7, 0, 0.84, 0), opacity 0.9s cubic-bezier(0.7, 0, 0.84, 0)'
+          }}
+        >
+          {/* 深色遮罩：压暗背景，保证标题清晰可读（径向渐变替代 blur，避免模糊计算导致星空卡顿） */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[160%] aspect-square" style={{
+            background: 'radial-gradient(circle, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.45) 50%, transparent 75%)'
+          }} />
+          <div className="relative">
+            {/* 主标题 */}
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-4" style={{
+              textShadow: '0 0 40px rgba(0, 255, 255, 0.6), 0 0 80px rgba(0, 191, 255, 0.3)',
+              fontFamily: 'Orbitron, sans-serif',
+              letterSpacing: '0.2em'
+            }}>
+              嘎宇宙
+            </h1>
+            {/* 副标题 */}
+            <p className="text-cyan-300 text-lg tracking-widest opacity-80" style={{
+              fontFamily: 'JetBrains Mono, monospace'
+            }}>
+              GAGA UNIVERSE
+            </p>
+            <p className="text-gray-400 text-sm mt-2 tracking-widest">
+              初始化宇宙创生协议
+            </p>
           </div>
         </div>
-      )}
+      </div>
 
       {/* HUD */}
       {!isLoading && showHUD && (
