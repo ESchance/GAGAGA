@@ -26,7 +26,7 @@ export default function IntroAnimation({
 
   // 惰性初始化时间轴，保证任何渲染时都已存在
   if (!timelineRef.current) {
-    timelineRef.current = new AnimationTimeline(35000)
+    timelineRef.current = new AnimationTimeline(36000)
   }
 
   // 假加载进度条（期间并行预加载渲染器 + 科技感字体）
@@ -168,8 +168,10 @@ export default function IntroAnimation({
       {!isLoading && showTitle && (
         <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
           <div className="text-center title-collapse relative">
-            {/* 深色遮罩：压暗背景，保证标题清晰可读 */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] aspect-square rounded-full bg-black/60 blur-3xl" />
+            {/* 深色遮罩：压暗背景，保证标题清晰可读（径向渐变替代 blur，避免模糊计算导致星空卡顿） */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[160%] aspect-square" style={{
+              background: 'radial-gradient(circle, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.45) 50%, transparent 75%)'
+            }} />
             <div className="relative">
               {/* 主标题：平滑浮现（淡入 + 上移 + 缩放） */}
               <h1 className="title-fade-in text-5xl md:text-7xl font-bold text-white mb-4" style={{
