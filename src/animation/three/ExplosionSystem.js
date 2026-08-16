@@ -1,8 +1,9 @@
 import * as THREE from 'three'
 
-// EXPLOSION：粒子从中心炸开，飞向旋臂目标形成漩涡银河；少部分飞出屏幕
-// 无星云聚集、无连线，粒子炸开即为银河
-// 粒子有大有小（aSize 随机）、有快有慢（delay/duration 随机）、银河有厚度（立体 3D）
+// 爆炸 + 银河系统
+// 粒子从中心炸开：80% 飞向旋臂目标形成银河（持久保留），20% 飞出屏幕
+// 银河粒子在穿梭阶段保持并缓慢自转，作为「第一视角穿越银河」的背景
+// 关键：颜色用 aPhase 随机相位在 shader 里计算，避免使用 Three.js 内建 color 属性名导致 shader 冲突
 export class ExplosionSystem {
   constructor(count) {
     this.count = count
@@ -10,24 +11,28 @@ export class ExplosionSystem {
 
     this.target = new Float32Array(count * 3) // 目标位置（旋臂或飞出）
     this.flyOut = new Uint8Array(count)       // 是否飞出屏幕
-    this.delay = new Float32Array(count)
-    this.duration = new Float32Array(count)
+    this.delay = new Float32Array(count)      // 起飞延迟（有快有慢）
+    this.duration = new Float32Array(count)   // 飞行时长（有快有慢）
     this.active = new Uint8Array(count)
     this.finished = new Uint8Array(count)
 
     const arms = 3
     const positions = new Float32Array(count * 3)
-    const sizes = new Float32Array(count)
+    const sizes = new Float32Array(count)     // 粒子大小（有大有小）
+    const phases = new Float32Array(count)    // [0,1) 随机，用于 shader 里选色
+
     for (let i = 0; i < count; i++) {
       this.delay[i] = Math.random() * 250
       this.duration[i] = 800 + Math.random() * 1600
 
       // 粒子大小：有大有小（多数小、少数大），层次分明
       const sizeRand = Math.random()
-      if (sizeRand > 0.95) sizes[i] = 2.2 + Math.random() * 0.8        // 5% 特大
-      else if (sizeRand > 0.80) sizes[i] = 1.5 + Math.random() * 0.7   // 15% 大
-      else if (sizeRand > 0.45) sizes[i] = 0.9 + Math.random() * 0.6   // 35% 中
-      else sizes[i] = 0.4 + Math.random() * 0.5                        // 45% 小
+      if (sizeRand > 0.95) sizes[i] = 2.6 + Math.random() * 1.0      // 5% 特大
+      else if (sizeRand > 0.80) sizes[i] = 1.7 + Math.random() * 0.8 // 15% 大
+      else if (sizeRand > 0.45) sizes[i] = 1.0 + Math.random() * 0.7 // 35% 中
+      else sizes[i] = 0.5 + Math.random() * 0.5                      // 45% 小
+
+      phases[i] = Math.random()
 
       if (Math.random() < 0.2) {
         // 20% 飞出屏幕（3D 球面分布）
@@ -46,7 +51,7 @@ export class ExplosionSystem {
         const theta = r * 0.55 + (arm * Math.PI * 2) / arms + (Math.random() - 0.5) * 0.25
         this.target[i * 3] = r * Math.cos(theta)
         this.target[i * 3 + 1] = r * Math.sin(theta)
-        // z 轴厚度：从 -38~-44（6 厚度）加宽到 -53~-23（30 厚度），银河立体
+        // z 轴厚度：约 -53 ~ -23，银河有立体厚度
         this.target[i * 3 + 2] = -38 + (Math.random() - 0.5) * 30
       }
     }
@@ -54,20 +59,7 @@ export class ExplosionSystem {
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     geometry.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1))
-
-    // 粒子颜色（电磁蓝紫系）
-    const colors = new Float32Array(count * 3)
-    const palette = [
-      [0.5, 0.85, 1.0], [0.4, 0.75, 1.0], [0.6, 0.5, 1.0], [0.7, 0.4, 1.0],
-      [0.2, 0.95, 0.95], [0.5, 0.7, 1.0], [0.4, 0.6, 1.0], [0.6, 0.6, 1.0]
-    ]
-    for (let i = 0; i < count; i++) {
-      const col = palette[Math.floor(Math.random() * palette.length)]
-      colors[i * 3] = col[0]
-      colors[i * 3 + 1] = col[1]
-      colors[i * 3 + 2] = col[2]
-    }
-    geometry.setAttribute('aColor', new THREE.BufferAttribute(colors, 3))
+    geometry.setAttribute('aPhase', new THREE.BufferAttribute(phases, 1))
     this.geometry = geometry
 
     // 自定义 shader：支持逐粒子大小（PointsMaterial 无法做到「有大有小」）
@@ -75,12 +67,20 @@ export class ExplosionSystem {
       uniforms: { uTexture: { value: null } },
       vertexShader: `
         attribute float aSize;
-        attribute vec3 aColor;
+        attribute float aPhase;
         varying vec3 vColor;
         void main() {
-          vColor = aColor;
+          // 用 aPhase 伪随机在蓝紫青白系中选色（避免 color attribute 与 Three.js 内建冲突）
+          vec3 c1 = vec3(0.45, 0.8, 1.0);   // 亮蓝
+          vec3 c2 = vec3(0.65, 0.5, 1.0);   // 蓝紫
+          vec3 c3 = vec3(0.3, 0.9, 0.9);    // 青
+          vec3 c4 = vec3(0.9, 0.95, 1.0);   // 白
+          vec3 c = mix(c1, c2, step(0.33, aPhase));
+          c = mix(c, c3, step(0.5, aPhase));
+          c = mix(c, c4, step(0.8, aPhase));
+          vColor = c;
           vec4 mv = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = clamp(aSize * (120.0 / max(-mv.z, 0.1)), 0.5, 8.0);
+          gl_PointSize = clamp(aSize * (150.0 / max(-mv.z, 0.1)), 0.5, 10.0);
           gl_Position = projectionMatrix * mv;
         }
       `,
@@ -111,6 +111,7 @@ export class ExplosionSystem {
     this.material.uniforms.uTexture.value = texture
   }
 
+  // 爆炸阶段：粒子按各自 delay/duration 从中心飞向目标
   update(elapsed) {
     if (!this.exploded) return
     const pos = this.geometry.attributes.position.array
@@ -120,9 +121,8 @@ export class ExplosionSystem {
       }
       if (!this.active[i] || this.finished[i]) continue
       const ix = i * 3
-      // 从中心飞向目标（炸开即为银河成形）
       const t = Math.min(1, (elapsed - this.delay[i]) / this.duration[i])
-      const k = 1 - (1 - t) * (1 - t)
+      const k = 1 - (1 - t) * (1 - t) // 缓出，粒子先快后慢，炸开更有力
       pos[ix] = this.target[ix] * k
       pos[ix + 1] = this.target[ix + 1] * k
       pos[ix + 2] = this.target[ix + 2] * k
@@ -140,12 +140,9 @@ export class ExplosionSystem {
     this.geometry.attributes.position.needsUpdate = true
   }
 
-  // 立即隐藏所有粒子
-  clear() {
-    this.geometry.attributes.position.array.fill(9999)
-    this.geometry.attributes.position.needsUpdate = true
-    this.active.fill(0)
-    this.finished.fill(0)
+  // 穿梭阶段：银河缓慢自转，增强「身处银河」的真实感（不再 clear，银河持久保留）
+  rotate(rate) {
+    this.group.rotation.z += rate
   }
 
   dispose() {

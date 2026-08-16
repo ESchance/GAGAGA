@@ -144,8 +144,9 @@ export default function ThreeAnimationCanvas({ timeline, _onNebulaHover, onReady
       singularity.group.visible =
         phase === PHASES.DARKNESS || phase === PHASES.BIRTH
 
-      // 背景星空：爆炸阶段隐藏（让位给旋臂银河，避免与无序星空混淆）
-      stars.group.visible = phase !== PHASES.EXPLOSION
+      // 背景星空：只在黑暗+诞生阶段显示（爆炸后由银河接管背景）
+      stars.group.visible =
+        phase === PHASES.DARKNESS || phase === PHASES.BIRTH
 
       // 穿梭粒子：从穿梭阶段到探索按钮阶段一直保持存在
       traverse.group.visible =
@@ -154,8 +155,13 @@ export default function ThreeAnimationCanvas({ timeline, _onNebulaHover, onReady
         phase === PHASES.FAST_TRAVERSE ||
         phase === PHASES.ENTER
 
-      // 爆炸粒子只在爆炸阶段显示（初始粒子聚在原点，提前显示会成一个亮点）
-      explosion.group.visible = phase === PHASES.EXPLOSION
+      // 银河（爆炸粒子）：爆炸阶段炸开成型，之后【持久保留】到动画结束，穿梭阶段作为背景
+      explosion.group.visible =
+        phase === PHASES.EXPLOSION ||
+        phase === PHASES.TRAVERSE ||
+        phase === PHASES.BUTTON ||
+        phase === PHASES.FAST_TRAVERSE ||
+        phase === PHASES.ENTER
 
       // 阶段渲染
       renderPhase(phase, {

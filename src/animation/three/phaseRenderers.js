@@ -1,7 +1,13 @@
 import { PHASES } from '../timeline/AnimationTimeline'
 
 // 阶段渲染协调器：根据时间轴阶段更新各 3D 系统状态
-// ctx = { timeline, systems, camera, bloom, time, dt, quality, state, nebulaCenters }
+// ctx = { timeline, systems, camera, bloom, time, dt, quality, state }
+//
+// 生命周期核心约定：
+//   星空(stars)     —— 仅 DARKNESS/BIRTH 显示，爆炸后由银河接管背景
+//   奇点(singularity) —— 仅 DARKNESS/BIRTH
+//   银河(explosion) —— EXPLOSION 炸开成型后【持久保留】到动画结束，穿梭阶段缓慢自转
+//   穿梭(traverse)  —— TRAVERSE 起显示，第一视角掠过银河
 
 export function renderPhase(phase, ctx) {
   const { timeline, systems, camera, bloom, time, dt } = ctx
@@ -18,7 +24,7 @@ export function renderPhase(phase, ctx) {
   }
   if (stars) stars.setCollapse(galaxyCollapse)
 
-  // 星空始终更新
+  // 星空始终更新（仅在显示阶段）
   if (stars) stars.update(time)
 
   switch (phase) {
@@ -44,23 +50,16 @@ export function renderPhase(phase, ctx) {
         if (explosion) explosion.explode()
         if (shake) shake.add(1)
       }
-
       const elapsed = time * 1000 - ctx.state.explosionStart
-      if (explosion) {
-        explosion.update(elapsed)
-      }
-
-      // 无刺眼白光
+      if (explosion) explosion.update(elapsed)
       if (flash) flash.visible = false
-
-      // 低泛光，避免大面积光晕
       if (bloom) bloom.setStrength(0.15)
       break
     }
 
     case PHASES.TRAVERSE: {
-      // 清空爆炸粒子（其聚成的星云已由穿梭阶段接管背景）
-      if (explosion) explosion.clear()
+      // 银河持久保留并缓慢自转，作为第一视角穿越的背景（不再 clear）
+      if (explosion) explosion.rotate(dt * 0.0002)
       if (traverse) {
         traverse.update(dt, 1)
         traverse.hideLines()
@@ -75,7 +74,8 @@ export function renderPhase(phase, ctx) {
     }
 
     case PHASES.BUTTON: {
-      // 穿梭粒子保持存在并继续巡航（一直播放到用户点击）
+      // 银河持续自转，穿梭粒子巡航等待用户点击
+      if (explosion) explosion.rotate(dt * 0.0002)
       if (traverse) {
         traverse.update(dt, 1)
         traverse.hideLines()
@@ -87,27 +87,28 @@ export function renderPhase(phase, ctx) {
 
     case PHASES.FAST_TRAVERSE: {
       const progress = timeline.getEasedProgress(PHASES.FAST_TRAVERSE)
+      // 快速穿梭时银河自转加快，增强速度感
+      if (explosion) explosion.rotate(dt * 0.0008)
       if (traverse) {
         traverse.update(dt, 2)
         traverse.updateLines(dt, 2)
       }
       if (bloom) bloom.setStrength(0.35)
-      // FOV 增大增强速度感
       camera.fov = 60 + 12 * progress
       camera.updateProjectionMatrix()
-      // 去除满屏白光
       if (flash) flash.visible = false
       break
     }
 
     case PHASES.ENTER: {
+      if (explosion) explosion.rotate(dt * 0.0002)
       if (traverse) {
         traverse.hideLines()
         // 淡出过渡（结尾渐隐，不硬切）
         const ep = timeline.getPhaseProgress(PHASES.ENTER)
         traverse.setOpacity(Math.max(0, 1 - ep))
       }
-      // 光亮慢慢布满整个屏幕（flash 从 0 渐显到 1）
+      // 光亮慢慢布满整个屏幕
       if (flash) {
         flash.visible = true
         flash.material.opacity = timeline.getPhaseProgress(PHASES.ENTER)
