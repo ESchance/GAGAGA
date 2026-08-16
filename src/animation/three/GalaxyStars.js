@@ -53,12 +53,11 @@ export class GalaxyStars {
           vec3 target = vec3(0.0, 0.0, -60.0);
           vec3 p = mix(position, target, uCollapse);
 
-          // 径向颜色（基于原位置，坍缩过程颜色不变）
-          float r = length(position.xy);
-          float t = clamp(r / uRadius, 0.0, 1.0);
-          vec3 centerColor = vec3(0.55, 0.62, 0.85);
-          vec3 edgeColor = vec3(0.8, 0.62, 0.42);
-          vColor = mix(centerColor, edgeColor, t);
+          // 深邃星空：统一蓝白色调，带轻微随机色温（去银河盘橙黄渐变）
+          float warmth = fract(sin(aPhase * 12.9898) * 43758.5453);
+          vec3 coolColor = vec3(0.72, 0.82, 1.0);
+          vec3 warmColor = vec3(1.0, 0.94, 0.82);
+          vColor = mix(coolColor, warmColor, warmth * 0.35);
 
           float twinkle = 0.55 + 0.3 * sin(uTime * 2.0 + aPhase);
           vAlpha = twinkle * 0.5;

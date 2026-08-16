@@ -106,7 +106,7 @@ export default function ThreeAnimationCanvas({ timeline, _onNebulaHover, onReady
         blending: THREE.AdditiveBlending
       })
     )
-    flash.scale.set(1, 1, 1)
+    flash.scale.set(20, 20, 1)
     flash.position.set(0, 0, -5)
     flash.frustumCulled = false
     flash.renderOrder = 999

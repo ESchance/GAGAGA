@@ -411,17 +411,6 @@ export class ParticleSystem {
     }
   }
 
-  // 固定部分粒子
-  fixParticles(percentage = 0.3) {
-    const activeParticles = this.particles.filter(p => p.active && p.life > 0.5)
-    const count = Math.floor(activeParticles.length * percentage)
-
-    for (let i = 0; i < count; i++) {
-      const randomIndex = Math.floor(Math.random() * activeParticles.length)
-      activeParticles[randomIndex].makeFixed()
-    }
-  }
-
   update(dt) {
     this.particles.forEach(p => {
       if (!p.active && p.isReady()) {

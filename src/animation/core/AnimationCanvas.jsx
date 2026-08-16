@@ -170,7 +170,7 @@ export default function AnimationCanvas({ timeline, onNebulaHover }) {
           break
 
         case PHASES.BUTTON:
-          drawButtonPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline)
+          drawButtonPhase(ctx, rect.width, rect.height, centerX, centerY, state, timeline, dt)
           break
 
         case PHASES.FAST_TRAVERSE:
@@ -250,7 +250,7 @@ function drawBirthPhase(ctx, width, height, centerX, centerY, state, timeline) {
 }
 
 // 阶段3：大爆发（粒子吸引到星云位置）
-function drawExplosionPhase(ctx, width, height, centerX, centerY, state, timeline, dt) {
+function drawExplosionPhase(ctx, width, height, centerX, centerY, state, timeline, _dt) {
   const progress = timeline.getEasedProgress(PHASES.EXPLOSION)
 
   // 闪光效果
@@ -311,9 +311,8 @@ function drawExplosionPhase(ctx, width, height, centerX, centerY, state, timelin
     })
   }
 
-  // 更新和绘制粒子
+  // 更新和绘制粒子（粒子已在主循环统一 update，这里只负责绘制）
   if (state.particleSystem) {
-    state.particleSystem.update(dt)
     state.particleSystem.draw(ctx)
   }
 
@@ -360,7 +359,7 @@ function drawTraversePhase(ctx, width, height, centerX, centerY, state, _timelin
 }
 
 // 阶段5：按钮出现
-function drawButtonPhase(ctx, width, height, centerX, centerY, state, _timeline) {
+function drawButtonPhase(ctx, width, height, centerX, centerY, state, _timeline, dt) {
   if (state.particleSystem) {
     ctx.globalAlpha = 0.5
     state.particleSystem.draw(ctx)
@@ -381,7 +380,7 @@ function drawButtonPhase(ctx, width, height, centerX, centerY, state, _timeline)
   })
 
   state.traverseParticles.forEach(p => {
-    p.update(16)
+    p.update(dt)
     p.draw(ctx)
   })
 }

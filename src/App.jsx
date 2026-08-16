@@ -87,7 +87,6 @@ function AnimationManager({ children }) {
       {showIntro && (
         <IntroAnimation
           onComplete={handleIntroComplete}
-          isFirstTime={!isNewUser}
           showSkip={!isNewUser}
           onExploreClick={handleExploreClick}
         />

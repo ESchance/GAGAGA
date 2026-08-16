@@ -88,8 +88,8 @@ export function renderPhase(phase, ctx) {
     case PHASES.FAST_TRAVERSE: {
       const progress = timeline.getEasedProgress(PHASES.FAST_TRAVERSE)
       if (traverse) {
-        traverse.update(dt, 8)
-        traverse.updateLines(dt, 8)
+        traverse.update(dt, 2)
+        traverse.updateLines(dt, 2)
       }
       if (bloom) bloom.setStrength(0.35)
       // FOV 增大增强速度感
@@ -107,8 +107,11 @@ export function renderPhase(phase, ctx) {
         const ep = timeline.getPhaseProgress(PHASES.ENTER)
         traverse.setOpacity(Math.max(0, 1 - ep))
       }
-      // 去除满屏白光（动画自然结束，由父组件卸载切换首页）
-      if (flash) flash.visible = false
+      // 光亮慢慢布满整个屏幕（flash 从 0 渐显到 1）
+      if (flash) {
+        flash.visible = true
+        flash.material.opacity = timeline.getPhaseProgress(PHASES.ENTER)
+      }
       if (bloom) bloom.setStrength(0)
       break
     }

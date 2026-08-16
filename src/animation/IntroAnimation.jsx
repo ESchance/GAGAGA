@@ -11,7 +11,6 @@ import { AnimationTimeline, PHASES } from './timeline/AnimationTimeline'
 
 export default function IntroAnimation({
   onComplete,
-  _isFirstTime = true,
   showSkip = false,
   onExploreClick
 }) {
