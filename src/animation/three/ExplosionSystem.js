@@ -22,7 +22,7 @@ export class ExplosionSystem {
 
     for (let i = 0; i < count; i++) {
       this.delay[i] = Math.random() * 250
-      this.duration[i] = 800 + Math.random() * 1600
+      this.duration[i] = 1000 + Math.random() * 1500
 
       // 粒子大小：有大有小（多数小、少数大），层次分明
       const sizeRand = Math.random()
@@ -70,7 +70,7 @@ export class ExplosionSystem {
           vec3 large = vec3(0.9, 0.95, 1.0);   // 大粒子白
           vColor = mix(small, large, t);
           vec4 mv = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = clamp(aSize * (220.0 / max(-mv.z, 0.1)), 1.0, 14.0);
+          gl_PointSize = clamp(aSize * (400.0 / max(-mv.z, 0.1)), 2.0, 24.0);
           gl_Position = projectionMatrix * mv;
         }
       `,

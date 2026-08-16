@@ -52,7 +52,12 @@ export function renderPhase(phase, ctx) {
       }
       const elapsed = time * 1000 - ctx.state.explosionStart
       if (explosion) explosion.update(elapsed)
-      if (flash) flash.visible = false
+      // 爆炸瞬间强闪光（前 200ms 渐隐），增强爆炸冲击感
+      if (flash) {
+        const fp = Math.max(0, 1 - elapsed / 200)
+        flash.visible = fp > 0
+        if (fp > 0) flash.material.opacity = fp
+      }
       if (bloom) bloom.setStrength(0.15)
       break
     }
