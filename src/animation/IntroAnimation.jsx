@@ -116,7 +116,7 @@ export default function IntroAnimation({
       setTitleCollapsed(false)
       return
     }
-    const timer = setTimeout(() => setTitleCollapsed(true), 1200)
+    const timer = setTimeout(() => setTitleCollapsed(true), 2500)
     return () => clearTimeout(timer)
   }, [showTitle])
 
@@ -180,7 +180,7 @@ export default function IntroAnimation({
         className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none"
         style={{
           opacity: !isLoading && showTitle ? 1 : 0,
-          transition: 'opacity 0.4s ease'
+          transition: 'opacity 1.5s ease'
         }}
       >
         <div
@@ -193,7 +193,7 @@ export default function IntroAnimation({
         >
           {/* 深色遮罩：压暗背景，保证标题清晰可读（径向渐变替代 blur，避免模糊计算导致星空卡顿） */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[160%] aspect-square" style={{
-            background: 'radial-gradient(circle, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.45) 50%, transparent 75%)'
+            background: 'radial-gradient(circle, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.28) 50%, transparent 70%)'
           }} />
           <div className="relative">
             {/* 主标题 */}

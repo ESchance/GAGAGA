@@ -30,10 +30,10 @@ export class AnimationTimeline {
     // 纯星空阶段加长（3s），探索按钮阶段留 11s（穿梭循环，等待用户点击）
     this.phaseTimes = {
       [PHASES.DARKNESS]: { start: 0, end: 3000 },
-      [PHASES.BIRTH]: { start: 3000, end: 6000 },
-      [PHASES.EXPLOSION]: { start: 6000, end: 11000 },
-      [PHASES.TRAVERSE]: { start: 11000, end: 19000 },
-      [PHASES.BUTTON]: { start: 19000, end: 30000 },
+      [PHASES.BIRTH]: { start: 3000, end: 7000 },
+      [PHASES.EXPLOSION]: { start: 7000, end: 12000 },
+      [PHASES.TRAVERSE]: { start: 12000, end: 20000 },
+      [PHASES.BUTTON]: { start: 20000, end: 30000 },
       [PHASES.FAST_TRAVERSE]: { start: 30000, end: 33000 },
       [PHASES.ENTER]: { start: 33000, end: 36000 }
     }
