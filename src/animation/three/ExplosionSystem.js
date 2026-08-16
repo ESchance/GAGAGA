@@ -67,7 +67,7 @@ export class ExplosionSystem {
       colors[i * 3 + 1] = col[1]
       colors[i * 3 + 2] = col[2]
     }
-    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+    geometry.setAttribute('aColor', new THREE.BufferAttribute(colors, 3))
     this.geometry = geometry
 
     // 自定义 shader：支持逐粒子大小（PointsMaterial 无法做到「有大有小」）
@@ -75,10 +75,10 @@ export class ExplosionSystem {
       uniforms: { uTexture: { value: null } },
       vertexShader: `
         attribute float aSize;
-        attribute vec3 color;
+        attribute vec3 aColor;
         varying vec3 vColor;
         void main() {
-          vColor = color;
+          vColor = aColor;
           vec4 mv = modelViewMatrix * vec4(position, 1.0);
           gl_PointSize = clamp(aSize * (120.0 / max(-mv.z, 0.1)), 0.5, 8.0);
           gl_Position = projectionMatrix * mv;

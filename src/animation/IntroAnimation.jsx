@@ -110,14 +110,13 @@ export default function IntroAnimation({
     }
   }, [animationStarted, onComplete])
 
-  // 标题出现 1.2s 后触发坍缩（向中心吸入），用 setTimeout 精确控制时机
+  // 标题出现 2.5s 后触发坍缩（向中心吸入）；showTitle 变 false 时不重置，避免坍缩后标题短暂重现
   useEffect(() => {
-    if (!showTitle) {
+    if (showTitle) {
       setTitleCollapsed(false)
-      return
+      const timer = setTimeout(() => setTitleCollapsed(true), 2500)
+      return () => clearTimeout(timer)
     }
-    const timer = setTimeout(() => setTitleCollapsed(true), 2500)
-    return () => clearTimeout(timer)
   }, [showTitle])
 
   useEffect(() => {
