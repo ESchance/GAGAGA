@@ -114,7 +114,7 @@ export default function IntroAnimation({
   useEffect(() => {
     if (showTitle) {
       setTitleCollapsed(false)
-      const timer = setTimeout(() => setTitleCollapsed(true), 2500)
+      const timer = setTimeout(() => setTitleCollapsed(true), 1400)
       return () => clearTimeout(timer)
     }
   }, [showTitle])
@@ -216,55 +216,58 @@ export default function IntroAnimation({
         </div>
       </div>
 
-      {/* HUD */}
-      {!isLoading && showHUD && (
-        <>
-          <div className="hidden sm:block">
-            <HUDOverlay visible={showHUD} hoveredNebula={hoveredNebula} />
-          </div>
-          <div className="sm:hidden">
-            <MobileHUD visible={showHUD} hoveredNebula={hoveredNebula} />
-          </div>
-        </>
-      )}
-
-      {/* 开始探索按钮 */}
-      {!isLoading && showExploreButton && (
-        <div className="absolute inset-0 flex items-center justify-center z-40">
-          <div className="text-center animate-fade-in">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{
-              background: 'linear-gradient(135deg, #00ffff 0%, #00bfff 30%, #e0ffff 60%, #9370db 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              fontFamily: 'Orbitron, sans-serif',
-              letterSpacing: '0.15em',
-              textShadow: '0 0 30px rgba(0, 255, 255, 0.3)'
-            }}>
-              宇宙探索者
-            </h2>
-            <p className="text-cyan-300 text-sm tracking-widest mb-8" style={{
-              fontFamily: 'JetBrains Mono, monospace',
-              textShadow: '0 0 10px rgba(0, 255, 255, 0.3)'
-            }}>
-              深空探索系统已激活 · 准备进入宇宙
-            </p>
-            <button
-              onClick={handleExploreClick}
-              className="px-10 py-4 bg-white/10 backdrop-blur-sm text-cyan-300 border border-cyan-400/40 rounded-lg text-lg font-medium hover:bg-white/20 hover:border-cyan-400/80 hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-300"
-              style={{
-                fontFamily: 'Orbitron, sans-serif',
-                letterSpacing: '0.2em',
-                clipPath: 'polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px)'
-              }}
-            >
-              开始探索
-            </button>
-            <p className="text-gray-500 text-xs mt-4 tracking-widest">
-              点击进入深空
-            </p>
-          </div>
+      {/* HUD：始终挂载，visible 控制 opacity，避免出现时首次渲染卡顿 */}
+      <>
+        <div className="hidden sm:block">
+          <HUDOverlay visible={!isLoading && showHUD} hoveredNebula={hoveredNebula} />
         </div>
-      )}
+        <div className="sm:hidden">
+          <MobileHUD visible={!isLoading && showHUD} hoveredNebula={hoveredNebula} />
+        </div>
+      </>
+
+      {/* 开始探索按钮：始终挂载，opacity 控制显隐，避免出现时首次渲染卡顿 */}
+      <div
+        className="absolute inset-0 flex items-center justify-center z-40"
+        style={{
+          opacity: !isLoading && showExploreButton ? 1 : 0,
+          transition: 'opacity 0.5s ease',
+          pointerEvents: !isLoading && showExploreButton ? 'auto' : 'none'
+        }}
+      >
+        <div className="text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{
+            background: 'linear-gradient(135deg, #00ffff 0%, #00bfff 30%, #e0ffff 60%, #9370db 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            fontFamily: 'Orbitron, sans-serif',
+            letterSpacing: '0.15em',
+            textShadow: '0 0 30px rgba(0, 255, 255, 0.3)'
+          }}>
+            宇宙探索者
+          </h2>
+          <p className="text-cyan-300 text-sm tracking-widest mb-8" style={{
+            fontFamily: 'JetBrains Mono, monospace',
+            textShadow: '0 0 10px rgba(0, 255, 255, 0.3)'
+          }}>
+            深空探索系统已激活 · 准备进入宇宙
+          </p>
+          <button
+            onClick={handleExploreClick}
+            className="px-10 py-4 bg-white/10 backdrop-blur-sm text-cyan-300 border border-cyan-400/40 rounded-lg text-lg font-medium hover:bg-white/20 hover:border-cyan-400/80 hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-300"
+            style={{
+              fontFamily: 'Orbitron, sans-serif',
+              letterSpacing: '0.2em',
+              clipPath: 'polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px)'
+            }}
+          >
+            开始探索
+          </button>
+          <p className="text-gray-500 text-xs mt-4 tracking-widest">
+            点击进入深空
+          </p>
+        </div>
+      </div>
 
       {/* 跳过按钮 */}
       {!isLoading && showSkip && !showExploreButton && (

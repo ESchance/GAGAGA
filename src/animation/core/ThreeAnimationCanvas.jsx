@@ -79,7 +79,7 @@ export default function ThreeAnimationCanvas({ timeline, _onNebulaHover, onReady
     state.disposables.push(singularity)
 
     // 爆炸系统：粒子炸开后飞向旋臂形成漩涡银河（更亮更多）
-    const explosion = new ExplosionSystem(quality === 'high' ? 25000 : 12000)
+    const explosion = new ExplosionSystem(quality === 'high' ? 15000 : 8000)
     explosion.setTexture(softTexture)
     scene.add(explosion.group)
     state.systems.explosion = explosion

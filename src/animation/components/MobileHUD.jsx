@@ -36,10 +36,8 @@ export default function MobileHUD({ visible = false, hoveredNebula = null }) {
     return () => clearInterval(interval)
   }, [])
 
-  if (!visible) return null
-
   return (
-    <div className="fixed inset-0 z-30 pointer-events-none opacity-0 animate-fade-in" style={{ animationDelay: '0.5s', animationDuration: '2s', animationFillMode: 'forwards' }}>
+    <div className="fixed inset-0 z-30 pointer-events-none" style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.5s ease' }}>
       {/* 暗角 */}
       <div className="absolute inset-0" style={{
         background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.4) 85%, rgba(0, 0, 0, 0.7) 100%)'

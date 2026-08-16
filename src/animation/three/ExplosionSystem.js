@@ -3,7 +3,7 @@ import * as THREE from 'three'
 // 爆炸 + 银河系统
 // 粒子从中心炸开：80% 飞向旋臂目标形成银河（持久保留），20% 飞出屏幕
 // 银河粒子在穿梭阶段保持并缓慢自转，作为「第一视角穿越银河」的背景
-// 关键：颜色用 aPhase 随机相位在 shader 里计算，避免使用 Three.js 内建 color 属性名导致 shader 冲突
+// 只用一个自定义属性 aSize（粒子大小），颜色在 shader 内按大小插值，避免任何属性名冲突
 export class ExplosionSystem {
   constructor(count) {
     this.count = count
@@ -19,7 +19,6 @@ export class ExplosionSystem {
     const arms = 3
     const positions = new Float32Array(count * 3)
     const sizes = new Float32Array(count)     // 粒子大小（有大有小）
-    const phases = new Float32Array(count)    // [0,1) 随机，用于 shader 里选色
 
     for (let i = 0; i < count; i++) {
       this.delay[i] = Math.random() * 250
@@ -27,12 +26,10 @@ export class ExplosionSystem {
 
       // 粒子大小：有大有小（多数小、少数大），层次分明
       const sizeRand = Math.random()
-      if (sizeRand > 0.95) sizes[i] = 2.6 + Math.random() * 1.0      // 5% 特大
-      else if (sizeRand > 0.80) sizes[i] = 1.7 + Math.random() * 0.8 // 15% 大
-      else if (sizeRand > 0.45) sizes[i] = 1.0 + Math.random() * 0.7 // 35% 中
+      if (sizeRand > 0.95) sizes[i] = 2.8 + Math.random() * 1.0      // 5% 特大
+      else if (sizeRand > 0.80) sizes[i] = 1.8 + Math.random() * 0.8 // 15% 大
+      else if (sizeRand > 0.45) sizes[i] = 1.1 + Math.random() * 0.7 // 35% 中
       else sizes[i] = 0.5 + Math.random() * 0.5                      // 45% 小
-
-      phases[i] = Math.random()
 
       if (Math.random() < 0.2) {
         // 20% 飞出屏幕（3D 球面分布）
@@ -51,7 +48,6 @@ export class ExplosionSystem {
         const theta = r * 0.55 + (arm * Math.PI * 2) / arms + (Math.random() - 0.5) * 0.25
         this.target[i * 3] = r * Math.cos(theta)
         this.target[i * 3 + 1] = r * Math.sin(theta)
-        // z 轴厚度：约 -53 ~ -23，银河有立体厚度
         this.target[i * 3 + 2] = -38 + (Math.random() - 0.5) * 30
       }
     }
@@ -59,7 +55,6 @@ export class ExplosionSystem {
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     geometry.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1))
-    geometry.setAttribute('aPhase', new THREE.BufferAttribute(phases, 1))
     this.geometry = geometry
 
     // 自定义 shader：支持逐粒子大小（PointsMaterial 无法做到「有大有小」）
@@ -67,20 +62,15 @@ export class ExplosionSystem {
       uniforms: { uTexture: { value: null } },
       vertexShader: `
         attribute float aSize;
-        attribute float aPhase;
         varying vec3 vColor;
         void main() {
-          // 用 aPhase 伪随机在蓝紫青白系中选色（避免 color attribute 与 Three.js 内建冲突）
-          vec3 c1 = vec3(0.45, 0.8, 1.0);   // 亮蓝
-          vec3 c2 = vec3(0.65, 0.5, 1.0);   // 蓝紫
-          vec3 c3 = vec3(0.3, 0.9, 0.9);    // 青
-          vec3 c4 = vec3(0.9, 0.95, 1.0);   // 白
-          vec3 c = mix(c1, c2, step(0.33, aPhase));
-          c = mix(c, c3, step(0.5, aPhase));
-          c = mix(c, c4, step(0.8, aPhase));
-          vColor = c;
+          // 用 aSize 插值颜色：小粒子偏蓝紫，大粒子偏白（直观可靠，无额外属性）
+          float t = clamp((aSize - 0.5) / 3.0, 0.0, 1.0);
+          vec3 small = vec3(0.5, 0.72, 1.0);   // 小粒子蓝
+          vec3 large = vec3(0.9, 0.95, 1.0);   // 大粒子白
+          vColor = mix(small, large, t);
           vec4 mv = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = clamp(aSize * (150.0 / max(-mv.z, 0.1)), 0.5, 10.0);
+          gl_PointSize = clamp(aSize * (220.0 / max(-mv.z, 0.1)), 1.0, 14.0);
           gl_Position = projectionMatrix * mv;
         }
       `,

@@ -82,12 +82,10 @@ export default function HUDOverlay({ visible = false, hoveredNebula = null }) {
     return { xPercent, yPercent, region }
   }, [mousePos, hoveredNebula])
 
-  if (!visible) return null
-
   const starRegion = getStarRegion()
 
   return (
-    <div className="fixed inset-0 z-30 pointer-events-none opacity-0 animate-fade-in" style={{ animationDelay: '0.5s', animationDuration: '2s', animationFillMode: 'forwards' }}>
+    <div className="fixed inset-0 z-30 pointer-events-none" style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.5s ease' }}>
       {/* 暗角效果 */}
       <div className="absolute inset-0" style={{
         background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.4) 85%, rgba(0, 0, 0, 0.7) 100%)'
