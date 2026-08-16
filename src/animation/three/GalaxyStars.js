@@ -59,8 +59,8 @@ export class GalaxyStars {
           vec3 warmColor = vec3(1.0, 0.94, 0.82);
           vColor = mix(coolColor, warmColor, warmth * 0.35);
 
-          float twinkle = 0.55 + 0.3 * sin(uTime * 2.0 + aPhase);
-          vAlpha = twinkle * 0.5;
+          float twinkle = 0.7 + 0.3 * sin(uTime * 2.0 + aPhase);
+          vAlpha = twinkle * 0.75;
 
           vec4 mvPosition = modelViewMatrix * vec4(p, 1.0);
           // 粒子位于相机前方 z≈-250，用对应系数得到适中尺寸

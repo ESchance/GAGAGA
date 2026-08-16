@@ -65,7 +65,7 @@ export default function ThreeAnimationCanvas({ timeline, _onNebulaHover, onReady
     state.disposables.push(background.geometry, background.material)
 
     // 银河星空
-    const stars = new GalaxyStars(quality === 'high' ? 5000 : 2500)
+    const stars = new GalaxyStars(quality === 'high' ? 8000 : 4000)
     stars.setTexture(softTexture)
     scene.add(stars.group)
     state.systems.stars = stars
