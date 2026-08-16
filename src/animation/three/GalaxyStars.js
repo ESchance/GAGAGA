@@ -60,7 +60,7 @@ export class GalaxyStars {
           vColor = mix(coolColor, warmColor, warmth * 0.35);
 
           float twinkle = 0.7 + 0.3 * sin(uTime * 2.0 + aPhase);
-          vAlpha = twinkle * 0.75;
+          vAlpha = twinkle * 1.0;
 
           vec4 mvPosition = modelViewMatrix * vec4(p, 1.0);
           // 粒子位于相机前方 z≈-250，用对应系数得到适中尺寸
@@ -69,7 +69,7 @@ export class GalaxyStars {
           if (mvPosition.z > -0.5) {
             starSize = 0.0;
           }
-          gl_PointSize = clamp(starSize, 0.5, 4.0);
+          gl_PointSize = clamp(starSize, 0.5, 6.0);
           gl_Position = projectionMatrix * mvPosition;
         }
       `,

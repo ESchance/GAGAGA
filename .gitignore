@@ -27,3 +27,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# 本地调试工具（AI 用于动画截图与亮度分析，不提交）
+_screenshot.mjs
+shot-*.png

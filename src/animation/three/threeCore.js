@@ -58,7 +58,7 @@ export function createDeepSpaceBackground() {
     side: THREE.BackSide,
     depthWrite: false,
     uniforms: {
-      uColorInner: { value: new THREE.Color(0x0a0a30) },
+      uColorInner: { value: new THREE.Color(0x141440) },
       uColorEdge: { value: new THREE.Color(0x000000) }
     },
     vertexShader: `
