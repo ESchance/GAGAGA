@@ -1,5 +1,6 @@
 // 入场动画全屏遮罩：持有 canvas、创建 timeline + 渲染器、驱动 rAF 主循环
 // 职责边界：只做"怎么播"，播完调 onComplete；新用户播完由 AppShell 弹种族选择
+// 生命周期用局部 disposed（每个 effect 独立），避免与共享状态冲突
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { AnimationTimeline } from './AnimationTimeline'
@@ -16,13 +17,13 @@ export default function IntroOverlay({ newUser, onComplete }) {
   const fpsTextRef = useRef(null)
   const timelineRef = useRef(null)
   const rafRef = useRef(0)
+  const stageRef = useRef('nebula')
   const st = useRef({
     kind: null,
     tier: null,
     renderer: null,
     fps: null,
     resizeHandler: null,
-    disposed: false,
     debug: {},
   }).current
 
@@ -47,45 +48,62 @@ export default function IntroOverlay({ newUser, onComplete }) {
   // 主逻辑：创建 timeline + 渲染器 + 主循环
   useEffect(() => {
     const canvas = canvasRef.current
+    let disposed = false
 
     function handleStage(key) {
+      stageRef.current = key
       setStage(key)
       if (key === 'travel') {
-        // 按钮延迟淡入（非 rAF 的 setTimeout，仅一次）
         setTimeout(() => setShowStart(true), 800)
       }
       if (key === 'burst') setShowStart(false)
     }
 
     function doComplete() {
-      if (!st.disposed) completeRef.current?.()
+      if (!disposed) completeRef.current?.()
     }
 
     // 降级：three → 2d（重建渲染器，timeline 不重启）
     async function degrade() {
-      if (st.kind === '2d' || st.disposed) return
+      if (st.kind === '2d' || disposed) return
       st.renderer?.dispose()
-      const { renderer } = await createRenderer(canvas, { tier: '2d' })
-      if (st.disposed) {
-        renderer?.dispose()
-        return
+      st.renderer = null
+      try {
+        const res = await createRenderer(canvas, { tier: '2d' })
+        if (disposed || !res.renderer) {
+          res.renderer?.dispose()
+          return
+        }
+        st.kind = res.kind
+        st.tier = res.tier
+        st.renderer = res.renderer
+        st.resizeHandler?.()
+      } catch (err) {
+        console.warn('[intro] degrade failed:', err)
       }
-      st.kind = '2d'
-      st.tier = '2d'
-      st.renderer = renderer
-      st.resizeHandler?.()
     }
 
     async function init() {
       const tier = detectTier()
-
       const timeline = new AnimationTimeline({ debug: st.debug })
       timelineRef.current = timeline
       timeline.onStageChange(handleStage)
       timeline.onComplete(doComplete)
 
-      const { renderer, kind, tier: actualTier } = await createRenderer(canvas, { tier })
-      if (st.disposed) {
+      let renderer
+      let kind
+      let actualTier
+      try {
+        const res = await createRenderer(canvas, { tier })
+        renderer = res.renderer
+        kind = res.kind
+        actualTier = res.tier
+      } catch (err) {
+        console.warn('[intro] createRenderer failed:', err)
+        return
+      }
+
+      if (disposed) {
         renderer?.dispose()
         return
       }
@@ -104,13 +122,14 @@ export default function IntroOverlay({ newUser, onComplete }) {
 
       timeline.start(performance.now())
 
-      // 帧率监控：three 档位监控降级；debug 时显示 FPS
+      // 帧率监控：three 档位监控降级；debug 时显示 FPS/tier/stage
       if (kind === 'three') {
         st.fps = new FpsMonitor({
           onSlow: () => degrade(),
           onFrame: (f) => {
             if (st.debug.debug && fpsTextRef.current) {
-              fpsTextRef.current.textContent = `FPS ${Math.round(f)} · tier ${st.tier}`
+              fpsTextRef.current.textContent =
+                `FPS ${Math.round(f)} · ${st.tier} · ${stageRef.current}`
             }
           },
         })
@@ -118,7 +137,7 @@ export default function IntroOverlay({ newUser, onComplete }) {
       }
 
       function loop(now) {
-        if (st.disposed) return
+        if (disposed) return
         if (st.debug.pause) {
           rafRef.current = requestAnimationFrame(loop)
           return
@@ -133,11 +152,16 @@ export default function IntroOverlay({ newUser, onComplete }) {
     init()
 
     return () => {
-      st.disposed = true
+      disposed = true
       cancelAnimationFrame(rafRef.current)
       st.fps?.stop()
+      st.fps = null
       st.renderer?.dispose()
-      if (st.resizeHandler) window.removeEventListener('resize', st.resizeHandler)
+      st.renderer = null
+      if (st.resizeHandler) {
+        window.removeEventListener('resize', st.resizeHandler)
+        st.resizeHandler = null
+      }
     }
   }, [st])
 
