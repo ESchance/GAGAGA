@@ -120,30 +120,41 @@ export default function IntroOverlay({ newUser, onComplete }) {
       st.resizeHandler()
       window.addEventListener('resize', st.resizeHandler)
 
-      timeline.start(performance.now())
-
-      // 帧率监控：three 档位监控降级；debug 时显示 FPS/tier/stage
+      // 帧率监控：three 档位监控降级；debug 时显示 FPS/tier/stage/state/elapsed
       if (kind === 'three') {
         st.fps = new FpsMonitor({
           onSlow: () => degrade(),
           onFrame: (f) => {
             if (st.debug.debug && fpsTextRef.current) {
+              const t = timelineRef.current
               fpsTextRef.current.textContent =
-                `FPS ${Math.round(f)} · ${st.tier} · ${stageRef.current}`
+                `FPS ${Math.round(f)} · ${st.tier} · ${stageRef.current}` +
+                ` · ${t?.state} · ${Math.round(t?.elapsed || 0)}ms`
             }
           },
         })
         st.fps.start()
       }
 
+      let started = false
       function loop(now) {
         if (disposed) return
         if (st.debug.pause) {
           rafRef.current = requestAnimationFrame(loop)
           return
         }
-        const snapshot = timeline.update(now)
-        renderer.update(snapshot)
+        try {
+          // 用 rAF 自身的时间源启动，保证 timeline 的 dt 累加不跨时间基准
+          if (!started) {
+            timeline.start(now)
+            started = true
+          }
+          const snapshot = timeline.update(now)
+          renderer.update(snapshot)
+        } catch (err) {
+          // 单帧出错不中断循环，打印便于定位
+          console.error('[intro] frame error:', err)
+        }
         rafRef.current = requestAnimationFrame(loop)
       }
       rafRef.current = requestAnimationFrame(loop)
@@ -167,7 +178,7 @@ export default function IntroOverlay({ newUser, onComplete }) {
 
   const handleStart = useCallback(() => {
     const t = timelineRef.current
-    if (t?.isWaitingForUser) t.startAcceleration(performance.now())
+    if (t?.isWaitingForUser) t.startAcceleration()
   }, [])
 
   const handleSkip = useCallback(() => {

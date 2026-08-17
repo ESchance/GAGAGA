@@ -59,7 +59,7 @@ describe('AnimationTimeline', () => {
     tl.update(15000)
     expect(tl.isWaitingForUser).toBe(true)
 
-    tl.startAcceleration(15000)
+    tl.startAcceleration()
     const s1 = tl.update(15300) // 300ms，爬升中
     expect(s1.state).toBe('accelerating')
     expect(s1.speedMultiplier).toBeGreaterThan(1)
@@ -77,7 +77,7 @@ describe('AnimationTimeline', () => {
     tl.onComplete(() => {
       done = true
     })
-    tl.startAcceleration(15000)
+    tl.startAcceleration()
     tl.update(17200) // 2200ms
     expect(tl.state).toBe('done')
     expect(done).toBe(true)
@@ -87,7 +87,7 @@ describe('AnimationTimeline', () => {
     const tl = new AnimationTimeline()
     tl.start(0)
     tl.update(15000)
-    tl.startAcceleration(15000)
+    tl.startAcceleration()
     const sMid = tl.update(16100) // 1100ms，进度约 0.5
     expect(sMid.stage).toBe('burst')
     expect(sMid.burstProgress).toBeGreaterThan(0)

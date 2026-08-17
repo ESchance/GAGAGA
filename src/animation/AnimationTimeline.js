@@ -1,6 +1,10 @@
 // 时间轴状态机：7 阶段入场动画的纯逻辑控制器（不依赖 DOM/Three，可单测）
 // 渲染器只消费 update() 返回的帧快照，保证"播到哪"与"怎么画"解耦
 //
+// 关键设计：elapsed / 加速进度全部用【相对增量 dt 累加】，
+// 不依赖绝对时间基准——避免 rAF 回调的 timestamp 与 performance.now() 在不同环境基准不一致，
+// 导致阶段永远无法推进。唯一要求：rAF 回调的 now 单调递增。
+//
 // 状态流转：
 //   idle --start()--> scripted --到达travel--> waiting --startAcceleration()--> accelerating --到点--> done
 //                                                    \---- skip() ---------------> done（任意时刻）
@@ -19,23 +23,23 @@ export const STAGES = [
 ]
 
 const TRAVEL_INDEX = 5
+const TRAVEL_START = STAGES[TRAVEL_INDEX].start
 const BURST_DURATION = 2200 // 点击后到完成的总时长
 const SPEED_RAMP_MS = 600 // 穿梭速度 1→2 的爬升时长
 
 export class AnimationTimeline {
   /**
    * @param {object} [opts]
-   * @param {object} [opts.debug] { startAtStage?: 'nebula'|'title'|...|'travel', pause?: boolean }
+   * @param {object} [opts.debug] { startAtStage?: 'nebula'|'title'|..., pause?: boolean }
    */
   constructor(opts = {}) {
     this.debug = opts.debug || {}
 
     this.state = 'idle'
-    this.startTime = 0
-    this.accelStartTime = 0
+    this.lastNow = null // 上一帧时间（用于 dt）
     this.elapsed = 0
     this.dt = 0
-    this.lastNow = 0
+    this.accelElapsed = 0
 
     this.stageIndex = -1
     this.stage = null
@@ -51,56 +55,48 @@ export class AnimationTimeline {
     const debugIdx = this.debug.startAtStage
       ? STAGES.findIndex((s) => s.key === this.debug.startAtStage)
       : -1
-
-    if (debugIdx >= 0) {
-      // 快进到指定阶段起点（调试用）
-      this.startTime = nowMs - STAGES[debugIdx].start
-    } else {
-      this.startTime = nowMs
-    }
+    const startIdx = Math.min(Math.max(debugIdx, 0), TRAVEL_INDEX)
 
     this.lastNow = nowMs
+    this.elapsed = debugIdx >= 0 ? STAGES[debugIdx].start : 0
     this.state = 'scripted'
-    this.elapsed = 0
+    this.accelElapsed = 0
     this.speedMultiplier = 1
     this.burstProgress = 0
-    this._enterStage(Math.min(Math.max(debugIdx, 0), TRAVEL_INDEX))
+    this._enterStage(startIdx)
   }
 
   update(nowMs) {
     if (this.state === 'done' || this.state === 'idle') return this._snapshot()
 
-    this.dt = this.lastNow ? (nowMs - this.lastNow) / 1000 : 0
+    // 相对增量累加：只依赖本时间源的递增
+    const rawDt = this.lastNow !== null ? (nowMs - this.lastNow) / 1000 : 0
     this.lastNow = nowMs
+    this.dt = rawDt
 
     if (this.state === 'scripted') {
-      this.elapsed = nowMs - this.startTime
+      this.elapsed += rawDt * 1000
 
-      // 到达 travel 起点即进入等待（不推进阶段进度，但 dt 照常供相机漂移）
-      if (this.elapsed >= STAGES[TRAVEL_INDEX].start) {
-        this.elapsed = STAGES[TRAVEL_INDEX].start
+      if (this.elapsed >= TRAVEL_START) {
+        this.elapsed = TRAVEL_START
         if (this.stageIndex !== TRAVEL_INDEX) this._enterStage(TRAVEL_INDEX)
         this.state = 'waiting'
-        this._snapshot()
       } else {
         const idx = this._stageIndexAt(this.elapsed)
         if (idx !== this.stageIndex) this._enterStage(idx)
       }
     } else if (this.state === 'waiting') {
-      this.elapsed = STAGES[TRAVEL_INDEX].start
+      this.elapsed = TRAVEL_START
     } else if (this.state === 'accelerating') {
-      const accelElapsed = nowMs - this.accelStartTime
-      this.elapsed = STAGES[TRAVEL_INDEX].start + accelElapsed
-
-      // 速度 1→2，600ms 内 easeInOutCubic 爬升
+      this.accelElapsed += rawDt * 1000
+      this.elapsed = TRAVEL_START + this.accelElapsed
       this.speedMultiplier =
-        accelElapsed < SPEED_RAMP_MS
-          ? 1 + easeInOutCubic(accelElapsed / SPEED_RAMP_MS)
+        this.accelElapsed < SPEED_RAMP_MS
+          ? 1 + easeInOutCubic(this.accelElapsed / SPEED_RAMP_MS)
           : 2
+      this.burstProgress = clamp(this.accelElapsed / BURST_DURATION, 0, 1)
 
-      this.burstProgress = clamp(accelElapsed / BURST_DURATION, 0, 1)
-
-      if (accelElapsed >= BURST_DURATION) {
+      if (this.accelElapsed >= BURST_DURATION) {
         this.state = 'done'
         this._emitComplete()
       }
@@ -109,11 +105,11 @@ export class AnimationTimeline {
     return this._snapshot()
   }
 
-  // 用户点击"开始探索"：waiting → accelerating
-  startAcceleration(nowMs) {
+  // 用户点击"开始探索"：waiting → accelerating（时间用内部累加，无需外部传参）
+  startAcceleration() {
     if (this.state !== 'waiting') return
     this.state = 'accelerating'
-    this.accelStartTime = nowMs
+    this.accelElapsed = 0
     this.speedMultiplier = 1
     this.burstProgress = 0
   }
