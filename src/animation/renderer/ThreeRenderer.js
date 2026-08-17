@@ -69,6 +69,15 @@ export class ThreeRenderer {
     this.ps.update(snapshot)
     this.ps.syncAttributes(this.attrs)
 
+    // 关键：标记所有 buffer attribute 需要重新上传 GPU。
+    // 否则 Three.js 不会把 JS 数组的新值同步到显卡，画面永远停留在初始帧（星空）。
+    const attrs = this.geometry.attributes
+    attrs.position.needsUpdate = true
+    attrs.aColor.needsUpdate = true
+    attrs.aSize.needsUpdate = true
+    attrs.aPhase.needsUpdate = true
+    attrs.aVelocity.needsUpdate = true
+
     this.time += snapshot.dt
     this.material.uniforms.uTime.value = this.time
     this.material.uniforms.uTrailLen.value = snapshot.stage === 'burst' ? 1 : 0
