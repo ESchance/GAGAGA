@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { isEmailAllowed } from '../lib/allowedEmails'
 import { validateEmail, validateUsername, validatePassword } from '../lib/validation'
-import RaceSelector from './RaceSelector'
 
 export default function AuthForm({ type = 'login' }) {
   const [email, setEmail] = useState('')
@@ -11,8 +10,6 @@ export default function AuthForm({ type = 'login' }) {
   const [username, setUsername] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
-  const [showRaceSelector, setShowRaceSelector] = useState(false)
-  const [newUserId, setNewUserId] = useState(null)
   const navigate = useNavigate()
 
   // 密码强度提示
@@ -29,26 +26,6 @@ export default function AuthForm({ type = 'login' }) {
     if (score < 3) return { level: 1, text: '密码强度：弱', color: 'text-red-500' }
     if (score < 4) return { level: 2, text: '密码强度：中', color: 'text-yellow-500' }
     return { level: 3, text: '密码强度：强', color: 'text-green-500' }
-  }
-
-  // 注册成功后选择种族：选择完成或跳过都进入首页
-  const handleRaceSelect = async (race) => {
-    // 跳过选种族
-    if (race === null) {
-      setShowRaceSelector(false)
-      navigate('/')
-      return
-    }
-
-    const { selectRace } = await import('../lib/worldbuilding')
-    const result = await selectRace(newUserId, race)
-
-    if (result.success) {
-      setShowRaceSelector(false)
-      navigate('/')
-    } else {
-      setMessage('选择种族失败：' + result.error)
-    }
   }
 
   const handleSubmit = async (e) => {
@@ -74,7 +51,7 @@ export default function AuthForm({ type = 'login' }) {
         }
 
         // 注册新用户
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -92,12 +69,9 @@ export default function AuthForm({ type = 'login' }) {
           throw error
         }
 
-        // 注册成功（profile 由数据库触发器自动创建），立即让新用户选择种族
+        // 注册成功（profile 由数据库触发器自动创建）→ 播放入场动画，动画结束由 App 层弹种族选择
         setMessage('注册成功！')
-        if (data.user?.id) {
-          setNewUserId(data.user.id)
-          setShowRaceSelector(true)
-        }
+        navigate('/?showIntro=true&newUser=true')
       } else {
         // 登录
         const { error } = await supabase.auth.signInWithPassword({
@@ -235,11 +209,6 @@ export default function AuthForm({ type = 'login' }) {
           <span className="mr-2">{message.includes('成功') ? '✅' : '❌'}</span>
           {message}
         </div>
-      )}
-
-      {/* 注册成功后选择种族（选择或跳过均进入首页） */}
-      {showRaceSelector && newUserId && (
-        <RaceSelector onSelect={handleRaceSelect} />
       )}
     </div>
   )
