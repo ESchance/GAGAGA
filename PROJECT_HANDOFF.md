@@ -18,6 +18,7 @@
 | 样式框架 | Tailwind CSS | 4.x |
 | 路由 | React Router | 7.x |
 | 后端/数据库 | Supabase | PostgreSQL + Realtime + Auth |
+| 3D 动画 | Three.js | 0.185.x（PC 端入场动画） |
 | 部署 | Cloudflare Pages | 全球 CDN |
 
 ---
@@ -32,22 +33,34 @@ forum-app/
 │   ├── robots.txt            # 搜索引擎配置
 │   └── sitemap.xml           # 站点地图
 ├── src/
-│   ├── animation/            # 入场动画系统
+│   ├── animation/            # 入场动画系统（Three.js 双渲染器）
 │   │   ├── IntroAnimation.jsx
 │   │   ├── components/
 │   │   │   ├── HUDOverlay.jsx
 │   │   │   ├── MobileHUD.jsx
 │   │   │   └── SkipButton.jsx
 │   │   ├── core/
-│   │   │   ├── AnimationCanvas.jsx
+│   │   │   ├── AnimationCanvas.jsx       # Canvas 2D 渲染器（移动端/降级兜底）
+│   │   │   ├── RendererSwitch.jsx        # 渲染器选择器（按设备分流）
+│   │   │   ├── ThreeAnimationCanvas.jsx  # Three.js 渲染器（PC 高/中配）
 │   │   │   ├── NebulaCluster.js
-│   │   │   ├── NebulaEffect.js
+│   │   │   ├── NebulaSystem.js
 │   │   │   ├── ParticleSystem.js
 │   │   │   └── StarSystem.js
+│   │   ├── three/                       # Three.js 3D 子系统
+│   │   │   ├── threeCore.js             # 渲染器/场景/相机/纹理/背景工厂
+│   │   │   ├── GalaxyStars.js           # 无序深邃星空
+│   │   │   ├── Singularity.js           # 奇点（坍缩点 + 光晕 + 立体星点）
+│   │   │   ├── ExplosionSystem.js       # 爆炸 + 银河（持久保留）
+│   │   │   ├── TraverseField.js         # 第一视角穿梭粒子
+│   │   │   ├── CameraShake.js           # 相机震动
+│   │   │   ├── bloom.js                 # 泛光后处理（仅高配）
+│   │   │   └── phaseRenderers.js        # 阶段渲染协调器
 │   │   ├── timeline/
 │   │   │   └── AnimationTimeline.js
 │   │   └── utils/
-│   │       └── MathUtils.js
+│   │       ├── MathUtils.js
+│   │       └── webgl.js                 # 设备能力检测 + 画质档位
 │   ├── components/             # 可复用组件
 │   │   ├── AnnouncementBar.jsx
 │   │   ├── AnnouncementModal.jsx
@@ -135,11 +148,14 @@ forum-app/
 - 超级管理员（user01）：可删除用户、管理管理员
 - 管理员（user02、user03）：可删除帖子、评论、置顶
 
-### 7. 入场动画
-- 宇宙大爆发主题（30秒）
-- Canvas 2D 渲染
-- 粒子系统 + 星云效果 + HUD界面
-- 点击"开始探索"后进入后续流程
+### 7. 入场动画（Three.js 双渲染器）
+- 宇宙大爆发主题，约 36 秒，7 阶段：黑暗→诞生→爆炸→穿梭→探索按钮→快速穿梭→进入
+- **双渲染器架构**：PC（≥640px + WebGL2）→ Three.js 3D 渲染；移动端/无 WebGL2/加载失败 → Canvas 2D 兜底
+- **画质档位**：high（PC 强 GPU，含泛光）/ medium（PC 弱 GPU，粒子减半无后处理）/ 2d（移动端）
+- **核心叙事**：无序星空 → 标题浮现 → 星空+标题坍缩成奇点 → 大爆炸（粒子飞出屏幕 + 形成漩涡银河）→ 第一视角穿越银河（银河持久保留 + 缓慢自转）→ 点击后快速穿梭 + 拖尾 → 白光布满结束
+- 爆炸粒子「有大有小」（逐粒子大小 shader）、「有快有慢」（随机 delay/duration）
+- 标题/HUD/按钮均「始终挂载 + opacity 控制显隐」，避免首次渲染卡顿
+- 新用户首次注册必看；老用户登录自动跳过，可首页回放
 
 ### 8. 其他功能
 - 暗色/浅色模式切换
