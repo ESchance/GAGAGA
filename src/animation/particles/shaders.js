@@ -10,6 +10,7 @@ attribute vec3  aColor;
 uniform float uTime;
 uniform float uPixelRatio;
 uniform float uTrailLen;   // >0 表示拖尾阶段（沿运动方向拉伸）
+uniform float uBrightness; // 全局发光强度
 
 varying vec3  vColor;
 varying float vAlpha;
@@ -18,15 +19,15 @@ void main() {
   vec4 mv = modelViewMatrix * vec4(position, 1.0);
   float dist = max(-mv.z, 0.001);
 
-  // 距离衰减：越近越大，产生穿越感
-  float baseSize = aSize * uPixelRatio * (300.0 / dist);
+  // 距离衰减：越近越大，产生穿越感（系数调大使粒子在屏幕上更明显）
+  float baseSize = aSize * uPixelRatio * (720.0 / dist);
 
   // 星光闪烁：按每粒子相位 + 时间正弦
-  float twinkle = 0.75 + 0.25 * sin(uTime * 2.0 + aPhase);
+  float twinkle = 0.8 + 0.2 * sin(uTime * 2.0 + aPhase);
 
   // 拖尾：沿运动方向拉长点精灵
   float velLen = length(aVelocity);
-  float trailLen = uTrailLen * velLen * 18.0;
+  float trailLen = uTrailLen * velLen * 30.0;
 
   gl_PointSize = baseSize * twinkle + trailLen;
 
@@ -43,17 +44,20 @@ void main() {
 `
 
 export const particleFragmentShader = `
+uniform float uBrightness;
+
 varying vec3  vColor;
 varying float vAlpha;
 
 void main() {
   // 软圆点：中心亮、边缘柔化
   float d = length(gl_PointCoord - vec2(0.5));
-  float alpha = smoothstep(0.5, 0.12, d);
+  float alpha = smoothstep(0.5, 0.14, d);
 
-  // 轻微中心高光
-  float core = smoothstep(0.25, 0.0, d) * 0.6;
+  // 中心高光增强
+  float core = smoothstep(0.3, 0.0, d) * 0.8;
 
-  gl_FragColor = vec4(vColor + core, alpha * vAlpha);
+  vec3 col = (vColor + core) * uBrightness;
+  gl_FragColor = vec4(col, min(alpha * vAlpha * uBrightness, 1.0));
 }
 `

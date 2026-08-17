@@ -512,7 +512,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: 40;
-  background: radial-gradient(ellipse at center, #0b0e1f 0%, #04050c 70%);
+  background: radial-gradient(ellipse at center, #0d1330 0%, #05070f 75%);
 }
 .intro-canvas {
   width: 100%;

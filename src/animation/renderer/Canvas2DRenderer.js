@@ -43,11 +43,11 @@ export class Canvas2DRenderer {
     const ctx = this.ctx
     const { w, h } = this
 
-    // 深邃星空背景（渐变）
+    // 深邃星空背景（渐变，保持暗色以凸显亮粒子）
     ctx.globalCompositeOperation = 'source-over'
     const bg = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, Math.max(w, h) * 0.7)
-    bg.addColorStop(0, '#0b0e1f')
-    bg.addColorStop(1, '#04050c')
+    bg.addColorStop(0, '#0d1330')
+    bg.addColorStop(1, '#05070f')
     ctx.fillStyle = bg
     ctx.fillRect(0, 0, w, h)
 
@@ -71,11 +71,11 @@ export class Canvas2DRenderer {
       const scale = fov / dist
       const sx = cx + p.x * scale
       const sy = cy + p.y * scale
-      const size = (p.size || p.baseSize) * scale * 0.4
+      const size = (p.size || p.baseSize) * scale * 1.2
 
       if (sx < -60 || sx > w + 60 || sy < -60 || sy > h + 60) continue
 
-      const alpha = 0.5 + 0.4 * (0.5 + 0.5 * Math.sin(this.time * 2 + p.phase))
+      const alpha = 0.75 + 0.25 * (0.5 + 0.5 * Math.sin(this.time * 2 + p.phase))
       const r = Math.round(p.r * 255)
       const g = Math.round(p.g * 255)
       const b = Math.round(p.b * 255)

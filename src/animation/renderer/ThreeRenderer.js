@@ -50,6 +50,7 @@ export class ThreeRenderer {
         uTime: { value: 0 },
         uPixelRatio: { value: this.dpr },
         uTrailLen: { value: 0 },
+        uBrightness: { value: 1.6 },
       },
     })
 

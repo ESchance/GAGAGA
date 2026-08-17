@@ -11,9 +11,9 @@ function gauss() {
   return (Math.random() + Math.random() + Math.random()) / 1.5 - 1
 }
 
-// 对数正态尺寸：多数小、少数大
+// 对数正态尺寸：多数小、少数大（基数调大使粒子在屏幕上清晰可见）
 function logNormalSize() {
-  return 1.5 * Math.exp(gauss() * 1.2)
+  return 3.5 * Math.exp(gauss() * 1.1)
 }
 
 function randomDir() {
