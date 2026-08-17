@@ -92,7 +92,7 @@ export default function WorldbuildingEdit() {
       <div className="page-container flex items-center justify-center">
         <div className="text-center">
           <div className="loading-spinner mx-auto mb-4"></div>
-          <p className="text-gray-500">加载中...</p>
+          <p className="text-(--color-text-tertiary)">加载中...</p>
         </div>
       </div>
     )
@@ -104,14 +104,14 @@ export default function WorldbuildingEdit() {
         <div className="max-w-2xl mx-auto px-4">
           <button
             onClick={() => navigate('/worldbuilding')}
-            className="inline-flex items-center text-gray-600 hover:text-purple-600 mb-6 transition-colors"
+            className="inline-flex items-center text-(--color-text-secondary) hover:text-purple-600 mb-6 transition-colors"
           >
             ← 返回创作列表
           </button>
           <div className="text-center py-16">
             <div className="text-6xl mb-4">😕</div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">内容不存在</h3>
-            <p className="text-gray-500">该内容可能已被删除</p>
+            <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">内容不存在</h3>
+            <p className="text-(--color-text-tertiary)">该内容可能已被删除</p>
           </div>
         </div>
       </div>
@@ -125,14 +125,14 @@ export default function WorldbuildingEdit() {
         <div className="max-w-2xl mx-auto px-4">
           <button
             onClick={() => navigate(`/worldbuilding/${id}`)}
-            className="inline-flex items-center text-gray-600 hover:text-purple-600 mb-6 transition-colors"
+            className="inline-flex items-center text-(--color-text-secondary) hover:text-purple-600 mb-6 transition-colors"
           >
             ← 返回详情
           </button>
           <div className="text-center py-16">
             <div className="text-6xl mb-4">🚫</div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">无权编辑</h3>
-            <p className="text-gray-500">只有作者可以编辑自己的创作</p>
+            <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">无权编辑</h3>
+            <p className="text-(--color-text-tertiary)">只有作者可以编辑自己的创作</p>
           </div>
         </div>
       </div>
@@ -145,7 +145,7 @@ export default function WorldbuildingEdit() {
         {/* 返回按钮 */}
         <button
           onClick={() => navigate(`/worldbuilding/${id}`)}
-          className="inline-flex items-center text-gray-600 hover:text-purple-600 mb-6 transition-colors"
+          className="inline-flex items-center text-(--color-text-secondary) hover:text-purple-600 mb-6 transition-colors"
         >
           ← 返回详情
         </button>
@@ -155,13 +155,13 @@ export default function WorldbuildingEdit() {
             <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
               ✏️ 编辑创作
             </h2>
-            <p className="text-gray-500 mt-2">修改你的嘎宇宙创作</p>
+            <p className="text-(--color-text-tertiary) mt-2">修改你的嘎宇宙创作</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* 类型选择 */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
+              <label className="block text-sm font-semibold text-(--color-text-secondary) mb-3">
                 📁 类型
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -173,11 +173,11 @@ export default function WorldbuildingEdit() {
                     className={`p-4 rounded-xl border-2 text-left transition-all duration-200 ${
                       type === option.value
                         ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        : 'border-(--color-border) hover:border-(--color-border)'
                     }`}
                   >
-                    <div className="font-medium text-gray-800">{option.label}</div>
-                    <div className="text-xs text-gray-500 mt-1">{option.description}</div>
+                    <div className="font-medium text-(--color-text-primary)">{option.label}</div>
+                    <div className="text-xs text-(--color-text-tertiary) mt-1">{option.description}</div>
                   </button>
                 ))}
               </div>
@@ -185,14 +185,14 @@ export default function WorldbuildingEdit() {
 
             {/* 标题 */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-(--color-text-secondary) mb-2">
                 📌 标题
               </label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none"
+                className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl focus:border-purple-500 focus:outline-none"
                 placeholder="请输入标题"
                 required
               />
@@ -200,14 +200,14 @@ export default function WorldbuildingEdit() {
 
             {/* 内容 */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-(--color-text-secondary) mb-2">
                 📝 内容
               </label>
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 rows={12}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none resize-none"
+                className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl focus:border-purple-500 focus:outline-none resize-none"
                 placeholder="在这里写下你的创作..."
                 required
               />
@@ -218,7 +218,7 @@ export default function WorldbuildingEdit() {
               <button
                 type="button"
                 onClick={() => navigate(`/worldbuilding/${id}`)}
-                className="px-6 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-all duration-200 font-medium"
+                className="px-6 py-3 text-(--color-text-secondary) hover:text-(--color-text-primary) hover:bg-(--color-bg-tertiary) rounded-xl transition-all duration-200 font-medium"
               >
                 取消
               </button>
@@ -243,8 +243,8 @@ export default function WorldbuildingEdit() {
           {message && (
             <div className={`mt-6 p-4 rounded-xl flex items-center animate-fade-in-up ${
               message.includes('成功')
-                ? 'bg-green-50 text-green-700 border border-green-200'
-                : 'bg-red-50 text-red-700 border border-red-200'
+                ? 'bg-(--color-success)/10 text-(--color-success) border border-(--color-success)/30'
+                : 'bg-(--color-error)/10 text-(--color-error) border border-(--color-error)/30'
             }`}>
               <span className="mr-2">{message.includes('成功') ? '✅' : '❌'}</span>
               {message}

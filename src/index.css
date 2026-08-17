@@ -505,3 +505,10 @@ body {
   border-color: var(--color-border);
 }
 
+/* 密码强度条 */
+.password-strength {
+  height: 6px;
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+

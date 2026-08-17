@@ -79,14 +79,9 @@ export default function WorldbuildingDetail() {
 
     const result = await toggleLike(user.id, id)
     if (result !== null) {
-      setLiked(result)
-      // 等待数据库更新后再获取最新数据
-      setTimeout(async () => {
-        const updatedPost = await getWorldbuildingDetail(id)
-        if (updatedPost) {
-          setPost(updatedPost)
-        }
-      }, 200)
+      setLiked(result.isLiked)
+      // 乐观更新点赞数，避免整篇重新拉取
+      setPost(prev => prev ? { ...prev, likes_count: result.count } : prev)
     }
   }
 
@@ -155,7 +150,7 @@ export default function WorldbuildingDetail() {
       <div className="page-container flex items-center justify-center">
         <div className="text-center">
           <div className="loading-spinner mx-auto mb-4"></div>
-          <p className="text-gray-500">加载中...</p>
+          <p className="text-(--color-text-tertiary)">加载中...</p>
         </div>
       </div>
     )
@@ -167,14 +162,14 @@ export default function WorldbuildingDetail() {
         <div className="max-w-4xl mx-auto px-4">
           <button
             onClick={() => navigate('/worldbuilding')}
-            className="inline-flex items-center text-gray-600 hover:text-purple-600 mb-6 transition-colors"
+            className="inline-flex items-center text-(--color-text-secondary) hover:text-purple-600 mb-6 transition-colors"
           >
             ← 返回创作列表
           </button>
           <div className="text-center py-16">
             <div className="text-6xl mb-4">😕</div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">内容不存在</h3>
-            <p className="text-gray-500">该内容可能已被删除</p>
+            <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">内容不存在</h3>
+            <p className="text-(--color-text-tertiary)">该内容可能已被删除</p>
           </div>
         </div>
       </div>
@@ -187,7 +182,7 @@ export default function WorldbuildingDetail() {
         {/* 返回按钮 */}
         <button
           onClick={() => navigate('/worldbuilding')}
-          className="inline-flex items-center text-gray-600 hover:text-purple-600 mb-6 transition-colors"
+          className="inline-flex items-center text-(--color-text-secondary) hover:text-purple-600 mb-6 transition-colors"
         >
           ← 返回创作列表
         </button>
@@ -197,16 +192,16 @@ export default function WorldbuildingDetail() {
           {/* 类型标签 */}
           <div className="flex items-center space-x-2 mb-4">
             <span className="text-2xl">{getTypeIcon(post.type)}</span>
-            <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+            <span className="text-sm text-(--color-text-tertiary) bg-(--color-bg-tertiary) px-3 py-1 rounded-full">
               {getTypeName(post.type)}
             </span>
           </div>
 
           {/* 标题 */}
-          <h1 className="text-3xl font-bold text-gray-800 mb-6">{post.title}</h1>
+          <h1 className="text-3xl font-bold text-(--color-text-primary) mb-6">{post.title}</h1>
 
           {/* 作者信息 */}
-          <div className="flex items-center space-x-4 mb-6 pb-6 border-b border-gray-200">
+          <div className="flex items-center space-x-4 mb-6 pb-6 border-b border-(--color-border)">
             <Avatar
               url={post.profiles?.avatar_url}
               username={post.profiles?.username}
@@ -215,7 +210,7 @@ export default function WorldbuildingDetail() {
             />
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-semibold text-gray-800">{post.profiles?.username || '匿名用户'}</span>
+                <span className="font-semibold text-(--color-text-primary)">{post.profiles?.username || '匿名用户'}</span>
                 {post.profiles?.role === 'admin' && (
                   <span className="text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-full font-medium">
                     管理员
@@ -223,37 +218,37 @@ export default function WorldbuildingDetail() {
                 )}
               </div>
               {post.profiles?.member_code && (
-                <div className="flex items-center space-x-2 text-xs text-gray-500">
+                <div className="flex items-center space-x-2 text-xs text-(--color-text-tertiary)">
                   <span>{RACES[post.profiles?.race]?.icon || '🧑'}</span>
                   <span className="font-mono">{post.profiles.member_code}</span>
                   <span>{RACES[post.profiles?.race]?.name || '人类'}</span>
                 </div>
               )}
             </div>
-            <span className="text-sm text-gray-400 ml-auto">{formatDate(post.created_at)}</span>
+            <span className="text-sm text-(--color-text-tertiary) ml-auto">{formatDate(post.created_at)}</span>
           </div>
 
           {/* 内容 */}
-          <div className="text-gray-700 whitespace-pre-wrap leading-relaxed text-lg mb-6">
+          <div className="text-(--color-text-secondary) whitespace-pre-wrap leading-relaxed text-lg mb-6">
             {post.content}
           </div>
 
           {/* 操作栏 */}
-          <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+          <div className="flex items-center justify-between pt-4 border-t border-(--color-border)">
             <div className="flex items-center space-x-6">
               <button
                 onClick={handleLike}
                 className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-200 ${
                   liked
-                    ? 'bg-red-50 text-red-500'
-                    : 'text-gray-500 hover:bg-gray-100'
+                    ? 'bg-(--color-error)/10 text-red-500'
+                    : 'text-(--color-text-tertiary) hover:bg-(--color-bg-tertiary)'
                 }`}
               >
                 <span>{liked ? '❤️' : '🤍'}</span>
                 <span>{post.likes_count || 0}</span>
               </button>
 
-              <div className="flex items-center space-x-2 text-gray-500">
+              <div className="flex items-center space-x-2 text-(--color-text-tertiary)">
                 <span>💬</span>
                 <span>{comments.length}</span>
               </div>
@@ -274,7 +269,7 @@ export default function WorldbuildingDetail() {
                 {/* 作者和管理员都可以删除 */}
                 <button
                   onClick={() => setShowDeleteModal(true)}
-                  className="px-4 py-2 text-red-500 hover:text-white hover:bg-red-500 rounded-full transition-all duration-200 text-sm font-medium"
+                  className="px-4 py-2 text-red-500 hover:text-white hover:bg-(--color-error)/100 rounded-full transition-all duration-200 text-sm font-medium"
                 >
                   🗑️ 删除
                 </button>
@@ -285,14 +280,14 @@ export default function WorldbuildingDetail() {
 
         {/* 评论区 */}
         <div className="glass-effect p-6 rounded-2xl shadow-lg animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-          <h3 className="text-xl font-bold text-gray-800 mb-6">
+          <h3 className="text-xl font-bold text-(--color-text-primary) mb-6">
             💬 评论 ({comments.length})
           </h3>
 
           {/* 评论输入框 */}
           {!user ? (
             <div className="mb-6 p-6 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl text-center">
-              <p className="text-gray-600 mb-3">请先登录后再发表评论</p>
+              <p className="text-(--color-text-secondary) mb-3">请先登录后再发表评论</p>
               <button
                 onClick={() => navigate('/login')}
                 className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate"
@@ -301,10 +296,10 @@ export default function WorldbuildingDetail() {
               </button>
             </div>
           ) : !userProfile?.race_selected ? (
-            <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
-              <p className="text-yellow-700 text-sm">
+            <div className="mb-6 p-4 bg-(--color-warning)/10 border border-(--color-warning)/30 rounded-xl text-center">
+              <p className="text-(--color-warning) text-sm">
                 ⚠️ 你还没有选择种族，无法发表评论。
-                <a href={`/profile/${user.id}`} className="ml-2 text-yellow-600 underline">
+                <a href={`/profile/${user.id}`} className="ml-2 text-(--color-warning) underline">
                   去选择种族
                 </a>
               </p>
@@ -315,7 +310,7 @@ export default function WorldbuildingDetail() {
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 rows={3}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none resize-none"
+                className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl focus:border-purple-500 focus:outline-none resize-none"
                 placeholder="写下你的评论..."
                 required
               />
@@ -336,13 +331,13 @@ export default function WorldbuildingDetail() {
             {comments.length === 0 ? (
               <div className="text-center py-8">
                 <div className="text-4xl mb-3">💭</div>
-                <p className="text-gray-500">暂无评论，快来发表第一条评论吧！</p>
+                <p className="text-(--color-text-tertiary)">暂无评论，快来发表第一条评论吧！</p>
               </div>
             ) : (
               comments.map((comment, index) => (
                 <div
                   key={comment.id}
-                  className="p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl animate-fade-in-up"
+                  className="p-4 bg-gradient-to-r from-(--color-bg-secondary) to-(--color-bg-tertiary) rounded-xl animate-fade-in-up"
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
                   <div className="flex items-start space-x-4">
@@ -354,19 +349,19 @@ export default function WorldbuildingDetail() {
                     />
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-2">
-                        <span className="font-semibold text-gray-800">
+                        <span className="font-semibold text-(--color-text-primary)">
                           {comment.profiles?.username || '匿名用户'}
                         </span>
                         {comment.profiles?.member_code && (
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-(--color-text-tertiary)">
                             {RACES[comment.profiles?.race]?.icon || '🧑'} {comment.profiles.member_code}
                           </span>
                         )}
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-(--color-text-tertiary)">
                           {formatDate(comment.created_at)}
                         </span>
                       </div>
-                      <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                      <p className="text-(--color-text-secondary) whitespace-pre-wrap leading-relaxed">
                         {comment.content}
                       </p>
                     </div>
@@ -381,26 +376,26 @@ export default function WorldbuildingDetail() {
       {/* 删除确认弹窗 */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full animate-fade-in-up">
+          <div className="bg-(--color-surface) rounded-2xl shadow-2xl max-w-md w-full animate-fade-in-up">
             <div className="p-6">
               <div className="text-center mb-6">
                 <div className="text-5xl mb-4">⚠️</div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">确认删除</h3>
-                <p className="text-gray-500">确定要删除这个创作吗？此操作不可撤销。</p>
+                <h3 className="text-xl font-bold text-(--color-text-primary) mb-2">确认删除</h3>
+                <p className="text-(--color-text-tertiary)">确定要删除这个创作吗？此操作不可撤销。</p>
               </div>
 
               <div className="flex space-x-4">
                 <button
                   onClick={() => setShowDeleteModal(false)}
                   disabled={deleting}
-                  className="flex-1 px-6 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-all duration-200 font-medium"
+                  className="flex-1 px-6 py-3 text-(--color-text-secondary) hover:text-(--color-text-primary) hover:bg-(--color-bg-tertiary) rounded-xl transition-all duration-200 font-medium"
                 >
                   取消
                 </button>
                 <button
                   onClick={handleDelete}
                   disabled={deleting}
-                  className="flex-1 px-6 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-all duration-200 disabled:opacity-50"
+                  className="flex-1 px-6 py-3 bg-(--color-error)/100 text-white rounded-xl font-medium hover:bg-red-600 transition-all duration-200 disabled:opacity-50"
                 >
                   {deleting ? '删除中...' : '🗑️ 确认删除'}
                 </button>

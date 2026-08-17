@@ -39,9 +39,13 @@ export default function PostDetail() {
         .from('posts')
         .select('*, profiles(username, avatar_url, role)')
         .eq('id', id)
-        .single()
+        .maybeSingle()
 
       if (error) throw error
+      if (!data) {
+        setError('帖子不存在或已被删除')
+        return
+      }
       setPost(data)
     } catch (error) {
       console.error('获取帖子失败:', error)
@@ -86,12 +90,12 @@ export default function PostDetail() {
     return (
       <div className="page-container py-8">
         <div className="max-w-4xl mx-auto px-4">
-          <a href="/" className="inline-flex items-center text-gray-600 hover:text-blue-600 mb-6 transition-colors">
+          <a href="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-blue-600 mb-6 transition-colors">
             ← 返回首页
           </a>
           <div className="text-center py-16">
             <div className="loading-spinner mx-auto mb-4"></div>
-            <p className="text-gray-500">加载中...</p>
+            <p className="text-(--color-text-tertiary)">加载中...</p>
           </div>
         </div>
       </div>
@@ -102,20 +106,20 @@ export default function PostDetail() {
     return (
       <div className="page-container py-8">
         <div className="max-w-4xl mx-auto px-4">
-          <a href="/" className="inline-flex items-center text-gray-600 hover:text-blue-600 mb-6 transition-colors">
+          <a href="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-blue-600 mb-6 transition-colors">
             ← 返回首页
           </a>
           <div className="text-center py-16">
             <div className="text-6xl mb-4">❌</div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">加载失败</h3>
-            <p className="text-gray-500 mb-4">{error}</p>
+            <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">加载失败</h3>
+            <p className="text-(--color-text-tertiary) mb-4">{error}</p>
             <button
               onClick={fetchPost}
               className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate mr-4"
             >
               🔄 重试
             </button>
-            <a href="/" className="inline-flex items-center text-gray-600 hover:text-blue-600">
+            <a href="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-blue-600">
               🏠 返回首页
             </a>
           </div>
@@ -128,13 +132,13 @@ export default function PostDetail() {
     return (
       <div className="page-container py-8">
         <div className="max-w-4xl mx-auto px-4">
-          <a href="/" className="inline-flex items-center text-gray-600 hover:text-blue-600 mb-6 transition-colors">
+          <a href="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-blue-600 mb-6 transition-colors">
             ← 返回首页
           </a>
           <div className="text-center py-16">
             <div className="text-6xl mb-4">😕</div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">帖子不存在</h3>
-            <p className="text-gray-500 mb-4">该帖子可能已被删除</p>
+            <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">帖子不存在</h3>
+            <p className="text-(--color-text-tertiary) mb-4">该帖子可能已被删除</p>
             <a href="/" className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-block">
               🏠 返回首页
             </a>
@@ -156,7 +160,7 @@ export default function PostDetail() {
 
         <article className={`glass-effect p-8 rounded-2xl shadow-lg mb-6 animate-fade-in-up ${post.is_pinned ? 'ring-1 ring-yellow-400/50' : ''}`}>
           {post.is_pinned && (
-            <div className="inline-flex items-center mb-4 px-3 py-1 bg-yellow-100 text-yellow-700 text-sm font-medium rounded-full">
+            <div className="inline-flex items-center mb-4 px-3 py-1 bg-(--color-warning)/15 text-(--color-warning) text-sm font-medium rounded-full">
               📌 置顶
             </div>
           )}
@@ -191,10 +195,10 @@ export default function PostDetail() {
           {/* 内容 - 使用阅读内容样式 */}
           <div className="reading-content mb-6">{post.content}</div>
 
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-4 border-t border-gray-200 gap-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-4 border-t border-(--color-border) gap-4">
             <Link
               to={`/profile/${post.user_id}`}
-              className="flex items-center space-x-3 hover:bg-gray-100 px-4 py-2 rounded-full transition-colors duration-200"
+              className="flex items-center space-x-3 hover:bg-(--color-bg-tertiary) px-4 py-2 rounded-full transition-colors duration-200"
             >
               <Avatar
                 url={post.profiles?.avatar_url}
@@ -204,7 +208,7 @@ export default function PostDetail() {
               />
               <div>
                 <div className="flex items-center space-x-2">
-                  <span className="font-semibold text-gray-800">{post.profiles?.username || '匿名用户'}</span>
+                  <span className="font-semibold text-(--color-text-primary)">{post.profiles?.username || '匿名用户'}</span>
                   {post.profiles?.role === 'admin' && (
                     <span className="hidden sm:inline text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-full font-medium">
                       管理员
@@ -215,19 +219,19 @@ export default function PostDetail() {
                   )}
                 </div>
                 {post.profiles?.member_code ? (
-                  <div className="flex items-center space-x-2 text-xs text-gray-500">
+                  <div className="flex items-center space-x-2 text-xs text-(--color-text-tertiary)">
                     <span>{RACES[post.profiles?.race]?.icon || '🧑'}</span>
                     <span className="font-mono">{post.profiles.member_code}</span>
                     <span>{RACES[post.profiles?.race]?.name || '人类'}</span>
                   </div>
                 ) : (
-                  <span className="text-xs text-gray-500">作者</span>
+                  <span className="text-xs text-(--color-text-tertiary)">作者</span>
                 )}
               </div>
             </Link>
 
             <div className="flex items-center space-x-3">
-              <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+              <span className="text-sm text-(--color-text-tertiary) bg-(--color-bg-tertiary) px-3 py-1 rounded-full">
                 🕐 {new Date(post.created_at).toLocaleString('zh-CN')}
               </span>
 
@@ -236,8 +240,8 @@ export default function PostDetail() {
                   onClick={handlePin}
                   className={`px-4 py-2 rounded-full transition-all duration-200 font-medium ${
                     post.is_pinned
-                      ? 'text-yellow-600 hover:text-white hover:bg-yellow-500 bg-yellow-50'
-                      : 'text-yellow-500 hover:text-white hover:bg-yellow-500'
+                      ? 'text-(--color-warning) hover:text-white hover:bg-(--color-warning)/100 bg-(--color-warning)/10'
+                      : 'text-yellow-500 hover:text-white hover:bg-(--color-warning)/100'
                   }`}
                 >
                   {post.is_pinned ? '📌 取消置顶' : '📌 置顶'}
@@ -247,7 +251,7 @@ export default function PostDetail() {
               {canDelete && (
                 <button
                   onClick={handleDelete}
-                  className="px-4 py-2 text-red-500 hover:text-white hover:bg-red-500 rounded-full transition-all duration-200 font-medium"
+                  className="px-4 py-2 text-red-500 hover:text-white hover:bg-(--color-error)/100 rounded-full transition-all duration-200 font-medium"
                 >
                   🗑️ 删除
                 </button>

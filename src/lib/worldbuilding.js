@@ -323,6 +323,7 @@ export const updateWorldbuilding = async (id, userId, type, title, content) => {
 }
 
 // 点赞/取消点赞
+// 返回 { isLiked, count }，供前端乐观更新，避免整篇重新拉取
 export const toggleLike = async (userId, worldbuildingId) => {
   try {
     // 检查是否已点赞
@@ -359,20 +360,17 @@ export const toggleLike = async (userId, worldbuildingId) => {
       isLiked = true
     }
 
-    // 等待一小段时间确保数据库同步
-    await new Promise(resolve => setTimeout(resolve, 100))
-
-    // 重新获取所有点赞记录并计算数量
-    const { data: allLikes, error: countError } = await supabase
+    // 用 count 查询直接获取点赞数（head 只取计数，不拉取全表）
+    const { count, error: countError } = await supabase
       .from('worldbuilding_likes')
-      .select('id')
+      .select('id', { count: 'exact', head: true })
       .eq('worldbuilding_id', worldbuildingId)
 
     if (countError) {
       console.error('获取点赞数失败:', countError)
     }
 
-    const likeCount = allLikes ? allLikes.length : 0
+    const likeCount = count ?? 0
 
     // 更新帖子的点赞数
     const { error: updateError } = await supabase
@@ -384,7 +382,7 @@ export const toggleLike = async (userId, worldbuildingId) => {
       console.error('更新点赞数失败:', updateError)
     }
 
-    return isLiked
+    return { isLiked, count: likeCount }
   } catch (error) {
     console.error('点赞操作失败:', error)
     return null

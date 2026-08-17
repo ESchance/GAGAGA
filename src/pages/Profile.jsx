@@ -140,7 +140,7 @@ export default function Profile() {
       <div className="page-container flex items-center justify-center">
         <div className="text-center">
           <div className="loading-spinner mx-auto mb-4"></div>
-          <p className="text-gray-500">加载中...</p>
+          <p className="text-(--color-text-tertiary)">加载中...</p>
         </div>
       </div>
     )
@@ -192,15 +192,15 @@ export default function Profile() {
                     {worldInfo.member_code ? (
                       <>
                         <span className="font-mono text-purple-600 font-bold">{worldInfo.member_code}</span>
-                        <span className="text-gray-600">
+                        <span className="text-(--color-text-secondary)">
                           {worldInfo.raceInfo?.icon} {worldInfo.raceInfo?.name}
                         </span>
                         {worldInfo.title && (
-                          <span className="text-yellow-600">· {worldInfo.title}</span>
+                          <span className="text-(--color-warning)">· {worldInfo.title}</span>
                         )}
                       </>
                     ) : (
-                      <span className="text-gray-400 italic">种族和编号待选择</span>
+                      <span className="text-(--color-text-tertiary) italic">种族和编号待选择</span>
                     )}
                   </div>
                   {/* 自己的主页且未选择种族时，显示选择按钮 */}
@@ -222,7 +222,7 @@ export default function Profile() {
               </div>
 
               {isOwnProfile && (
-                <p className="text-sm text-gray-500 flex items-center justify-center sm:justify-start">
+                <p className="text-sm text-(--color-text-tertiary) flex items-center justify-center sm:justify-start">
                   <span className="mr-2">💡</span> 点击头像可以更换
                 </p>
               )}
@@ -242,9 +242,9 @@ export default function Profile() {
           <div className="mb-8 animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
             <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-2xl p-4 border border-green-100">
               <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-semibold text-gray-700 flex items-center">
+                <h4 className="text-sm font-semibold text-(--color-text-secondary) flex items-center">
                   <span className="mr-2">✍️</span> 我的故事
-                  <span className="ml-2 text-xs text-gray-400 font-normal">（可编辑）</span>
+                  <span className="ml-2 text-xs text-(--color-text-tertiary) font-normal">（可编辑）</span>
                 </h4>
                 {!editingBackstory && (
                   <button
@@ -265,31 +265,31 @@ export default function Profile() {
                     value={backstoryText}
                     onChange={(e) => setBackstoryText(e.target.value)}
                     rows={4}
-                    className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:border-green-500 focus:outline-none resize-none"
+                    className="w-full px-4 py-3 border-2 border-(--color-success)/30 rounded-xl focus:border-green-500 focus:outline-none resize-none"
                     placeholder="在这里写下你的个人故事..."
                   />
                   <div className="flex justify-end space-x-3 mt-3">
                     <button
                       onClick={() => setEditingBackstory(false)}
-                      className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-all duration-200 text-sm"
+                      className="px-4 py-2 text-(--color-text-secondary) hover:text-(--color-text-primary) hover:bg-(--color-bg-tertiary) rounded-full transition-all duration-200 text-sm"
                     >
                       取消
                     </button>
                     <button
                       onClick={handleSaveBackstory}
                       disabled={saving}
-                      className="px-4 py-2 bg-green-500 text-white rounded-full text-sm font-medium hover:bg-green-600 transition-all duration-200 disabled:opacity-50"
+                      className="px-4 py-2 bg-(--color-success)/100 text-white rounded-full text-sm font-medium hover:bg-green-600 transition-all duration-200 disabled:opacity-50"
                     >
                       {saving ? '保存中...' : '💾 保存'}
                     </button>
                   </div>
                 </div>
               ) : (
-                <div className="bg-white bg-opacity-60 rounded-xl p-4">
+                <div className="bg-(--color-surface) bg-opacity-60 rounded-xl p-4">
                   {profile?.custom_backstory ? (
-                    <p className="text-gray-600 text-sm leading-relaxed">{profile.custom_backstory}</p>
+                    <p className="text-(--color-text-secondary) text-sm leading-relaxed">{profile.custom_backstory}</p>
                   ) : (
-                    <p className="text-gray-400 text-sm text-center">还没有添加个人故事</p>
+                    <p className="text-(--color-text-tertiary) text-sm text-center">还没有添加个人故事</p>
                   )}
                 </div>
               )}
@@ -301,23 +301,23 @@ export default function Profile() {
         {worldInfo && (
           <div className="mb-8 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-100">
-              <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+              <h4 className="text-sm font-semibold text-(--color-text-secondary) mb-3 flex items-center">
                 <span className="mr-2">📊</span> 数据统计
               </h4>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
                   <div className="text-2xl font-bold text-blue-600">{posts.length}</div>
-                  <div className="text-xs text-gray-500">帖子</div>
+                  <div className="text-xs text-(--color-text-tertiary)">帖子</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-green-600">{worldInfo.achievements?.length || 0}</div>
-                  <div className="text-xs text-gray-500">成就</div>
+                  <div className="text-2xl font-bold text-(--color-success)">{worldInfo.achievements?.length || 0}</div>
+                  <div className="text-xs text-(--color-text-tertiary)">成就</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-purple-600">
                     {worldInfo.member_code ? worldInfo.member_code.replace('GZ-', '#') : '#0000'}
                   </div>
-                  <div className="text-xs text-gray-500">编号</div>
+                  <div className="text-xs text-(--color-text-tertiary)">编号</div>
                 </div>
               </div>
             </div>
@@ -333,8 +333,8 @@ export default function Profile() {
           {posts.length === 0 ? (
             <div className="text-center py-12 glass-effect rounded-2xl">
               <div className="text-5xl mb-4">📝</div>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">还没有帖子</h3>
-              <p className="text-gray-500">去发布第一个帖子吧！</p>
+              <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">还没有帖子</h3>
+              <p className="text-(--color-text-tertiary)">去发布第一个帖子吧！</p>
             </div>
           ) : (
             <div className="space-y-4">

@@ -66,7 +66,7 @@ const PostCard = memo(function PostCard({ post, onDelete, onPinChange, isAdmin =
       <Link to={`/post/${post.id}`} className="block">
         {/* 置顶标记 */}
         {post.is_pinned && (
-          <div className="inline-flex items-center mb-2 px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs font-medium rounded">
+          <div className="inline-flex items-center mb-2 px-2 py-0.5 bg-(--color-warning)/15 text-(--color-warning) text-xs font-medium rounded">
             📌 置顶
           </div>
         )}

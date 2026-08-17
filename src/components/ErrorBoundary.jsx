@@ -17,11 +17,11 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-(--color-bg-secondary) flex items-center justify-center p-4">
           <div className="text-center max-w-md">
             <div className="text-6xl mb-4">😵</div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">出错了</h2>
-            <p className="text-gray-600 mb-4">
+            <h2 className="text-2xl font-bold text-(--color-text-primary) mb-2">出错了</h2>
+            <p className="text-(--color-text-secondary) mb-4">
               页面遇到了一个错误，请尝试刷新页面。
             </p>
             <button

@@ -46,7 +46,7 @@ export default function RaceSelector({ onSelect }) {
                 >
                   <div className="text-4xl mb-2">{race.icon}</div>
                   <div className="text-white font-medium text-sm">{race.name}</div>
-                  <div className="text-gray-400 text-xs mt-1">{race.description}</div>
+                  <div className="text-(--color-text-tertiary) text-xs mt-1">{race.description}</div>
                 </button>
               ))}
             </div>
@@ -98,13 +98,13 @@ export default function RaceSelector({ onSelect }) {
 
         {/* 底部提示和跳过按钮 */}
         <div className="px-6 pb-6">
-          <p className="text-center text-gray-500 text-xs mb-4">
+          <p className="text-center text-(--color-text-tertiary) text-xs mb-4">
             每个种族都有独特的背景故事，选择后将随机获得一个
           </p>
           <div className="text-center">
             <button
               onClick={() => onSelect(null)}
-              className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
+              className="text-(--color-text-tertiary) hover:text-white text-sm transition-colors duration-200"
             >
               跳过，稍后选择
             </button>

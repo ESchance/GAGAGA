@@ -31,7 +31,7 @@ export default function AnnouncementBar() {
         .eq('is_active', true)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single()
+        .maybeSingle()
 
       if (error) throw error
       setAnnouncement(data)
@@ -105,7 +105,7 @@ export default function AnnouncementBar() {
             {isAdmin && (
               <button
                 onClick={openEditModal}
-                className="flex-shrink-0 ml-4 px-3 py-1 text-white text-opacity-80 hover:text-opacity-100 hover:bg-white hover:bg-opacity-20 rounded-full text-xs transition-all duration-200"
+                className="flex-shrink-0 ml-4 px-3 py-1 text-white text-opacity-80 hover:text-opacity-100 hover:bg-(--color-surface) hover:bg-opacity-20 rounded-full text-xs transition-all duration-200"
               >
                 ✏️ 编辑
               </button>
@@ -117,7 +117,7 @@ export default function AnnouncementBar() {
       {/* 编辑弹窗 */}
       {showEditModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full animate-scale-in overflow-hidden">
+          <div className="bg-(--color-surface) rounded-2xl shadow-2xl max-w-lg w-full animate-scale-in overflow-hidden">
             <div className="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] px-6 py-4">
               <h3 className="text-xl font-bold text-white">📝 编辑公告</h3>
             </div>

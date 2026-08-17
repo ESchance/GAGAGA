@@ -72,33 +72,33 @@ export default function CreatePost() {
           <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             ✏️ 发表新帖子
           </h2>
-          <p className="text-gray-500 mt-2">分享你的想法和见解</p>
+          <p className="text-(--color-text-tertiary) mt-2">分享你的想法和见解</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-(--color-text-secondary) mb-2">
               📌 标题
             </label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl input-animate focus:border-blue-500 focus:outline-none"
+              className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl input-animate focus:border-blue-500 focus:outline-none"
               placeholder="请输入帖子标题"
               required
             />
           </div>
 
           <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-(--color-text-secondary) mb-2">
               📝 内容
             </label>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
               rows={10}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl input-animate focus:border-blue-500 focus:outline-none resize-none"
+              className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl input-animate focus:border-blue-500 focus:outline-none resize-none"
               placeholder="请输入帖子内容..."
               required
             />
@@ -123,8 +123,8 @@ export default function CreatePost() {
         {message && (
           <div className={`mt-6 p-4 rounded-xl flex items-center animate-fade-in-up ${
             message.includes('成功')
-              ? 'bg-green-50 text-green-700 border border-green-200'
-              : 'bg-red-50 text-red-700 border border-red-200'
+              ? 'bg-(--color-success)/10 text-(--color-success) border border-(--color-success)/30'
+              : 'bg-(--color-error)/10 text-(--color-error) border border-(--color-error)/30'
           }`}>
             <span className="mr-2">{message.includes('成功') ? '✅' : '❌'}</span>
             {message}

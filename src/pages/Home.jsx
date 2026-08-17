@@ -70,7 +70,7 @@ export default function Home() {
       <div className="page-container flex items-center justify-center">
         <div className="text-center">
           <div className="loading-spinner mx-auto mb-4"></div>
-          <p className="text-gray-500">加载中...</p>
+          <p className="text-(--color-text-tertiary)">加载中...</p>
         </div>
       </div>
     )
@@ -87,7 +87,7 @@ export default function Home() {
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
               🌟 最新帖子
             </h1>
-            <p className="text-gray-500">发现精彩内容，参与讨论</p>
+            <p className="text-(--color-text-tertiary)">发现精彩内容，参与讨论</p>
             <div className="mt-4 flex items-center justify-center space-x-5">
               {isSuperAdmin && (
                 <button
@@ -105,8 +105,8 @@ export default function Home() {
           {posts.length === 0 ? (
             <div className="text-center py-16 animate-fade-in-up">
               <div className="empty-state-icon mb-4">📝</div>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">还没有帖子</h3>
-              <p className="text-gray-500 mb-6">快来发第一个帖子吧！</p>
+              <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">还没有帖子</h3>
+              <p className="text-(--color-text-tertiary) mb-6">快来发第一个帖子吧！</p>
               <a
                 href="/create"
                 className="btn-gradient text-white px-6 py-3 rounded-full font-medium btn-animate inline-block"

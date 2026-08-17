@@ -130,7 +130,7 @@ export default function AvatarUpload({ userId, currentAvatarUrl, onAvatarUpdate 
       </div>
 
       {/* 提示信息 */}
-      <p className="mt-3 text-xs text-gray-500 flex items-center">
+      <p className="mt-3 text-xs text-(--color-text-tertiary) flex items-center">
         <span className="mr-1">💡</span> 支持 JPG、PNG，最大 2MB
       </p>
 
@@ -138,8 +138,8 @@ export default function AvatarUpload({ userId, currentAvatarUrl, onAvatarUpdate 
       {message && (
         <div className={`mt-3 px-4 py-2 rounded-full text-sm font-medium flex items-center animate-fade-in-up ${
           message.includes('成功')
-            ? 'bg-green-100 text-green-700'
-            : 'bg-red-100 text-red-700'
+            ? 'bg-(--color-success)/15 text-(--color-success)'
+            : 'bg-(--color-error)/15 text-(--color-error)'
         }`}>
           <span className="mr-2">{message.includes('成功') ? '✅' : '❌'}</span>
           {message}

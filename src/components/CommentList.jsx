@@ -138,7 +138,7 @@ export default function CommentList({ postId, requireRace = false }) {
       {!user ? (
         // 未登录
         <div className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl text-center">
-          <p className="text-gray-600 mb-3">请先登录后再发表评论</p>
+          <p className="text-(--color-text-secondary) mb-3">请先登录后再发表评论</p>
           <a
             href="/login"
             className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-block"
@@ -148,10 +148,10 @@ export default function CommentList({ postId, requireRace = false }) {
         </div>
       ) : requireRace && !currentUserProfile?.race_selected ? (
         // 需要种族选择但未选择（仅嘎宇宙创作）
-        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
-          <p className="text-yellow-700 text-sm">
+        <div className="mb-6 p-4 bg-(--color-warning)/10 border border-(--color-warning)/30 rounded-xl text-center">
+          <p className="text-(--color-warning) text-sm">
             ⚠️ 你还没有选择种族，无法发表评论。
-            <a href={`/profile/${user.id}`} className="ml-2 text-yellow-600 underline">
+            <a href={`/profile/${user.id}`} className="ml-2 text-(--color-warning) underline">
               去选择种族
             </a>
           </p>
@@ -199,7 +199,7 @@ export default function CommentList({ postId, requireRace = false }) {
         {comments.length === 0 ? (
           <div className="text-center py-8">
             <div className="text-4xl mb-3">💭</div>
-            <p className="text-gray-500">暂无评论，快来发表第一条评论吧！</p>
+            <p className="text-(--color-text-tertiary)">暂无评论，快来发表第一条评论吧！</p>
           </div>
         ) : (
           comments.map((comment, index) => {
@@ -208,7 +208,7 @@ export default function CommentList({ postId, requireRace = false }) {
             return (
               <div
                 key={comment.id}
-                className="p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl animate-fade-in-up"
+                className="p-4 bg-gradient-to-r from-(--color-bg-secondary) to-(--color-bg-tertiary) rounded-xl animate-fade-in-up"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="flex items-start space-x-4">
@@ -221,7 +221,7 @@ export default function CommentList({ postId, requireRace = false }) {
                   <div className="flex-1">
                     <div className="flex justify-between items-center mb-2">
                       <div className="flex items-center space-x-2">
-                        <span className="font-semibold text-gray-800">
+                        <span className="font-semibold text-(--color-text-primary)">
                           {comment.profiles?.username || '匿名用户'}
                         </span>
                         {comment.profiles?.role === 'admin' && (
@@ -233,19 +233,19 @@ export default function CommentList({ postId, requireRace = false }) {
                           <span className="sm:hidden text-xs" title="管理员">👑</span>
                         )}
                         {comment.profiles?.member_code && (
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-(--color-text-tertiary)">
                             {RACES[comment.profiles?.race]?.icon || '🧑'} {comment.profiles.member_code}
                           </span>
                         )}
                       </div>
                       <div className="flex items-center space-x-2">
-                        <span className="text-xs text-gray-500 bg-white px-2 py-1 rounded-full">
+                        <span className="text-xs text-(--color-text-tertiary) bg-(--color-surface) px-2 py-1 rounded-full">
                           🕐 {new Date(comment.created_at).toLocaleString('zh-CN')}
                         </span>
                         {canDeleteComment && (
                           <button
                             onClick={() => handleDeleteComment(comment.id, comment.user_id)}
-                            className="text-red-500 hover:text-white hover:bg-red-500 p-1 rounded-full transition-all duration-200"
+                            className="text-red-500 hover:text-white hover:bg-(--color-error)/100 p-1 rounded-full transition-all duration-200"
                             title="删除评论"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -255,7 +255,7 @@ export default function CommentList({ postId, requireRace = false }) {
                         )}
                       </div>
                     </div>
-                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                    <p className="text-(--color-text-secondary) whitespace-pre-wrap leading-relaxed">
                       {comment.content}
                     </p>
                   </div>

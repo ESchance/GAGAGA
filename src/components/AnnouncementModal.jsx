@@ -72,7 +72,7 @@ export default function AnnouncementModal() {
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-blue-500/30 to-purple-500/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[80vh] overflow-hidden animate-fade-in-up">
+      <div className="bg-(--color-surface) rounded-2xl shadow-2xl max-w-lg w-full max-h-[80vh] overflow-hidden animate-fade-in-up">
         {/* 头部 */}
         <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-4">
           <div className="flex justify-between items-center">
@@ -92,18 +92,18 @@ export default function AnnouncementModal() {
         {/* 内容 */}
         <div className="p-6 overflow-y-auto max-h-[50vh]">
           {sections.length === 0 ? (
-            <p className="text-center text-gray-500 text-sm py-6">暂无公告内容</p>
+            <p className="text-center text-(--color-text-tertiary) text-sm py-6">暂无公告内容</p>
           ) : (
             sections.map((section, index) => (
               <div key={index} className="mb-6 last:mb-0">
-                <h3 className="flex items-center text-lg font-semibold text-gray-800 mb-3">
+                <h3 className="flex items-center text-lg font-semibold text-(--color-text-primary) mb-3">
                   <span className="mr-2">{section.icon}</span>
                   {section.title}
                 </h3>
                 <ul className="space-y-2">
                   {(section.items || []).map((item, itemIndex) => (
-                    <li key={itemIndex} className="flex items-start text-gray-600 text-sm">
-                      <span className="mr-2 text-gray-400">•</span>
+                    <li key={itemIndex} className="flex items-start text-(--color-text-secondary) text-sm">
+                      <span className="mr-2 text-(--color-text-tertiary)">•</span>
                       {item}
                     </li>
                   ))}
@@ -114,11 +114,11 @@ export default function AnnouncementModal() {
         </div>
 
         {/* 底部按钮 */}
-        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+        <div className="px-6 py-4 border-t border-(--color-border) bg-(--color-bg-secondary)">
           <div className="flex justify-between items-center">
             <button
               onClick={handleDismiss}
-              className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+              className="text-sm text-(--color-text-tertiary) hover:text-(--color-text-secondary) transition-colors"
             >
               不再显示
             </button>

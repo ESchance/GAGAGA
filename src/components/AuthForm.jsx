@@ -98,7 +98,7 @@ export default function AuthForm({ type = 'login' }) {
         <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           {type === 'register' ? '🚀 注册' : '👋 登录'}
         </h2>
-        <p className="text-gray-500 mt-2">
+        <p className="text-(--color-text-tertiary) mt-2">
           {type === 'register' ? '加入嘎宇宙，开始你的旅程' : '欢迎回来！'}
         </p>
       </div>
@@ -106,14 +106,14 @@ export default function AuthForm({ type = 'login' }) {
       <form onSubmit={handleSubmit} className="space-y-5">
         {type === 'register' && (
           <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-(--color-text-secondary) mb-2">
               👤 用户名
             </label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl input-animate focus:border-blue-500 focus:outline-none"
+              className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl input-animate focus:border-blue-500 focus:outline-none"
               placeholder="请输入用户名"
               required
             />
@@ -121,61 +121,61 @@ export default function AuthForm({ type = 'login' }) {
         )}
 
         <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-(--color-text-secondary) mb-2">
             📧 邮箱
           </label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl input-animate focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl input-animate focus:outline-none focus:border-blue-500"
             placeholder="请输入邮箱"
             required
           />
           {type === 'register' && (
-            <p className="mt-2 text-xs text-gray-500 flex items-center">
+            <p className="mt-2 text-xs text-(--color-text-tertiary) flex items-center">
               <span className="mr-1">💡</span> 只能使用指定的邮箱注册
             </p>
           )}
         </div>
 
         <div className="animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-(--color-text-secondary) mb-2">
             🔒 密码
           </label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl input-animate focus:border-blue-500 focus:outline-none"
+            className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl input-animate focus:border-blue-500 focus:outline-none"
             placeholder="请输入密码"
             required
             minLength={6}
           />
           {type === 'register' && password && (
-            <div className="mt-3 p-3 bg-gray-50 rounded-xl">
+            <div className="mt-3 p-3 bg-(--color-bg-secondary) rounded-xl">
               <p className={`text-sm font-medium ${passwordStrength.color} mb-2`}>
                 {passwordStrength.text}
               </p>
               <div className="flex gap-2 mb-3">
-                <div className={`password-strength flex-1 ${passwordStrength.level >= 1 ? 'bg-red-500' : 'bg-gray-200'}`}></div>
-                <div className={`password-strength flex-1 ${passwordStrength.level >= 2 ? 'bg-yellow-500' : 'bg-gray-200'}`}></div>
-                <div className={`password-strength flex-1 ${passwordStrength.level >= 3 ? 'bg-green-500' : 'bg-gray-200'}`}></div>
+                <div className={`password-strength flex-1 ${passwordStrength.level >= 1 ? 'bg-(--color-error)/100' : 'bg-(--color-bg-tertiary)'}`}></div>
+                <div className={`password-strength flex-1 ${passwordStrength.level >= 2 ? 'bg-(--color-warning)/100' : 'bg-(--color-bg-tertiary)'}`}></div>
+                <div className={`password-strength flex-1 ${passwordStrength.level >= 3 ? 'bg-(--color-success)/100' : 'bg-(--color-bg-tertiary)'}`}></div>
               </div>
-              <ul className="text-xs text-gray-600 space-y-1">
-                <li className={`flex items-center ${/[A-Z]/.test(password) ? 'text-green-600' : ''}`}>
+              <ul className="text-xs text-(--color-text-secondary) space-y-1">
+                <li className={`flex items-center ${/[A-Z]/.test(password) ? 'text-(--color-success)' : ''}`}>
                   <span className="mr-2">{/[A-Z]/.test(password) ? '✅' : '⬜'}</span>
                   包含大写字母
                 </li>
-                <li className={`flex items-center ${/[a-z]/.test(password) ? 'text-green-600' : ''}`}>
+                <li className={`flex items-center ${/[a-z]/.test(password) ? 'text-(--color-success)' : ''}`}>
                   <span className="mr-2">{/[a-z]/.test(password) ? '✅' : '⬜'}</span>
                   包含小写字母
                 </li>
-                <li className={`flex items-center ${/[0-9]/.test(password) ? 'text-green-600' : ''}`}>
+                <li className={`flex items-center ${/[0-9]/.test(password) ? 'text-(--color-success)' : ''}`}>
                   <span className="mr-2">{/[0-9]/.test(password) ? '✅' : '⬜'}</span>
                   包含数字
                 </li>
-                <li className={`flex items-center ${password.length >= 6 ? 'text-green-600' : ''}`}>
+                <li className={`flex items-center ${password.length >= 6 ? 'text-(--color-success)' : ''}`}>
                   <span className="mr-2">{password.length >= 6 ? '✅' : '⬜'}</span>
                   至少6位
                 </li>
@@ -203,8 +203,8 @@ export default function AuthForm({ type = 'login' }) {
       {message && (
         <div className={`mt-6 p-4 rounded-xl flex items-center animate-fade-in-up ${
           message.includes('成功')
-            ? 'bg-green-50 text-green-700 border border-green-200'
-            : 'bg-red-50 text-red-700 border border-red-200'
+            ? 'bg-(--color-success)/10 text-(--color-success) border border-(--color-success)/30'
+            : 'bg-(--color-error)/10 text-(--color-error) border border-(--color-error)/30'
         }`}>
           <span className="mr-2">{message.includes('成功') ? '✅' : '❌'}</span>
           {message}

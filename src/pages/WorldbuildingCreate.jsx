@@ -77,7 +77,7 @@ export default function WorldbuildingCreate() {
         {/* 返回按钮 */}
         <button
           onClick={() => navigate('/worldbuilding')}
-          className="inline-flex items-center text-gray-600 hover:text-purple-600 mb-6 transition-colors"
+          className="inline-flex items-center text-(--color-text-secondary) hover:text-purple-600 mb-6 transition-colors"
         >
           ← 返回创作列表
         </button>
@@ -87,14 +87,14 @@ export default function WorldbuildingCreate() {
             <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
               ✏️ 创作新内容
             </h2>
-            <p className="text-gray-500 mt-2">在嘎宇宙中留下你的印记</p>
+            <p className="text-(--color-text-tertiary) mt-2">在嘎宇宙中留下你的印记</p>
           </div>
 
           {!raceSelected ? (
             <div className="text-center py-8">
               <div className="text-6xl mb-4">🌌</div>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">请先选择种族</h3>
-              <p className="text-gray-500 mb-6">在开始创作之前，你需要先在个人主页选择种族</p>
+              <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">请先选择种族</h3>
+              <p className="text-(--color-text-tertiary) mb-6">在开始创作之前，你需要先在个人主页选择种族</p>
               <button
                 onClick={() => navigate(`/profile/${user?.id}`)}
                 className="btn-gradient text-white px-6 py-3 rounded-full font-medium btn-animate"
@@ -106,7 +106,7 @@ export default function WorldbuildingCreate() {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* 类型选择 */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                <label className="block text-sm font-semibold text-(--color-text-secondary) mb-3">
                   📁 类型
                 </label>
                 <div className="grid grid-cols-2 gap-3">
@@ -118,11 +118,11 @@ export default function WorldbuildingCreate() {
                       className={`p-4 rounded-xl border-2 text-left transition-all duration-200 ${
                         type === option.value
                           ? 'border-purple-500 bg-purple-50'
-                          : 'border-gray-200 hover:border-gray-300'
+                          : 'border-(--color-border) hover:border-(--color-border)'
                       }`}
                     >
-                      <div className="font-medium text-gray-800">{option.label}</div>
-                      <div className="text-xs text-gray-500 mt-1">{option.description}</div>
+                      <div className="font-medium text-(--color-text-primary)">{option.label}</div>
+                      <div className="text-xs text-(--color-text-tertiary) mt-1">{option.description}</div>
                     </button>
                   ))}
                 </div>
@@ -130,14 +130,14 @@ export default function WorldbuildingCreate() {
 
               {/* 标题 */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-(--color-text-secondary) mb-2">
                   📌 标题
                 </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none"
+                  className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl focus:border-purple-500 focus:outline-none"
                   placeholder="请输入标题"
                   required
                 />
@@ -145,14 +145,14 @@ export default function WorldbuildingCreate() {
 
               {/* 内容 */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-(--color-text-secondary) mb-2">
                   📝 内容
                 </label>
                 <textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   rows={12}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none resize-none"
+                  className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl focus:border-purple-500 focus:outline-none resize-none"
                   placeholder="在这里写下你的创作..."
                   required
                 />
@@ -174,7 +174,7 @@ export default function WorldbuildingCreate() {
                 <button
                   type="button"
                   onClick={() => navigate('/worldbuilding')}
-                  className="px-6 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-all duration-200 font-medium"
+                  className="px-6 py-3 text-(--color-text-secondary) hover:text-(--color-text-primary) hover:bg-(--color-bg-tertiary) rounded-xl transition-all duration-200 font-medium"
                 >
                   取消
                 </button>
@@ -200,8 +200,8 @@ export default function WorldbuildingCreate() {
           {message && (
             <div className={`mt-6 p-4 rounded-xl flex items-center animate-fade-in-up ${
               message.includes('成功')
-                ? 'bg-green-50 text-green-700 border border-green-200'
-                : 'bg-red-50 text-red-700 border border-red-200'
+                ? 'bg-(--color-success)/10 text-(--color-success) border border-(--color-success)/30'
+                : 'bg-(--color-error)/10 text-(--color-error) border border-(--color-error)/30'
             }`}>
               <span className="mr-2">{message.includes('成功') ? '✅' : '❌'}</span>
               {message}

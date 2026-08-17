@@ -194,7 +194,7 @@ export default function Navbar() {
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-3 py-2 text-[var(--color-error)] hover:bg-red-50 rounded-md transition-colors text-sm"
+                  className="w-full text-left px-3 py-2 text-[var(--color-error)] hover:bg-(--color-error)/10 rounded-md transition-colors text-sm"
                 >
                   退出
                 </button>
