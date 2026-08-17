@@ -45,9 +45,8 @@ CI 已配置：推送到 GitHub 会自动运行 lint + test + build（`.github/w
 3. 嘎宇宙创作（故事、角色、设定、点子）
 4. 世界观系统（6种种族、编号、背景故事）
 5. 管理员系统（超级管理员、管理员）
-6. 入场动画（宇宙大爆发主题，重建版）
-7. 暗色/浅色模式
-8. 移动端适配
+6. 暗色/浅色模式
+7. 移动端适配
 
 ## 关键文件
 
@@ -56,18 +55,8 @@ CI 已配置：推送到 GitHub 会自动运行 lint + test + build（`.github/w
 - `src/lib/validation.js` - 输入校验（发帖/评论/创作/注册统一使用）
 - `src/components/Toast.jsx` - Toast 轻量提示条系统，用法：`const { showToast } = useToast()`，`showToast('消息', 'success'|'error'|'warning'|'info')`
 - `src/pages/UserManagement.jsx` - 用户管理
-- `src/animation/` - 入场动画（Three.js 渲染 + Canvas 2D 兜底，详见下文）
 
 > 提示约定：操作结果提示统一用 `showToast`；高风险操作的确认框保留原生 `confirm`（删除帖子/评论）。
-
-## 入场动画架构（重建版，2026-08-17）
-
-- **阶段时间轴**：`src/animation/AnimationTimeline.js` 纯状态机，7 阶段共 15s + 用户点击等待 + 2.2s 收尾。阶段：星空(0-2.6s)→标题"嘎宇宙"(2.6-5.2s)→坍缩(5.2-7.6s)→奇点(7.6-10.2s)→大爆炸/银河(10.2-15s)→第一视角遨游(等待点击，HUD+开始探索按钮)→点击后加速+拖尾+白光亮屏结束
-- **渲染器分流**：`renderer/RendererSwitch.js` 按 `device.js` 检测 tier（high/medium/2d/skip），Three.js 动态 import 独立 chunk；移动端/无 WebGL2/init 失败/低帧降级 → Canvas 2D
-- **粒子**：`particles/ParticleSystem.js` 单 Points + 单 ShaderMaterial（`particles/shaders.js`），对数正态"有大有小"、随机速度"有快有慢"，螺旋臂生成银河
-- **性能**：`FpsMonitor.js` 帧率监控（连续 <50fps×3s 降级）；`prefers-reduced-motion` 直接跳过；组件卸载时资源 dispose 全量清理
-- **交互**：`IntroOverlay.jsx` 全屏遮罩；"开始探索"按钮出现于 travel 阶段，点击后速度×2 + 拖尾
-- **触发**：`/?showIntro=true` 回放；`&newUser=true` 新用户（动画结束弹种族选择）；调试参数 `introStage`/`introPause`/`introDebug`
 
 ## 数据库表
 

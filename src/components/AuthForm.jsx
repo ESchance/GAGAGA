@@ -69,9 +69,9 @@ export default function AuthForm({ type = 'login' }) {
           throw error
         }
 
-        // 注册成功（profile 由数据库触发器自动创建）→ 播放入场动画，动画结束由 App 层弹种族选择
+        // 注册成功（profile 由数据库触发器自动创建），直接进入首页
         setMessage('注册成功！')
-        navigate('/?showIntro=true&newUser=true')
+        navigate('/')
       } else {
         // 登录
         const { error } = await supabase.auth.signInWithPassword({

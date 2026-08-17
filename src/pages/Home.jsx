@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import PostCard from '../components/PostCard'
@@ -11,7 +10,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [showAnnouncementAdmin, setShowAnnouncementAdmin] = useState(false)
   const { user, isAdmin, isSuperAdmin } = useAuth()
-  const navigate = useNavigate()
 
   useEffect(() => {
     // 获取所有帖子
@@ -91,16 +89,6 @@ export default function Home() {
             </h1>
             <p className="text-gray-500">发现精彩内容，参与讨论</p>
             <div className="mt-4 flex items-center justify-center space-x-5">
-              {user && (
-                <button
-                  onClick={() => navigate('/?showIntro=true')}
-                  className="inline-flex items-center space-x-1.5 text-sm text-[var(--color-text-tertiary)] hover:text-[var(--color-primary)] transition-colors"
-                  title="回放入场动画"
-                >
-                  <span>🎬</span>
-                  <span>回放动画</span>
-                </button>
-              )}
               {isSuperAdmin && (
                 <button
                   onClick={() => setShowAnnouncementAdmin(true)}

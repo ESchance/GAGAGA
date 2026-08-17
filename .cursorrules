@@ -1,11 +1,11 @@
 # 嘎宇宙项目规则
 
 > 本项目当前以 Claude Code 开发（规则见 `CLAUDE.md`），本文件为 Cursor 编辑器兼容保留。
-> 重要决策、动画架构、数据库细节以 `CLAUDE.md` 与 `PROJECT_HANDOFF.md` 为准。
+> 重要决策与数据库细节以 `CLAUDE.md` 与 `PROJECT_HANDOFF.md` 为准。
 
 ## 项目概述
 
-这是一个基于 React + Supabase 的多人实时在线交流论坛，包含世界观系统和入场动画。
+这是一个基于 React + Supabase 的多人实时在线交流论坛，包含世界观系统。
 
 ## 技术栈
 
@@ -26,7 +26,6 @@
 - `src/pages/` - 页面组件
 - `src/lib/` - 工具函数
 - `src/hooks/` - 自定义 Hook（useAuth）
-- `src/animation/` - 入场动画（Three.js 双渲染器，详见 CLAUDE.md）
 
 ## 数据库
 

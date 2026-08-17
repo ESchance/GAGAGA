@@ -18,7 +18,6 @@
 | 样式框架 | Tailwind CSS | 4.x |
 | 路由 | React Router | 7.x |
 | 后端/数据库 | Supabase | PostgreSQL + Realtime + Auth |
-| 3D 动画 | Three.js | 0.182.x（入场动画，动态加载） |
 | 部署 | Cloudflare Pages | 全球 CDN |
 
 ---
@@ -33,13 +32,6 @@ forum-app/
 │   ├── robots.txt            # 搜索引擎配置
 │   └── sitemap.xml           # 站点地图
 ├── src/
-│   ├── animation/              # 入场动画（Three.js 渲染 + Canvas 2D 兜底，7 阶段）
-│   │   ├── AnimationTimeline.js  # 7 阶段状态机（星空→标题→坍缩→奇点→爆炸→遨游→加速）
-│   │   ├── IntroOverlay.jsx      # 全屏遮罩 + rAF 主循环 + 降级/清理
-│   │   ├── device.js / FpsMonitor.js / easing.js
-│   │   ├── renderer/             # ThreeRenderer / Canvas2DRenderer / RendererSwitch
-│   │   ├── particles/            # ParticleSystem / shaders
-│   │   └── components/           # Title / StartButton / SkipButton / HUD
 │   ├── components/             # 可复用组件
 │   │   ├── AnnouncementBar.jsx
 │   │   ├── AnnouncementModal.jsx
@@ -128,12 +120,7 @@ forum-app/
 - 超级管理员（user01）：可删除用户、管理管理员
 - 管理员（user02、user03）：可删除帖子、评论、置顶
 
-### 7. 入场动画（重建版，2026-08-17）
-- 7 阶段：星空→标题"嘎宇宙"→坍缩→奇点→大爆炸（部分飞出屏幕/部分形成螺旋银河）→第一视角遨游→点击"开始探索"后加速+拖尾+白光亮屏结束
-- 新用户注册后必看；老用户登录跳过，可首页"回放动画"（回放时可跳过）
-- Three.js(PC) + Canvas 2D(移动端/低配) 双渲染器，帧率监控自动降级
-
-### 8. 其他功能
+### 7. 其他功能
 - 暗色/浅色模式切换
 - 移动端适配
 - 实时更新
