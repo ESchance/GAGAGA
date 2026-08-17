@@ -40,15 +40,21 @@ CREATE POLICY "admins can delete site_announcements"
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'superadmin')
   );
 
--- 5. 初始化当前公告内容（版本 3.0，可重复执行）
+-- 5. 初始化当前公告内容（版本 4.0，可重复执行）
+-- 公告内容仅面向普通用户
 INSERT INTO site_announcements (version, title, sections) VALUES
 (
-  '3.0',
+  '4.0',
   '📢 嘎宇宙公告',
   '[
-    {"icon": "🎉", "title": "最新更新", "items": ["支持暗色/浅色模式手动切换", "新增嘎宇宙创作板块（故事、角色、设定、点子）", "新增嘎宇宙种族系统（6种种族+独特编号）", "新增嘎宇宙住户功能（查看所有用户）", "优化移动端和PC端视觉体验", "修复点赞计数和删除用户等问题"]},
-    {"icon": "📖", "title": "功能说明", "items": ["注册后可选择种族，获得唯一编号（GZ-XXXX）", "首页发帖无需选择种族，所有用户可参与", "嘎宇宙创作需要选择种族才能参与", "所有用户可查看嘎宇宙住户", "支持暗色/浅色模式切换"]},
-    {"icon": "⚠️", "title": "注意事项", "items": ["种族选择后不可更改，请慎重选择", "编号中的 4 和 44 已跳过（不吉利）", "删除用户操作不可撤销", "请遵守社区规则，文明交流"]}
+    {"icon": "🎉", "title": "最新更新", "items": ["支持暗色/浅色模式手动切换", "新增嘎宇宙创作板块（故事、角色、设定、点子）", "新增嘎宇宙种族系统（6种种族+独特编号）", "优化移动端和PC端视觉体验", "修复点赞计数等问题"]},
+    {"icon": "📖", "title": "功能说明", "items": ["注册后可选择种族，获得唯一编号（GZ-XXXX）", "首页发帖无需选择种族，所有用户可参与", "嘎宇宙创作需要选择种族才能参与", "支持暗色/浅色模式切换"]},
+    {"icon": "⚠️", "title": "注意事项", "items": ["种族选择后不可更改，请慎重选择", "编号中的 4 和 44 已跳过（不吉利）", "请遵守社区规则，文明交流"]}
   ]'::jsonb
 )
 ON CONFLICT (version) DO NOTHING;
+
+-- 6. 停用旧版本公告，仅保留最新（4.0）
+UPDATE site_announcements
+SET is_active = false
+WHERE is_active = true AND version <> '4.0';
