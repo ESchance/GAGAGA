@@ -6,6 +6,9 @@ import { clamp, expoIn, expoOut, easeInOutCubic, lerp } from '../easing'
 
 const RING_COUNT = 300 // 奇点环绕立体星点数量
 
+// 快速离开中心的缓出（爆炸用）：初期快速飞散，避免粒子堆积中心过曝
+const cubicOut = (t) => 1 - Math.pow(1 - t, 3)
+
 // 近似正态分布 [-1,1]（3 次采样平均）
 function gauss() {
   return (Math.random() + Math.random() + Math.random()) / 1.5 - 1
@@ -119,8 +122,11 @@ export class ParticleSystem {
           p.r = 0.55; p.g = 0.9; p.b = 1.0
         } else {
           p.mode = 'core'
-          p.x = 0; p.y = 0; p.z = 0
-          p.size = p.baseSize
+          // 核心粒子散布在中心小范围（避免全部重叠成刺眼白点）
+          p.x = (Math.random() - 0.5) * 3
+          p.y = (Math.random() - 0.5) * 3
+          p.z = (Math.random() - 0.5) * 2
+          p.size = p.baseSize * 0.5
           p.r = 0.92; p.g = 0.85; p.b = 1.0
         }
       }
@@ -140,7 +146,7 @@ export class ParticleSystem {
           p.mode = 'galaxy'
           const t = galaxyTarget()
           p.tx = t.x; p.ty = t.y; p.tz = t.z
-          p.speed = 0.35 + Math.random() * 0.5 // 慢
+          p.speed = 0.6 + Math.random() * 0.4 // 快速散开，避免堆积中心
           // 银河多色
           const hue = Math.random()
           p.r = hue < 0.33 ? 0.5 + Math.random() * 0.2 : 0.8 + Math.random() * 0.2
@@ -204,7 +210,8 @@ export class ParticleSystem {
   _updateBigbang({ localProgress }) {
     for (const p of this.particles) {
       const t = clamp(localProgress * p.speed, 0, 1)
-      const e = p.mode === 'escape' ? expoOut(t) : easeInOutCubic(t)
+      // galaxy 用 cubicOut 快速离开中心（easeInOutCubic 前段慢会导致粒子堆积中心过曝）
+      const e = p.mode === 'escape' ? expoOut(t) : cubicOut(t)
       p.x = lerp(p.ox, p.tx, e)
       p.y = lerp(p.oy, p.ty, e)
       p.z = lerp(p.oz, p.tz, e)
