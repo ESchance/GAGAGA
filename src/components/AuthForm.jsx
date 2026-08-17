@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { isEmailAllowed } from '../lib/allowedEmails'
 import { validateEmail, validateUsername, validatePassword } from '../lib/validation'
+import RaceSelector from './RaceSelector'
 
 export default function AuthForm({ type = 'login' }) {
   const [email, setEmail] = useState('')
@@ -10,6 +11,8 @@ export default function AuthForm({ type = 'login' }) {
   const [username, setUsername] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
+  const [showRaceSelector, setShowRaceSelector] = useState(false)
+  const [newUserId, setNewUserId] = useState(null)
   const navigate = useNavigate()
 
   // 密码强度提示
@@ -28,12 +31,30 @@ export default function AuthForm({ type = 'login' }) {
     return { level: 3, text: '密码强度：强', color: 'text-green-500' }
   }
 
+  // 注册成功后选择种族：选择完成或跳过都进入首页
+  const handleRaceSelect = async (race) => {
+    // 跳过选种族
+    if (race === null) {
+      setShowRaceSelector(false)
+      navigate('/')
+      return
+    }
+
+    const { selectRace } = await import('../lib/worldbuilding')
+    const result = await selectRace(newUserId, race)
+
+    if (result.success) {
+      setShowRaceSelector(false)
+      navigate('/')
+    } else {
+      setMessage('选择种族失败：' + result.error)
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setMessage('')
-
-    console.log('开始注册流程', { email, username })
 
     try {
       if (type === 'register') {
@@ -48,13 +69,11 @@ export default function AuthForm({ type = 'login' }) {
         if (!passwordCheck.valid) throw new Error(passwordCheck.message)
 
         // 检查邮箱是否在白名单中
-        console.log('检查邮箱白名单...')
         if (!isEmailAllowed(email)) {
           throw new Error('该邮箱未被授权注册，请使用指定的邮箱地址')
         }
 
         // 注册新用户
-        console.log('开始注册...')
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -65,8 +84,6 @@ export default function AuthForm({ type = 'login' }) {
           }
         })
 
-        console.log('注册结果:', { data, error })
-
         if (error) {
           console.error('注册错误:', error)
           if (error.message.includes('already registered')) {
@@ -75,10 +92,12 @@ export default function AuthForm({ type = 'login' }) {
           throw error
         }
 
-        // 注册成功（profile 由数据库触发器自动创建）
+        // 注册成功（profile 由数据库触发器自动创建），立即让新用户选择种族
         setMessage('注册成功！')
-        // 显示入场动画，动画结束后跳转到种族选择
-        navigate('/?showIntro=true&newUser=true')
+        if (data.user?.id) {
+          setNewUserId(data.user.id)
+          setShowRaceSelector(true)
+        }
       } else {
         // 登录
         const { error } = await supabase.auth.signInWithPassword({
@@ -87,7 +106,7 @@ export default function AuthForm({ type = 'login' }) {
         })
 
         if (error) throw error
-        // 登录成功，直接进入首页（老用户不再自动播放入场动画）
+        // 登录成功，直接进入首页
         navigate('/')
       }
     } catch (error) {
@@ -216,6 +235,11 @@ export default function AuthForm({ type = 'login' }) {
           <span className="mr-2">{message.includes('成功') ? '✅' : '❌'}</span>
           {message}
         </div>
+      )}
+
+      {/* 注册成功后选择种族（选择或跳过均进入首页） */}
+      {showRaceSelector && newUserId && (
+        <RaceSelector onSelect={handleRaceSelect} />
       )}
     </div>
   )

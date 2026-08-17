@@ -45,9 +45,8 @@ CI 已配置：推送到 GitHub 会自动运行 lint + test + build（`.github/w
 3. 嘎宇宙创作（故事、角色、设定、点子）
 4. 世界观系统（6种种族、编号、背景故事）
 5. 管理员系统（超级管理员、管理员）
-6. 入场动画（宇宙大爆发主题）
-7. 暗色/浅色模式
-8. 移动端适配
+6. 暗色/浅色模式
+7. 移动端适配
 
 ## 关键文件
 
@@ -56,19 +55,8 @@ CI 已配置：推送到 GitHub 会自动运行 lint + test + build（`.github/w
 - `src/lib/validation.js` - 输入校验（发帖/评论/创作/注册统一使用）
 - `src/components/Toast.jsx` - Toast 轻量提示条系统，用法：`const { showToast } = useToast()`，`showToast('消息', 'success'|'error'|'warning'|'info')`
 - `src/pages/UserManagement.jsx` - 用户管理
-- `src/animation/` - 入场动画
 
 > 提示约定：操作结果提示统一用 `showToast`；高风险操作的确认框保留原生 `confirm`（删除帖子/评论）。
-
-## 入场动画架构（Three.js 升级版）
-
-- **渲染器分层**：`src/animation/core/RendererSwitch.jsx` 按设备选择渲染器——
-  - PC（≥640px + WebGL2）→ `ThreeAnimationCanvas`（Three.js，动态 import）
-  - 移动端 / 无 WebGL2 / 加载失败 → `AnimationCanvas`（Canvas 2D，原版）
-  - 档位判定见 `src/animation/utils/webgl.js`
-- **Three.js 模块**（`src/animation/three/`）：GalaxyStars（银河星空）、Singularity（奇点）、ExplosionSystem（爆炸+冲击波）、TraverseField（穿梭）、NebulaVolume（星云体积）、bloom（泛光，仅高配）、CameraShake、phaseRenderers
-- **科技感字体**：Orbitron / JetBrains Mono 用 @fontsource 自托管，在动画播放时动态 import
-- **时间轴**：`AnimationTimeline` 是唯一控制器，7 阶段约 35 秒，渲染层与叙事逻辑解耦。阶段：黑暗(0-2s)→诞生(2-5s)→爆炸(5-10s)→HUD穿梭(10-18s)→探索按钮(18s起等待点击，穿梭持续循环)→快速穿梭→进入
 
 ## 数据库表
 
@@ -95,4 +83,3 @@ CI 已配置：推送到 GitHub 会自动运行 lint + test + build（`.github/w
 5. 密码规则：至少6位，须含大写字母、小写字母和数字（`validation.js` 强制）
 6. `PostCard` 不再自查管理员，由 Home/Profile 页面层通过 props 传入 `isAdmin` / `currentUserId`
 7. 两套公告：`announcements` 表=页面顶部公告条（警示语，管理员可编辑）；`site_announcements` 表=弹出公告（更新说明，**仅超级管理员**可在首页"管理公告"入口维护），初始化执行 `supabase/setup_site_announcements.sql`
-8. 入场动画：新用户首次注册必看；老用户登录自动跳过，可在首页"回放开场动画"回顾（回顾时保留跳过按钮）

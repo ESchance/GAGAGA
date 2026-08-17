@@ -152,8 +152,7 @@ git push -u origin main
 forum-app/
 ├── public/                 # 静态资源（含 _headers 安全头）
 ├── src/
-│   ├── animation/          # 入场动画（Canvas 2D 粒子/星云系统）
-│   ├── components/         # 可复用组件（Navbar、PostCard、CommentList 等）
+│   ├── components/         # 可复用组件（Navbar、PostCard、CommentList、Toast、SiteAnnouncementAdmin 等）
 │   ├── hooks/              # 自定义 Hook（useAuth）
 │   ├── lib/                # 核心逻辑（supabase、admin、worldbuilding、validation、allowedEmails）
 │   ├── pages/              # 页面（Home、Login、Register、Worldbuilding 系列等）

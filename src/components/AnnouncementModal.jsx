@@ -18,10 +18,6 @@ export default function AnnouncementModal() {
       // 只在首页（/）时检查
       if (location.pathname !== '/') return
 
-      // 检查动画是否已完成（首次注册需看完动画才显示公告）
-      const introComplete = localStorage.getItem('gagaga_intro_complete')
-      if (!introComplete) return
-
       const { supabase } = await import('../lib/supabase')
       const { data: { session } } = await supabase.auth.getSession()
 

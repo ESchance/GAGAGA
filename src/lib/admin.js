@@ -92,31 +92,18 @@ export const toggleAdmin = async (userId, currentRole) => {
 // 3. 前端调用 RPC 必须正确传递参数
 export const deleteUser = async (userId) => {
   try {
-    console.log('=== 删除用户检查清单 ===')
-    console.log('1. 目标用户 ID:', userId)
-
     // 1. 删除所有关联数据（按外键依赖顺序）
-    console.log('2. 删除关联数据...')
     await supabase.from('worldbuilding_comments').delete().eq('user_id', userId)
-    console.log('   - worldbuilding_comments 已删除')
     await supabase.from('worldbuilding_likes').delete().eq('user_id', userId)
-    console.log('   - worldbuilding_likes 已删除')
     await supabase.from('worldbuilding').delete().eq('user_id', userId)
-    console.log('   - worldbuilding 已删除')
     await supabase.from('member_codes').delete().eq('user_id', userId)
-    console.log('   - member_codes 已删除')
     await supabase.from('comments').delete().eq('user_id', userId)
-    console.log('   - comments 已删除')
     await supabase.from('posts').delete().eq('user_id', userId)
-    console.log('   - posts 已删除')
 
     // 2. 调用 SQL 函数删除 profiles 和 auth.users
-    console.log('3. 调用 delete_user 函数...')
     const { data, error } = await supabase.rpc('delete_user', {
       target_user_id: userId
     })
-
-    console.log('4. RPC 结果:', { data, error })
 
     if (error) {
       console.error('❌ RPC 错误:', error)
@@ -128,7 +115,6 @@ export const deleteUser = async (userId) => {
       throw new Error('删除失败：SQL 函数执行失败')
     }
 
-    console.log('✅ 删除成功')
     return { success: true }
   } catch (error) {
     console.error('删除用户失败:', error)
