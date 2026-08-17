@@ -512,7 +512,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: 40;
-  background: radial-gradient(ellipse at center, #0d1330 0%, #05070f 75%);
+  background: radial-gradient(ellipse at center, #0b0e1f 0%, #04050c 70%);
 }
 .intro-canvas {
   width: 100%;
@@ -719,5 +719,22 @@ body {
   background: rgba(0, 0, 0, 0.5);
   padding: 4px 10px;
   border-radius: 6px;
+}
+
+/* 诊断面板（introDebug=1，大字号） */
+.intro-diag {
+  position: fixed;
+  left: 20px;
+  top: 70px;
+  z-index: 90;
+  padding: 14px 18px;
+  background: rgba(0, 0, 0, 0.78);
+  color: #7dd3fc;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  line-height: 1.8;
+  white-space: pre;
+  border-radius: 8px;
+  border: 1px solid rgba(125, 211, 252, 0.35);
 }
 

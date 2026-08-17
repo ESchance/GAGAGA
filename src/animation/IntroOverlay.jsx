@@ -18,6 +18,7 @@ export default function IntroOverlay({ newUser, onComplete }) {
   const timelineRef = useRef(null)
   const rafRef = useRef(0)
   const stageRef = useRef('nebula')
+  const diagRef = useRef(null)
   const st = useRef({
     kind: null,
     tier: null,
@@ -43,6 +44,34 @@ export default function IntroOverlay({ newUser, onComplete }) {
       debug: params.get('introDebug') === '1',
     }
     if (st.debug.debug) setDebugOn(true)
+  }, [st])
+
+  // 诊断面板：introDebug=1 时左上角大字号显示运行状态，并捕获全局错误
+  useEffect(() => {
+    if (!st.debug.debug) return
+    const errors = []
+    const render = () => {
+      const t = timelineRef.current
+      if (!diagRef.current) return
+      const lines = [
+        `阶段: ${stageRef.current}`,
+        `状态: ${t?.state || '-'}`,
+        `时间: ${Math.round(t?.elapsed || 0)}ms`,
+        `渲染: ${st.kind || '-'} / ${st.tier || '-'}`,
+      ]
+      if (errors.length) lines.push(`错误(${errors.length}): ${errors[errors.length - 1]}`)
+      diagRef.current.textContent = lines.join('\n')
+    }
+    const onError = (e) => {
+      errors.push(e.message || String(e.error || e))
+      render()
+    }
+    window.addEventListener('error', onError)
+    const timer = setInterval(render, 400)
+    return () => {
+      window.removeEventListener('error', onError)
+      clearInterval(timer)
+    }
   }, [st])
 
   // 主逻辑：创建 timeline + 渲染器 + 主循环
@@ -137,14 +166,16 @@ export default function IntroOverlay({ newUser, onComplete }) {
       }
 
       let started = false
-      function loop(now) {
+      function loop() {
         if (disposed) return
+        // 统一用 performance.now() 作时间源：某些 WebView 的 rAF 回调时间参数可能不递增，
+        // 导致 dt 恒为 0、时间轴卡死。performance.now() 在标准浏览器必然单调递增。
+        const now = performance.now()
         if (st.debug.pause) {
           rafRef.current = requestAnimationFrame(loop)
           return
         }
         try {
-          // 用 rAF 自身的时间源启动，保证 timeline 的 dt 累加不跨时间基准
           if (!started) {
             timeline.start(now)
             started = true
@@ -192,6 +223,7 @@ export default function IntroOverlay({ newUser, onComplete }) {
       <HUD stage={stage} />
       <StartButton onClick={handleStart} show={showStart} />
       {!newUser && <SkipButton onClick={handleSkip} />}
+      {debugOn && <div className="intro-diag" ref={diagRef}>诊断加载中...</div>}
       {debugOn && <div className="intro-fps" ref={fpsTextRef}>FPS --</div>}
     </div>
   )
