@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useLocation } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
 
 // 弹出公告（网站更新说明）
 // 内容从数据库 site_announcements 表读取，管理员在首页"管理公告"中维护
@@ -18,7 +19,6 @@ export default function AnnouncementModal() {
       // 只在首页（/）时检查
       if (location.pathname !== '/') return
 
-      const { supabase } = await import('../lib/supabase')
       const { data: { session } } = await supabase.auth.getSession()
 
       // 只有登录用户才显示公告

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
+import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import PostCard from '../components/PostCard'
@@ -18,18 +19,18 @@ export default function Home() {
     // 订阅新帖子和删除帖子的实时更新
     const subscription = supabase
       .channel('posts')
-      .on(
-        'postgres_changes',
-        {
-          event: '*', // 监听所有事件（INSERT, UPDATE, DELETE）
-          schema: 'public',
-          table: 'posts'
-        },
-        (_payload) => {
-          // 数据变化，重新获取列表
-          fetchPosts()
-        }
-      )
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, () => {
+        // 新帖子需要作者信息，重新获取列表
+        fetchPosts()
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'posts' }, (payload) => {
+        // 本地移除被删除的帖子，避免整表重刷
+        setPosts(prev => prev.filter(p => p.id !== payload.old.id))
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'posts' }, (payload) => {
+        // 本地更新被修改的帖子（保留 profiles 作者信息）
+        setPosts(prev => prev.map(p => p.id === payload.new.id ? { ...p, ...payload.new } : p))
+      })
       .subscribe()
 
     return () => {
@@ -55,15 +56,15 @@ export default function Home() {
     }
   }
 
-  const handleDeletePost = (postId) => {
+  const handleDeletePost = useCallback((postId) => {
     setPosts(prev => prev.filter(post => post.id !== postId))
-  }
+  }, [])
 
-  const handlePinChange = (postId, isPinned) => {
+  const handlePinChange = useCallback((postId, isPinned) => {
     setPosts(prev => prev.map(post =>
       post.id === postId ? { ...post, is_pinned: isPinned } : post
     ))
-  }
+  }, [])
 
   if (loading) {
     return (
@@ -107,17 +108,17 @@ export default function Home() {
               <div className="empty-state-icon mb-4">📝</div>
               <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">还没有帖子</h3>
               <p className="text-(--color-text-tertiary) mb-6">快来发第一个帖子吧！</p>
-              <a
-                href="/create"
+              <Link
+                to="/create"
                 className="btn-gradient text-white px-6 py-3 rounded-full font-medium btn-animate inline-block"
               >
                 ✏️ 发帖
-              </a>
+              </Link>
             </div>
           ) : (
             <div className="space-y-4">
               {posts.map((post, index) => (
-                <div key={post.id} style={{ animationDelay: `${index * 0.1}s` }}>
+                <div key={post.id} style={{ animationDelay: `${Math.min(index, 10) * 0.03}s` }}>
                   <PostCard
                     post={post}
                     onDelete={handleDeletePost}

@@ -90,9 +90,9 @@ export default function PostDetail() {
     return (
       <div className="page-container py-8">
         <div className="max-w-4xl mx-auto px-4">
-          <a href="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-blue-600 mb-6 transition-colors">
+          <Link to="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-blue-600 mb-6 transition-colors">
             ← 返回首页
-          </a>
+          </Link>
           <div className="text-center py-16">
             <div className="loading-spinner mx-auto mb-4"></div>
             <p className="text-(--color-text-tertiary)">加载中...</p>
@@ -106,9 +106,9 @@ export default function PostDetail() {
     return (
       <div className="page-container py-8">
         <div className="max-w-4xl mx-auto px-4">
-          <a href="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-blue-600 mb-6 transition-colors">
+          <Link to="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-blue-600 mb-6 transition-colors">
             ← 返回首页
-          </a>
+          </Link>
           <div className="text-center py-16">
             <div className="text-6xl mb-4">❌</div>
             <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">加载失败</h3>
@@ -119,9 +119,9 @@ export default function PostDetail() {
             >
               🔄 重试
             </button>
-            <a href="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-blue-600">
+            <Link to="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-blue-600">
               🏠 返回首页
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -132,16 +132,16 @@ export default function PostDetail() {
     return (
       <div className="page-container py-8">
         <div className="max-w-4xl mx-auto px-4">
-          <a href="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-blue-600 mb-6 transition-colors">
+          <Link to="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-blue-600 mb-6 transition-colors">
             ← 返回首页
-          </a>
+          </Link>
           <div className="text-center py-16">
             <div className="text-6xl mb-4">😕</div>
             <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">帖子不存在</h3>
             <p className="text-(--color-text-tertiary) mb-4">该帖子可能已被删除</p>
-            <a href="/" className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-block">
+            <Link to="/" className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-block">
               🏠 返回首页
-            </a>
+            </Link>
           </div>
         </div>
       </div>

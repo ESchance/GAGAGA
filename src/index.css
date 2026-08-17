@@ -512,3 +512,17 @@ body {
   transition: background-color 0.2s ease;
 }
 
+/* 键盘焦点可见性（无障碍）：键盘用户能清晰定位焦点 */
+.btn:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 0;
+}
+

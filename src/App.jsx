@@ -4,7 +4,6 @@ import Navbar from './components/Navbar'
 import ErrorBoundary from './components/ErrorBoundary'
 import AnnouncementModal from './components/AnnouncementModal'
 import { ToastProvider } from './components/Toast'
-import './index.css'
 
 // 代码分割
 const Home = lazy(() => import('./pages/Home'))

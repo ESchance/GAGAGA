@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { checkIsAdmin, adminDeleteComment } from '../lib/admin'
 import { RACES } from '../lib/worldbuilding'
@@ -34,14 +35,27 @@ export default function CommentList({ postId, requireRace = false }) {
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'INSERT',
           schema: 'public',
           table: 'comments',
           filter: `post_id=eq.${postId}`
         },
-        (_payload) => {
-          // 数据变化，重新获取列表
+        () => {
+          // 新评论需要作者信息，重新获取列表
           fetchComments()
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'comments',
+          filter: `post_id=eq.${postId}`
+        },
+        (payload) => {
+          // 本地移除被删除的评论
+          setComments(prev => prev.filter(c => c.id !== payload.old.id))
         }
       )
       .subscribe()
@@ -94,7 +108,7 @@ export default function CommentList({ postId, requireRace = false }) {
 
     setLoading(true)
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('comments')
         .insert([
           {
@@ -103,8 +117,22 @@ export default function CommentList({ postId, requireRace = false }) {
             user_id: user.id
           }
         ])
+        .select()
+        .single()
 
       if (error) throw error
+      // 乐观插入本地，评论立即上屏（附带当前用户资料）
+      setComments(prev => [
+        ...prev,
+        {
+          ...data,
+          profiles: {
+            username: currentUserProfile?.username,
+            avatar_url: currentUserProfile?.avatar_url,
+            role: currentUserProfile?.role
+          }
+        }
+      ])
       setNewComment('')
     } catch (error) {
       console.error('发表评论失败:', error)
@@ -139,21 +167,21 @@ export default function CommentList({ postId, requireRace = false }) {
         // 未登录
         <div className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl text-center">
           <p className="text-(--color-text-secondary) mb-3">请先登录后再发表评论</p>
-          <a
-            href="/login"
+          <Link
+            to="/login"
             className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-block"
           >
             👋 登录
-          </a>
+          </Link>
         </div>
       ) : requireRace && !currentUserProfile?.race_selected ? (
         // 需要种族选择但未选择（仅嘎宇宙创作）
         <div className="mb-6 p-4 bg-(--color-warning)/10 border border-(--color-warning)/30 rounded-xl text-center">
           <p className="text-(--color-warning) text-sm">
             ⚠️ 你还没有选择种族，无法发表评论。
-            <a href={`/profile/${user.id}`} className="ml-2 text-(--color-warning) underline">
+            <Link to={`/profile/${user.id}`} className="ml-2 text-(--color-warning) underline">
               去选择种族
-            </a>
+            </Link>
           </p>
         </div>
       ) : (

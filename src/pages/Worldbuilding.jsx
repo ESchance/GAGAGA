@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { getWorldbuildingList, RACES } from '../lib/worldbuilding'
 import Avatar from '../components/Avatar'
@@ -106,12 +106,12 @@ export default function Worldbuilding() {
         {/* 创作按钮 */}
         {user && (
           <div className="text-center mb-8 animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
-            <a
-              href="/worldbuilding/create"
+            <Link
+              to="/worldbuilding/create"
               className="btn btn-primary"
             >
               ✏️ 开始创作
-            </a>
+            </Link>
           </div>
         )}
 
