@@ -31,6 +31,7 @@ export default function IntroOverlay({ newUser, onComplete }) {
   const [stage, setStage] = useState('nebula')
   const [showStart, setShowStart] = useState(false)
   const [debugOn, setDebugOn] = useState(false)
+  const [showDiag, setShowDiag] = useState(false)
 
   const completeRef = useRef(onComplete)
   completeRef.current = onComplete
@@ -43,13 +44,21 @@ export default function IntroOverlay({ newUser, onComplete }) {
       pause: params.get('introPause') === '1',
       debug: params.get('introDebug') === '1',
     }
-    if (st.debug.debug) setDebugOn(true)
+    if (st.debug.debug) {
+      setDebugOn(true)
+      setShowDiag(true)
+    } else {
+      // 非 debug 也默认显示诊断面板 15 秒，便于定位动画问题
+      setShowDiag(true)
+      const t = setTimeout(() => setShowDiag(false), 15000)
+      return () => clearTimeout(t)
+    }
   }, [st])
 
-  // 诊断面板：introDebug=1 时左上角大字号显示运行状态，并捕获全局错误
+  // 诊断面板：左上角大字号显示运行状态；错误捕获仅在 introDebug=1 时启用
   useEffect(() => {
-    if (!st.debug.debug) return
     const errors = []
+    let onError = null
     const render = () => {
       const t = timelineRef.current
       if (!diagRef.current) return
@@ -62,14 +71,16 @@ export default function IntroOverlay({ newUser, onComplete }) {
       if (errors.length) lines.push(`错误(${errors.length}): ${errors[errors.length - 1]}`)
       diagRef.current.textContent = lines.join('\n')
     }
-    const onError = (e) => {
-      errors.push(e.message || String(e.error || e))
-      render()
+    if (st.debug.debug) {
+      onError = (e) => {
+        errors.push(e.message || String(e.error || e))
+        render()
+      }
+      window.addEventListener('error', onError)
     }
-    window.addEventListener('error', onError)
     const timer = setInterval(render, 400)
     return () => {
-      window.removeEventListener('error', onError)
+      if (onError) window.removeEventListener('error', onError)
       clearInterval(timer)
     }
   }, [st])
@@ -223,7 +234,7 @@ export default function IntroOverlay({ newUser, onComplete }) {
       <HUD stage={stage} />
       <StartButton onClick={handleStart} show={showStart} />
       {!newUser && <SkipButton onClick={handleSkip} />}
-      {debugOn && <div className="intro-diag" ref={diagRef}>诊断加载中...</div>}
+      {showDiag && <div className="intro-diag" ref={diagRef}>诊断加载中...</div>}
       {debugOn && <div className="intro-fps" ref={fpsTextRef}>FPS --</div>}
     </div>
   )
