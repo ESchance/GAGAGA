@@ -122,7 +122,7 @@ git push -u origin main
 | 表名 | 用途 | 关键字段 |
 |------|------|----------|
 | profiles | 用户资料 | id, username, avatar_url, role, race, member_code, title, race_selected, default_story_id, custom_backstory, achievements |
-| posts | 帖子 | id, title, content, user_id, is_pinned |
+| posts | 帖子 | id, title, content, user_id, is_pinned, comments_count |
 | comments | 评论 | id, content, post_id, user_id |
 | worldbuilding | 嘎宇宙创作 | id, type, title, content, user_id, likes_count, comments_count, is_published |
 | worldbuilding_likes | 创作点赞 | id, user_id, worldbuilding_id |
@@ -140,6 +140,7 @@ git push -u origin main
 | get_next_member_code() | 生成用户编号 GZ-XXXX（避开 4、44） | `supabase/fix_member_code_function.sql` |
 | delete_user(UUID) | 删除用户（含超级管理员权限校验） | `supabase/fix_delete_user_function.sql` |
 | handle_new_user() | 注册后自动创建 profiles（触发器） | `supabase/setup_profiles_trigger.sql` |
+| sync_post_comment_count() | 发帖评论数自动维护（触发器） | `supabase/posts_comment_count_triggers.sql` |
 
 > 💡 新环境快速初始化，可直接执行合并脚本 `supabase/p0_apply_all.sql`。
 > 弹出公告表初始化：执行 `supabase/setup_site_announcements.sql`；仅超级管理员可在首页"管理公告"按钮中维护公告内容，无需改代码。

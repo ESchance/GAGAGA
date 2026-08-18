@@ -5,7 +5,7 @@ import { togglePinPost } from '../lib/admin'
 import { RACES } from '../lib/worldbuilding'
 import { useToast } from './Toast'
 import Avatar from './Avatar'
-import { Pin, MapPin, Trash2, Crown } from 'lucide-react'
+import { Pin, MapPin, Trash2, Crown, MessageCircle } from 'lucide-react'
 
 const formatDate = (dateString) => {
   const date = new Date(dateString)
@@ -115,7 +115,11 @@ const PostCard = memo(function PostCard({ post, onDelete, onPinChange, isAdmin =
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
+            <span className="inline-flex items-center space-x-1 text-xs text-[var(--color-text-tertiary)]" title="评论数">
+              <MessageCircle size={14} />
+              <span>{post.comments_count || 0}</span>
+            </span>
             <span className="text-xs text-[var(--color-text-tertiary)]">
               {formatDate(post.created_at)}
             </span>

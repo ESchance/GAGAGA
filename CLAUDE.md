@@ -68,6 +68,7 @@ CI 已配置：推送到 GitHub 会自动运行 lint + test + build（`.github/w
 - `get_next_member_code()` - 生成编号 GZ-XXXX（授权 authenticated）
 - `delete_user(UUID)` - 删除用户，**函数内部校验调用者必须为 superadmin**（授权 authenticated）
 - `handle_new_user()` 触发器 - 注册后自动创建 profiles
+- `sync_post_comment_count()` 触发器 - 帖子评论数自动维护（`supabase/posts_comment_count_triggers.sql`）
 - 新环境初始化可直接执行 `supabase/p0_apply_all.sql`
 
 ## Edge Functions

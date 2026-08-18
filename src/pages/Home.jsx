@@ -26,7 +26,7 @@ export default function Home() {
     try {
       const { data, error } = await supabase
         .from('posts')
-        .select('id, title, content, created_at, is_pinned, user_id, profiles(username, avatar_url, role, race, member_code)')
+        .select('id, title, content, created_at, is_pinned, user_id, comments_count, profiles(username, avatar_url, role, race, member_code)')
         .order('is_pinned', { ascending: false })
         .order('created_at', { ascending: false })
         .limit(50)  // 限制返回数量
