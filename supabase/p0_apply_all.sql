@@ -109,3 +109,43 @@ CREATE TRIGGER on_auth_user_created
 -- 3. 新注册一个邮箱（白名单内）后，登录应能看到自己的个人资料
 -- 4. 新用户选择种族时，应能正常生成 GZ-XXXX 编号
 -- ============================================
+
+-- --------------------------------------------------
+-- 10. 帖子评论数自动维护（posts.comments_count 触发器）
+-- --------------------------------------------------
+-- 0. 给 posts 表补充 comments_count 字段
+ALTER TABLE public.posts
+  ADD COLUMN IF NOT EXISTS comments_count INTEGER NOT NULL DEFAULT 0;
+
+-- 1. 按现有数据校准一次计数
+UPDATE posts p
+SET
+  comments_count = (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id);
+
+-- 2. 评论计数触发器函数
+CREATE OR REPLACE FUNCTION public.sync_post_comment_count()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    UPDATE posts
+       SET comments_count = (SELECT COUNT(*) FROM comments WHERE post_id = NEW.post_id)
+     WHERE id = NEW.post_id;
+    RETURN NEW;
+  ELSIF TG_OP = 'DELETE' THEN
+    UPDATE posts
+       SET comments_count = (SELECT COUNT(*) FROM comments WHERE post_id = OLD.post_id)
+     WHERE id = OLD.post_id;
+    RETURN OLD;
+  END IF;
+  RETURN NULL;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_sync_post_comment_count ON comments;
+CREATE TRIGGER trg_sync_post_comment_count
+AFTER INSERT OR DELETE ON comments
+FOR EACH ROW EXECUTE FUNCTION public.sync_post_comment_count();
