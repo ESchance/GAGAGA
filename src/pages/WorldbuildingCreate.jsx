@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { createWorldbuilding, checkRaceSelected } from '../lib/worldbuilding'
 import { validateTitle, validateContent } from '../lib/validation'
+import { BookIcon, MaskIcon, GlobeIcon, LightbulbIcon, GalaxyIcon } from '../components/Icons'
+import { FolderOpen, Pin, FileText, Lightbulb, Rocket, CheckCircle2, AlertCircle } from 'lucide-react'
 
 const TYPE_OPTIONS = [
-  { value: 'story', label: '📖 故事', description: '创作嘎宇宙中的故事' },
-  { value: 'character', label: '🎭 角色', description: '设定你的角色背景' },
-  { value: 'setting', label: '🌍 设定', description: '补充世界观设定' },
-  { value: 'idea', label: '💡 点子', description: '提出新的创意想法' }
+  { value: 'story', label: '故事', Icon: BookIcon, description: '创作嘎宇宙中的故事' },
+  { value: 'character', label: '角色', Icon: MaskIcon, description: '设定你的角色背景' },
+  { value: 'setting', label: '设定', Icon: GlobeIcon, description: '补充世界观设定' },
+  { value: 'idea', label: '点子', Icon: LightbulbIcon, description: '提出新的创意想法' }
 ]
 
 export default function WorldbuildingCreate() {
@@ -88,8 +90,8 @@ export default function WorldbuildingCreate() {
 
         <div className="glass-effect p-8 rounded-2xl shadow-lg animate-fade-in-up">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              ✏️ 创作新内容
+            <h2 className="text-3xl font-bold heading-gradient">
+              创作新内容
             </h2>
             <p className="text-(--color-text-tertiary) mt-2">在嘎宇宙中留下你的印记</p>
           </div>
@@ -101,7 +103,7 @@ export default function WorldbuildingCreate() {
             </div>
           ) : !raceSelected ? (
             <div className="text-center py-8">
-              <div className="text-6xl mb-4">🌌</div>
+              <GalaxyIcon className="w-20 h-20 mx-auto mb-4 text-[var(--color-primary)]" />
               <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">请先选择种族</h3>
               <p className="text-(--color-text-tertiary) mb-6">在开始创作之前，你需要先在个人主页选择种族</p>
               <button
@@ -115,8 +117,8 @@ export default function WorldbuildingCreate() {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* 类型选择 */}
               <div>
-                <label className="block text-sm font-semibold text-(--color-text-secondary) mb-3">
-                  📁 类型
+                <label className="block text-sm font-semibold text-(--color-text-secondary) mb-3 flex items-center gap-1.5">
+                  <FolderOpen size={16} /> 类型
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   {TYPE_OPTIONS.map((option) => (
@@ -130,7 +132,7 @@ export default function WorldbuildingCreate() {
                           : 'border-(--color-border) hover:border-(--color-border)'
                       }`}
                     >
-                      <div className="font-medium text-(--color-text-primary)">{option.label}</div>
+                      <div className="font-medium text-(--color-text-primary) flex items-center gap-1.5"><option.Icon className="w-4 h-4 text-[var(--color-primary)]" /> {option.label}</div>
                       <div className="text-xs text-(--color-text-tertiary) mt-1">{option.description}</div>
                     </button>
                   ))}
@@ -139,8 +141,8 @@ export default function WorldbuildingCreate() {
 
               {/* 标题 */}
               <div>
-                <label className="block text-sm font-semibold text-(--color-text-secondary) mb-2">
-                  📌 标题
+                <label className="block text-sm font-semibold text-(--color-text-secondary) mb-2 flex items-center gap-1.5">
+                  <Pin size={16} /> 标题
                 </label>
                 <input
                   type="text"
@@ -154,8 +156,8 @@ export default function WorldbuildingCreate() {
 
               {/* 内容 */}
               <div>
-                <label className="block text-sm font-semibold text-(--color-text-secondary) mb-2">
-                  📝 内容
+                <label className="block text-sm font-semibold text-(--color-text-secondary) mb-2 flex items-center gap-1.5">
+                  <FileText size={16} /> 内容
                 </label>
                 <textarea
                   value={content}
@@ -169,7 +171,7 @@ export default function WorldbuildingCreate() {
 
               {/* 创作提示 */}
               <div className="bg-[var(--color-primary-light)] rounded-xl p-4">
-                <h4 className="text-sm font-semibold text-[var(--color-primary)] mb-2">💡 创作提示</h4>
+                <h4 className="text-sm font-semibold text-[var(--color-primary)] mb-2 flex items-center gap-1.5"><Lightbulb size={16} /> 创作提示</h4>
                 <ul className="text-xs text-[var(--color-secondary)] space-y-1">
                   <li>• 故事类：可以描写你在嘎宇宙中的冒险经历</li>
                   <li>• 角色类：可以设定你角色的背景故事和性格</li>
@@ -190,7 +192,7 @@ export default function WorldbuildingCreate() {
                 <button
                   type="submit"
                   disabled={loading || !title.trim() || !content.trim()}
-                  className="btn-gradient text-white px-6 py-3 rounded-xl font-medium btn-animate disabled:opacity-50"
+                  className="btn-gradient text-white px-6 py-3 rounded-xl font-medium btn-animate disabled:opacity-50 inline-flex items-center"
                 >
                   {loading ? (
                     <span className="flex items-center">
@@ -198,7 +200,7 @@ export default function WorldbuildingCreate() {
                       发布中...
                     </span>
                   ) : (
-                    '🚀 发布'
+                    <><Rocket size={16} className="mr-1.5" /> 发布</>
                   )}
                 </button>
               </div>
@@ -212,7 +214,7 @@ export default function WorldbuildingCreate() {
                 ? 'bg-(--color-success)/10 text-(--color-success) border border-(--color-success)/30'
                 : 'bg-(--color-error)/10 text-(--color-error) border border-(--color-error)/30'
             }`}>
-              <span className="mr-2">{message.includes('成功') ? '✅' : '❌'}</span>
+              <span className="mr-2">{message.includes('成功') ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}</span>
               {message}
             </div>
           )}

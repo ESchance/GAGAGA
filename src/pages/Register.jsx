@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import AuthForm from '../components/AuthForm'
+import { Mail, Lightbulb } from 'lucide-react'
 import { allowedEmails } from '../lib/allowedEmails'
 
 export default function Register() {
@@ -28,8 +29,8 @@ export default function Register() {
       <AuthForm type="register" />
 
       <div className="max-w-md mx-auto mt-6 glass-effect p-6 rounded-2xl shadow-lg animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-        <h3 className="text-lg font-bold text-[var(--color-text-primary)] mb-4">
-          📧 可用的注册邮箱
+        <h3 className="text-lg font-bold text-[var(--color-text-primary)] mb-4 flex items-center gap-2">
+          <Mail size={18} /> 可用的注册邮箱
         </h3>
         <div className="max-h-60 overflow-y-auto space-y-2 pr-2">
           {allowedEmails.map((email, index) => {
@@ -55,7 +56,7 @@ export default function Register() {
         </div>
         <div className="mt-4 p-3 bg-[var(--color-bg-tertiary)] rounded-xl">
           <p className="text-xs text-[var(--color-text-secondary)] flex items-center">
-            <span className="mr-2">💡</span>
+            <Lightbulb size={14} className="mr-1.5" />
             红色删除线表示已注册，密码需包含大小写字母和数字
           </p>
         </div>

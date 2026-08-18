@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { isEmailAllowed } from '../lib/allowedEmails'
 import { validateEmail, validateUsername, validatePassword } from '../lib/validation'
+import { User, Mail, Lock, Lightbulb, Check, Circle, CheckCircle2, AlertCircle } from 'lucide-react'
 
 export default function AuthForm({ type = 'login' }) {
   const [email, setEmail] = useState('')
@@ -23,9 +24,9 @@ export default function AuthForm({ type = 'login' }) {
 
     const score = [hasUpperCase, hasLowerCase, hasNumber, hasMinLength].filter(Boolean).length
 
-    if (score < 3) return { level: 1, text: '密码强度：弱', color: 'text-red-500' }
-    if (score < 4) return { level: 2, text: '密码强度：中', color: 'text-yellow-500' }
-    return { level: 3, text: '密码强度：强', color: 'text-green-500' }
+    if (score < 3) return { level: 1, text: '密码强度：弱', color: 'text-(--color-error)' }
+    if (score < 4) return { level: 2, text: '密码强度：中', color: 'text-(--color-warning)' }
+    return { level: 3, text: '密码强度：强', color: 'text-(--color-success)' }
   }
 
   const handleSubmit = async (e) => {
@@ -95,8 +96,8 @@ export default function AuthForm({ type = 'login' }) {
   return (
     <div className="max-w-md mx-auto mt-10 p-8 glass-effect rounded-2xl shadow-xl animate-fade-in-up">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          {type === 'register' ? '🚀 注册' : '👋 登录'}
+        <h2 className="text-3xl font-bold heading-gradient">
+          {type === 'register' ? '注册' : '登录'}
         </h2>
         <p className="text-(--color-text-tertiary) mt-2">
           {type === 'register' ? '加入嘎宇宙，开始你的旅程' : '欢迎回来！'}
@@ -107,7 +108,7 @@ export default function AuthForm({ type = 'login' }) {
         {type === 'register' && (
           <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
             <label className="block text-sm font-medium text-(--color-text-secondary) mb-2">
-              👤 用户名
+              <span className="inline-flex items-center gap-1.5"><User size={16} /> 用户名</span>
             </label>
             <input
               type="text"
@@ -122,7 +123,7 @@ export default function AuthForm({ type = 'login' }) {
 
         <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
           <label className="block text-sm font-medium text-(--color-text-secondary) mb-2">
-            📧 邮箱
+            <span className="inline-flex items-center gap-1.5"><Mail size={16} /> 邮箱</span>
           </label>
           <input
             type="email"
@@ -134,14 +135,14 @@ export default function AuthForm({ type = 'login' }) {
           />
           {type === 'register' && (
             <p className="mt-2 text-xs text-(--color-text-tertiary) flex items-center">
-              <span className="mr-1">💡</span> 只能使用指定的邮箱注册
+              <Lightbulb size={14} className="mr-1.5" /> 只能使用指定的邮箱注册
             </p>
           )}
         </div>
 
         <div className="animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
           <label className="block text-sm font-medium text-(--color-text-secondary) mb-2">
-            🔒 密码
+            <span className="inline-flex items-center gap-1.5"><Lock size={16} /> 密码</span>
           </label>
           <input
             type="password"
@@ -164,19 +165,19 @@ export default function AuthForm({ type = 'login' }) {
               </div>
               <ul className="text-xs text-(--color-text-secondary) space-y-1">
                 <li className={`flex items-center ${/[A-Z]/.test(password) ? 'text-(--color-success)' : ''}`}>
-                  <span className="mr-2">{/[A-Z]/.test(password) ? '✅' : '⬜'}</span>
+                  <span className="mr-2">{/[A-Z]/.test(password) ? <Check size={14} /> : <Circle size={14} />}</span>
                   包含大写字母
                 </li>
                 <li className={`flex items-center ${/[a-z]/.test(password) ? 'text-(--color-success)' : ''}`}>
-                  <span className="mr-2">{/[a-z]/.test(password) ? '✅' : '⬜'}</span>
+                  <span className="mr-2">{/[a-z]/.test(password) ? <Check size={14} /> : <Circle size={14} />}</span>
                   包含小写字母
                 </li>
                 <li className={`flex items-center ${/[0-9]/.test(password) ? 'text-(--color-success)' : ''}`}>
-                  <span className="mr-2">{/[0-9]/.test(password) ? '✅' : '⬜'}</span>
+                  <span className="mr-2">{/[0-9]/.test(password) ? <Check size={14} /> : <Circle size={14} />}</span>
                   包含数字
                 </li>
                 <li className={`flex items-center ${password.length >= 6 ? 'text-(--color-success)' : ''}`}>
-                  <span className="mr-2">{password.length >= 6 ? '✅' : '⬜'}</span>
+                  <span className="mr-2">{password.length >= 6 ? <Check size={14} /> : <Circle size={14} />}</span>
                   至少6位
                 </li>
               </ul>
@@ -195,7 +196,7 @@ export default function AuthForm({ type = 'login' }) {
               处理中...
             </span>
           ) : (
-            type === 'register' ? '🚀 注册' : '👋 登录'
+            type === 'register' ? '注册' : '登录'
           )}
         </button>
       </form>
@@ -206,7 +207,7 @@ export default function AuthForm({ type = 'login' }) {
             ? 'bg-(--color-success)/10 text-(--color-success) border border-(--color-success)/30'
             : 'bg-(--color-error)/10 text-(--color-error) border border-(--color-error)/30'
         }`}>
-          <span className="mr-2">{message.includes('成功') ? '✅' : '❌'}</span>
+          <span className="mr-2">{message.includes('成功') ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}</span>
           {message}
         </div>
       )}

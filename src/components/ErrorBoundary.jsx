@@ -1,4 +1,5 @@
 import { Component } from 'react'
+import { AlertCircle } from 'lucide-react'
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -19,7 +20,7 @@ class ErrorBoundary extends Component {
       return (
         <div className="min-h-screen bg-(--color-bg-secondary) flex items-center justify-center p-4">
           <div className="text-center max-w-md">
-            <div className="text-6xl mb-4">😵</div>
+            <AlertCircle size={64} className="mx-auto mb-4 text-(--color-error)" />
             <h2 className="text-2xl font-bold text-(--color-text-primary) mb-2">出错了</h2>
             <p className="text-(--color-text-secondary) mb-4">
               页面遇到了一个错误，请尝试刷新页面。

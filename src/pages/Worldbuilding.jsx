@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { getWorldbuildingList, RACES } from '../lib/worldbuilding'
 import Avatar from '../components/Avatar'
 import { GalaxyIcon, BookIcon, MaskIcon, GlobeIcon, LightbulbIcon, StarIcon } from '../components/Icons'
+import { PenLine, Heart, MessageCircle, FileText } from 'lucide-react'
 
 const TYPE_FILTERS = [
   { key: null, label: '全部', Icon: GalaxyIcon },
@@ -110,7 +111,7 @@ export default function Worldbuilding() {
               to="/worldbuilding/create"
               className="btn btn-primary"
             >
-              ✏️ 开始创作
+              <PenLine size={16} className="mr-1.5" /> 开始创作
             </Link>
           </div>
         )}
@@ -123,15 +124,15 @@ export default function Worldbuilding() {
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-16 animate-fade-in-up">
-            <div className="empty-state-icon mb-4">📝</div>
+            <div className="empty-state-icon mb-4"><FileText size={28} /></div>
             <h3 className="text-xl font-semibold text-[var(--color-text-secondary)] mb-2">还没有创作</h3>
             <p className="text-[var(--color-text-tertiary)] mb-6">成为第一个创作者吧！</p>
             {user && (
               <Link
                 to="/worldbuilding/create"
-                className="btn-gradient text-white px-6 py-3 rounded-full font-medium btn-animate inline-block"
+                className="btn-gradient text-white px-6 py-3 rounded-full font-medium btn-animate inline-flex items-center"
               >
-                ✏️ 开始创作
+                <PenLine size={16} className="mr-1.5" /> 开始创作
               </Link>
             )}
           </div>
@@ -192,11 +193,11 @@ export default function Worldbuilding() {
 
                   <div className="flex items-center space-x-4 text-xs">
                     <span className="flex items-center space-x-1 text-[var(--color-text-tertiary)]">
-                      <span>❤️</span>
+                      <Heart size={14} />
                       <span>{post.likes_count || 0}</span>
                     </span>
                     <span className="flex items-center space-x-1 text-[var(--color-text-tertiary)]">
-                      <span>💬</span>
+                      <MessageCircle size={14} />
                       <span>{post.comments_count || 0}</span>
                     </span>
                   </div>

@@ -9,6 +9,7 @@ import AvatarUpload from '../components/AvatarUpload'
 import RaceSelector from '../components/RaceSelector'
 import WorldInfo from '../components/WorldInfo'
 import { useToast } from '../components/Toast'
+import { Crown, FileText, PenLine, Save, BarChart3, Lightbulb } from 'lucide-react'
 
 export default function Profile() {
   const { id } = useParams()
@@ -175,12 +176,12 @@ export default function Profile() {
             {/* 用户信息 */}
             <div className="text-center sm:text-left flex-1">
               <div className="flex items-center justify-center sm:justify-start space-x-3 mb-2">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold heading-gradient">
                   {profile?.username || '匿名用户'}
                 </h1>
                 {profile?.role === 'admin' && (
-                  <span className="text-sm bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-full font-medium">
-                    👑 管理员
+                  <span className="text-sm admin-badge px-3 py-1 rounded-full font-medium inline-flex items-center gap-1.5">
+                    <Crown size={14} /> 管理员
                   </span>
                 )}
               </div>
@@ -216,14 +217,14 @@ export default function Profile() {
               )}
 
               <div className="flex items-center justify-center sm:justify-start space-x-4 mb-4">
-                <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full text-sm font-medium">
-                  📝 {posts.length} 个帖子
+                <div className="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white px-4 py-2 rounded-full text-sm font-medium inline-flex items-center gap-1.5">
+                  <FileText size={14} /> {posts.length} 个帖子
                 </div>
               </div>
 
               {isOwnProfile && (
                 <p className="text-sm text-(--color-text-tertiary) flex items-center justify-center sm:justify-start">
-                  <span className="mr-2">💡</span> 点击头像可以更换
+                  <Lightbulb size={14} className="mr-1.5" /> 点击头像可以更换
                 </p>
               )}
             </div>
@@ -240,10 +241,10 @@ export default function Profile() {
         {/* 自定义背景故事编辑 */}
         {isOwnProfile && worldInfo && (
           <div className="mb-8 animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
-            <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-2xl p-4 border border-green-100">
+            <div className="bg-(--color-success)/10 rounded-2xl p-4 border border-(--color-success)/20">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="text-sm font-semibold text-(--color-text-secondary) flex items-center">
-                  <span className="mr-2">✍️</span> 我的故事
+                  <PenLine size={16} className="mr-2" /> 我的故事
                   <span className="ml-2 text-xs text-(--color-text-tertiary) font-normal">（可编辑）</span>
                 </h4>
                 {!editingBackstory && (
@@ -252,9 +253,9 @@ export default function Profile() {
                       setBackstoryText(profile?.custom_backstory || '')
                       setEditingBackstory(true)
                     }}
-                    className="text-xs text-[var(--color-info)] hover:text-[var(--color-primary)]"
+                    className="text-xs text-[var(--color-info)] hover:text-[var(--color-primary)] inline-flex items-center gap-1"
                   >
-                    ✏️ 编辑
+                    <PenLine size={14} /> 编辑
                   </button>
                 )}
               </div>
@@ -278,9 +279,9 @@ export default function Profile() {
                     <button
                       onClick={handleSaveBackstory}
                       disabled={saving}
-                      className="px-4 py-2 bg-(--color-success)/100 text-white rounded-full text-sm font-medium hover:bg-green-600 transition-all duration-200 disabled:opacity-50"
+                      className="px-4 py-2 bg-(--color-success) text-white rounded-full text-sm font-medium hover:bg-(--color-success-hover) transition-all duration-200 disabled:opacity-50 inline-flex items-center gap-1.5"
                     >
-                      {saving ? '保存中...' : '💾 保存'}
+                      {saving ? '保存中...' : (<><Save size={16} /> 保存</>)}
                     </button>
                   </div>
                 </div>
@@ -302,7 +303,7 @@ export default function Profile() {
           <div className="mb-8 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             <div className="bg-gradient-to-r from-[var(--color-bg-secondary)] to-[var(--color-bg-tertiary)] rounded-2xl p-4 border border-[var(--color-border)]">
               <h4 className="text-sm font-semibold text-(--color-text-secondary) mb-3 flex items-center">
-                <span className="mr-2">📊</span> 数据统计
+                <BarChart3 size={16} className="mr-2" /> 数据统计
               </h4>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
@@ -326,13 +327,13 @@ export default function Profile() {
 
         {/* 用户帖子列表 */}
         <div className="animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
-            📚 发布的帖子
+          <h2 className="text-2xl font-bold heading-gradient mb-6">
+            发布的帖子
           </h2>
 
           {posts.length === 0 ? (
             <div className="text-center py-12 glass-effect rounded-2xl">
-              <div className="text-5xl mb-4">📝</div>
+              <FileText size={56} className="mx-auto mb-4 text-(--color-text-tertiary)" />
               <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">还没有帖子</h3>
               <p className="text-(--color-text-tertiary)">去发布第一个帖子吧！</p>
             </div>

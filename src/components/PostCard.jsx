@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { togglePinPost } from '../lib/admin'
 import { useToast } from './Toast'
 import Avatar from './Avatar'
+import { Pin, MapPin, Trash2, Crown } from 'lucide-react'
 
 const formatDate = (dateString) => {
   const date = new Date(dateString)
@@ -62,12 +63,12 @@ const PostCard = memo(function PostCard({ post, onDelete, onPinChange, isAdmin =
   const canDelete = currentUserId && (currentUserId === post.user_id || isAdmin)
 
   return (
-    <article className={`post-card card-hover animate-fade-in-up ${post.is_pinned ? 'ring-1 ring-yellow-400/50' : ''}`}>
+    <article className={`post-card card-hover animate-fade-in-up ${post.is_pinned ? 'ring-1 ring-(--color-warning)/50' : ''}`}>
       <Link to={`/post/${post.id}`} className="block">
         {/* 置顶标记 */}
         {post.is_pinned && (
           <div className="inline-flex items-center mb-2 px-2 py-0.5 bg-(--color-warning)/15 text-(--color-warning) text-xs font-medium rounded">
-            📌 置顶
+            <Pin size={14} className="mr-1.5" /> 置顶
           </div>
         )}
 
@@ -100,7 +101,7 @@ const PostCard = memo(function PostCard({ post, onDelete, onPinChange, isAdmin =
                 </span>
               )}
               {post.profiles?.role === 'admin' && (
-                <span className="sm:hidden text-xs" title="管理员">👑</span>
+                <span className="sm:hidden text-xs" title="管理员"><Crown size={14} /></span>
               )}
             </div>
           </div>
@@ -116,7 +117,7 @@ const PostCard = memo(function PostCard({ post, onDelete, onPinChange, isAdmin =
                 className="text-[var(--color-text-tertiary)] hover:text-[var(--color-primary)] transition-colors p-1"
                 title={post.is_pinned ? '取消置顶' : '置顶'}
               >
-                {post.is_pinned ? '📌' : '📍'}
+                {post.is_pinned ? <Pin size={16} className="fill-current" /> : <MapPin size={16} />}
               </button>
             )}
 
@@ -126,7 +127,7 @@ const PostCard = memo(function PostCard({ post, onDelete, onPinChange, isAdmin =
                 className="text-[var(--color-text-tertiary)] hover:text-[var(--color-error)] transition-colors p-1"
                 title="删除"
               >
-                🗑️
+                <Trash2 size={16} />
               </button>
             )}
           </div>

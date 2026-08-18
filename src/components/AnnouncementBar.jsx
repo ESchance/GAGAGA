@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { checkIsAdmin } from '../lib/admin'
 import { useToast } from './Toast'
+import { PenLine, FileText, Save } from 'lucide-react'
 
 export default function AnnouncementBar() {
   const { showToast } = useToast()
@@ -105,9 +106,9 @@ export default function AnnouncementBar() {
             {isAdmin && (
               <button
                 onClick={openEditModal}
-                className="flex-shrink-0 ml-4 px-3 py-1 text-white text-opacity-80 hover:text-opacity-100 hover:bg-(--color-surface) hover:bg-opacity-20 rounded-full text-xs transition-all duration-200"
+                className="flex-shrink-0 ml-4 px-3 py-1 text-white text-opacity-80 hover:text-opacity-100 hover:bg-(--color-surface) hover:bg-opacity-20 rounded-full text-xs transition-all duration-200 inline-flex items-center"
               >
-                ✏️ 编辑
+                <PenLine size={14} className="mr-1" /> 编辑
               </button>
             )}
           </div>
@@ -119,7 +120,7 @@ export default function AnnouncementBar() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-(--color-surface) rounded-2xl shadow-2xl max-w-lg w-full animate-scale-in overflow-hidden">
             <div className="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] px-6 py-4">
-              <h3 className="text-xl font-bold text-white">📝 编辑公告</h3>
+              <h3 className="text-xl font-bold text-white flex items-center gap-2"><FileText size={20} /> 编辑公告</h3>
             </div>
 
             <div className="p-6">
@@ -143,7 +144,7 @@ export default function AnnouncementBar() {
                   disabled={saving || !editContent.trim()}
                   className="btn btn-primary disabled:opacity-50"
                 >
-                  {saving ? '保存中...' : '💾 保存'}
+                  {saving ? '保存中...' : (<><Save size={16} className="mr-1.5" /> 保存</>)}
                 </button>
               </div>
             </div>

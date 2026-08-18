@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { validateTitle, validateContent } from '../lib/validation'
+import { Pin, FileText, Rocket, CheckCircle2, AlertCircle } from 'lucide-react'
 
 export default function CreatePost() {
   const [title, setTitle] = useState('')
@@ -69,8 +70,8 @@ export default function CreatePost() {
     <div className="page-container py-12 px-4">
       <div className="max-w-2xl mx-auto glass-effect p-8 rounded-2xl shadow-lg animate-fade-in-up">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            ✏️ 发表新帖子
+          <h2 className="text-3xl font-bold heading-gradient">
+            发表新帖子
           </h2>
           <p className="text-(--color-text-tertiary) mt-2">分享你的想法和见解</p>
         </div>
@@ -78,7 +79,7 @@ export default function CreatePost() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
             <label className="block text-sm font-semibold text-(--color-text-secondary) mb-2">
-              📌 标题
+              <span className="inline-flex items-center gap-1.5"><Pin size={16} /> 标题</span>
             </label>
             <input
               type="text"
@@ -92,7 +93,7 @@ export default function CreatePost() {
 
           <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             <label className="block text-sm font-semibold text-(--color-text-secondary) mb-2">
-              📝 内容
+              <span className="inline-flex items-center gap-1.5"><FileText size={16} /> 内容</span>
             </label>
             <textarea
               value={content}
@@ -107,7 +108,7 @@ export default function CreatePost() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full btn-gradient text-white py-3 px-4 rounded-xl font-medium btn-animate disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full btn-gradient text-white py-3 px-4 rounded-xl font-medium btn-animate disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center"
           >
             {loading ? (
               <span className="flex items-center justify-center">
@@ -115,7 +116,7 @@ export default function CreatePost() {
                 发布中...
               </span>
             ) : (
-              '🚀 发布帖子'
+              <><Rocket size={16} className="mr-1.5" /> 发布帖子</>
             )}
           </button>
         </form>
@@ -126,7 +127,7 @@ export default function CreatePost() {
               ? 'bg-(--color-success)/10 text-(--color-success) border border-(--color-success)/30'
               : 'bg-(--color-error)/10 text-(--color-error) border border-(--color-error)/30'
           }`}>
-            <span className="mr-2">{message.includes('成功') ? '✅' : '❌'}</span>
+            <span className="mr-2">{message.includes('成功') ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}</span>
             {message}
           </div>
         )}

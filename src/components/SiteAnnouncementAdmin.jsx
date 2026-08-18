@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { Megaphone, Lightbulb, Save } from 'lucide-react'
 
 // 弹出公告（更新说明）管理界面
 // 管理员可编辑公告内容，保存后写入 site_announcements 表
@@ -111,11 +112,11 @@ export default function SiteAnnouncementAdmin({ onClose, onSaved }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-blue-500/30 to-purple-500/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-gradient-to-br from-(--color-primary)/30 to-(--color-secondary)/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-(--color-surface) rounded-2xl shadow-2xl max-w-xl w-full max-h-[85vh] overflow-hidden animate-fade-in-up">
         {/* 头部 */}
-        <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-4 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-white">📣 管理更新公告</h2>
+        <div className="gradient-header px-6 py-4 flex justify-between items-center">
+          <h2 className="text-xl font-bold text-white flex items-center gap-2"><Megaphone size={20} /> 管理更新公告</h2>
           <button
             onClick={onClose}
             className="text-white hover:text-gray-200 transition-colors"
@@ -144,7 +145,7 @@ export default function SiteAnnouncementAdmin({ onClose, onSaved }) {
                     type="text"
                     value={version}
                     onChange={(e) => setVersion(e.target.value)}
-                    className="w-full px-3 py-2 border-2 border-(--color-border) rounded-lg focus:border-blue-500 focus:outline-none"
+                    className="w-full px-3 py-2 border-2 border-(--color-border) rounded-lg focus:border-[var(--color-primary)] focus:outline-none"
                     placeholder="如 3.0"
                   />
                   <p className="mt-1 text-xs text-(--color-text-tertiary)">版本号变化后，所有用户会重新看到公告</p>
@@ -155,7 +156,7 @@ export default function SiteAnnouncementAdmin({ onClose, onSaved }) {
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-3 py-2 border-2 border-(--color-border) rounded-lg focus:border-blue-500 focus:outline-none"
+                    className="w-full px-3 py-2 border-2 border-(--color-border) rounded-lg focus:border-[var(--color-primary)] focus:outline-none"
                   />
                 </div>
               </div>
@@ -166,7 +167,7 @@ export default function SiteAnnouncementAdmin({ onClose, onSaved }) {
                   <label className="text-sm font-medium text-(--color-text-secondary)">公告板块</label>
                   <button
                     onClick={addSection}
-                    className="text-sm text-blue-500 hover:text-blue-700 font-medium"
+                    className="text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium"
                   >
                     + 添加板块
                   </button>
@@ -184,7 +185,7 @@ export default function SiteAnnouncementAdmin({ onClose, onSaved }) {
                           <span className="text-sm font-medium text-(--color-text-secondary)">板块 {index + 1}</span>
                           <button
                             onClick={() => removeSection(index)}
-                            className="text-xs text-red-500 hover:text-(--color-error)"
+                            className="text-xs text-(--color-error) hover:text-(--color-error)"
                           >
                             删除板块
                           </button>
@@ -196,7 +197,7 @@ export default function SiteAnnouncementAdmin({ onClose, onSaved }) {
                               type="text"
                               value={section.icon}
                               onChange={(e) => updateSection(index, 'icon', e.target.value)}
-                              className="w-full px-2 py-1.5 border-2 border-(--color-border) rounded-lg focus:border-blue-500 focus:outline-none text-center"
+                              className="w-full px-2 py-1.5 border-2 border-(--color-border) rounded-lg focus:border-[var(--color-primary)] focus:outline-none text-center"
                               placeholder="🎉"
                             />
                           </div>
@@ -206,7 +207,7 @@ export default function SiteAnnouncementAdmin({ onClose, onSaved }) {
                               type="text"
                               value={section.title}
                               onChange={(e) => updateSection(index, 'title', e.target.value)}
-                              className="w-full px-2 py-1.5 border-2 border-(--color-border) rounded-lg focus:border-blue-500 focus:outline-none"
+                              className="w-full px-2 py-1.5 border-2 border-(--color-border) rounded-lg focus:border-[var(--color-primary)] focus:outline-none"
                               placeholder="如：最新更新"
                             />
                           </div>
@@ -219,7 +220,7 @@ export default function SiteAnnouncementAdmin({ onClose, onSaved }) {
                             value={section.itemsText}
                             onChange={(e) => updateSection(index, 'itemsText', e.target.value)}
                             rows={3}
-                            className="w-full px-3 py-2 border-2 border-(--color-border) rounded-lg focus:border-blue-500 focus:outline-none resize-none"
+                            className="w-full px-3 py-2 border-2 border-(--color-border) rounded-lg focus:border-[var(--color-primary)] focus:outline-none resize-none"
                             placeholder="第一条内容&#10;第二条内容"
                           />
                         </div>
@@ -231,7 +232,7 @@ export default function SiteAnnouncementAdmin({ onClose, onSaved }) {
 
               {/* 提示 */}
               <p className="text-xs text-(--color-text-tertiary) bg-[var(--color-bg-tertiary)] rounded-lg p-3">
-                💡 保存后，版本号如有变化，所有用户下次打开首页都会看到这份公告。
+                <Lightbulb size={14} className="mr-1.5" /> 保存后，版本号如有变化，所有用户下次打开首页都会看到这份公告。
               </p>
 
               {message && (
@@ -261,7 +262,7 @@ export default function SiteAnnouncementAdmin({ onClose, onSaved }) {
             disabled={saving || loading}
             className="btn-gradient text-white px-6 py-2 rounded-lg font-medium btn-animate disabled:opacity-50"
           >
-            {saving ? '保存中...' : '💾 保存公告'}
+            {saving ? '保存中...' : (<><Save size={16} className="mr-1.5" /> 保存公告</>)}
           </button>
         </div>
       </div>

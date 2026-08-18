@@ -1,4 +1,5 @@
 import { memo, useMemo } from 'react'
+import { Crown } from 'lucide-react'
 
 // 常量移到组件外部
 const SIZE_CLASSES = {
@@ -63,8 +64,8 @@ const Avatar = memo(function Avatar({ url, username, size = 'md', role = 'user' 
 
       {/* 管理员徽章 */}
       {role === 'admin' && (
-        <div className={`absolute -bottom-1 -right-1 ${BADGE_SIZES[size]} bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white`}>
-          👑
+        <div className={`absolute -bottom-1 -right-1 ${BADGE_SIZES[size]} admin-badge rounded-full flex items-center justify-center shadow-lg border-2 border-white`}>
+          <Crown className="w-3/5 h-3/5" />
         </div>
       )}
     </div>

@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { getUsersList, toggleAdmin, deleteUser, checkIsSuperAdmin } from '../lib/admin'
 import Avatar from '../components/Avatar'
 import { useToast } from '../components/Toast'
+import { AlertTriangle, Trash2 } from 'lucide-react'
 
 export default function UserManagement() {
   const navigate = useNavigate()
@@ -125,8 +126,8 @@ export default function UserManagement() {
 
         {/* 页面标题 */}
         <div className="mb-6 animate-fade-in-up">
-          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            {isSuperAdmin ? '👥 用户管理' : '🏠 嘎宇宙住户'}
+          <h1 className="text-2xl sm:text-3xl font-bold heading-gradient">
+            {isSuperAdmin ? '用户管理' : '嘎宇宙住户'}
           </h1>
           <p className="text-(--color-text-tertiary) mt-1">共 {users.length} 位用户</p>
           {!isSuperAdmin && (
@@ -183,7 +184,7 @@ export default function UserManagement() {
                           <button onClick={() => handleToggleAdmin(userData.id, userData.role)} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${userData.role === 'admin' ? 'text-[var(--color-warning)] hover:bg-(--color-warning)/10' : 'text-[var(--color-info)] hover:bg-(--color-info)/10'}`}>
                             {userData.role === 'admin' ? '撤销管理' : '设为管理员'}
                           </button>
-                          <button onClick={() => handleDeleteClick(userData)} className="px-3 py-1 text-red-500 hover:bg-(--color-error)/10 rounded-full text-xs font-medium transition-colors">删除</button>
+                          <button onClick={() => handleDeleteClick(userData)} className="px-3 py-1 text-(--color-error) hover:bg-(--color-error)/10 rounded-full text-xs font-medium transition-colors">删除</button>
                         </div>
                       )}
                     </div>
@@ -222,7 +223,7 @@ export default function UserManagement() {
                       <button onClick={() => handleToggleAdmin(userData.id, userData.role)} className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${userData.role === 'admin' ? 'text-[var(--color-warning)] bg-(--color-warning)/10 hover:bg-(--color-warning)/15' : 'text-[var(--color-info)] bg-(--color-info)/10 hover:bg-(--color-info)/15'}`}>
                         {userData.role === 'admin' ? '撤销管理' : '设为管理员'}
                       </button>
-                      <button onClick={() => handleDeleteClick(userData)} className="flex-1 px-3 py-2 text-red-500 bg-(--color-error)/10 hover:bg-(--color-error)/15 rounded-lg text-xs font-medium transition-colors">删除</button>
+                      <button onClick={() => handleDeleteClick(userData)} className="flex-1 px-3 py-2 text-(--color-error) bg-(--color-error)/10 hover:bg-(--color-error)/15 rounded-lg text-xs font-medium transition-colors">删除</button>
                     </div>
                   )}
                 </div>
@@ -234,17 +235,17 @@ export default function UserManagement() {
 
       {/* 删除确认弹窗 */}
       {showDeleteModal && selectedUser && (
-        <div className="fixed inset-0 bg-gradient-to-br from-blue-500/30 to-purple-500/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-gradient-to-br from-(--color-primary)/30 to-(--color-secondary)/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-(--color-surface) rounded-2xl shadow-2xl max-w-md w-full animate-fade-in-up">
             <div className="p-6">
               <div className="text-center mb-6">
-                <div className="text-5xl mb-4">⚠️</div>
+                <AlertTriangle size={56} className="mx-auto mb-4 text-(--color-warning)" />
                 <h3 className="text-xl font-bold text-(--color-text-primary) mb-2">确认删除用户</h3>
-                <p className="text-(--color-text-tertiary)">确定要删除用户 <span className="font-medium text-red-500">"{selectedUser.username}"</span> 吗？</p>
+                <p className="text-(--color-text-tertiary)">确定要删除用户 <span className="font-medium text-(--color-error)">"{selectedUser.username}"</span> 吗？</p>
               </div>
               <div className="bg-(--color-error)/10 rounded-xl p-4 mb-6">
                 <p className="text-sm text-(--color-error) font-medium mb-2">该操作将删除：</p>
-                <ul className="text-sm text-red-500 space-y-1">
+                <ul className="text-sm text-(--color-error) space-y-1">
                   <li>• 用户账号和登录信息</li>
                   <li>• 用户发布的所有帖子</li>
                   <li>• 用户发表的所有评论</li>
@@ -255,7 +256,7 @@ export default function UserManagement() {
               </div>
               <div className="flex space-x-4">
                 <button onClick={() => { setShowDeleteModal(false); setSelectedUser(null); }} disabled={deleting} className="flex-1 px-6 py-3 text-(--color-text-secondary) hover:text-(--color-text-primary) hover:bg-(--color-bg-tertiary) rounded-xl transition-all duration-200 font-medium">取消</button>
-                <button onClick={handleDeleteConfirm} disabled={deleting} className="flex-1 px-6 py-3 bg-(--color-error)/100 text-white rounded-xl font-medium hover:bg-red-600 transition-all duration-200 disabled:opacity-50">{deleting ? '删除中...' : '🗑️ 确认删除'}</button>
+                <button onClick={handleDeleteConfirm} disabled={deleting} className="flex-1 px-6 py-3 bg-(--color-error) text-white rounded-xl font-medium hover:bg-(--color-error-hover) transition-all duration-200 disabled:opacity-50 inline-flex items-center justify-center gap-1.5">{deleting ? '删除中...' : (<><Trash2 size={16} /> 确认删除</>)}</button>
               </div>
             </div>
           </div>

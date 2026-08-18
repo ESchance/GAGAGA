@@ -1,5 +1,6 @@
 /* eslint-disable react/only-export-components */
 import { createContext, useContext, useState, useCallback } from 'react'
+import { CheckCircle2, XCircle, AlertTriangle, Info } from 'lucide-react'
 
 // 轻量提示条（Toast）系统
 // 用法：const { showToast } = useToast(); showToast('操作成功', 'success')
@@ -16,16 +17,16 @@ export function useToast() {
 let toastId = 0
 
 const ICONS = {
-  success: '✅',
-  error: '❌',
-  warning: '⚠️',
-  info: '💡'
+  success: <CheckCircle2 size={20} className="text-(--color-success)" />,
+  error: <XCircle size={20} className="text-(--color-error)" />,
+  warning: <AlertTriangle size={20} className="text-(--color-warning)" />,
+  info: <Info size={20} className="text-(--color-info)" />
 }
 
 const BORDER_COLORS = {
-  success: 'border-green-500/40',
-  error: 'border-red-500/40',
-  warning: 'border-yellow-500/40',
+  success: 'border-(--color-success)/40',
+  error: 'border-(--color-error)/40',
+  warning: 'border-(--color-warning)/40',
   info: 'border-[var(--color-border)]'
 }
 

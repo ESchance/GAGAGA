@@ -71,10 +71,10 @@ export default function AnnouncementModal() {
   const sections = Array.isArray(announcement.sections) ? announcement.sections : []
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-blue-500/30 to-purple-500/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-gradient-to-br from-(--color-primary)/30 to-(--color-secondary)/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-(--color-surface) rounded-2xl shadow-2xl max-w-lg w-full max-h-[80vh] overflow-hidden animate-fade-in-up">
         {/* 头部 */}
-        <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-4">
+        <div className="gradient-header px-6 py-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-white">{announcement.title}</h2>
             <button

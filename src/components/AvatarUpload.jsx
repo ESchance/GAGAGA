@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { User, Camera, Lightbulb, CheckCircle2, AlertCircle } from 'lucide-react'
 
 export default function AvatarUpload({ userId, currentAvatarUrl, onAvatarUpdate }) {
   const [uploading, setUploading] = useState(false)
@@ -91,7 +92,7 @@ export default function AvatarUpload({ userId, currentAvatarUrl, onAvatarUpdate 
     <div className="flex flex-col items-center">
       {/* 头像显示 */}
       <div className="relative group">
-        <div className="w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-purple-500 border-4 border-white shadow-xl">
+        <div className="w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] border-4 border-white shadow-xl">
           {avatarUrl ? (
             <img
               src={avatarUrl}
@@ -99,8 +100,8 @@ export default function AvatarUpload({ userId, currentAvatarUrl, onAvatarUpdate 
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-white text-4xl">
-              👤
+            <div className="w-full h-full flex items-center justify-center text-white">
+              <User size={44} />
             </div>
           )}
         </div>
@@ -115,7 +116,7 @@ export default function AvatarUpload({ userId, currentAvatarUrl, onAvatarUpdate 
                   上传中...
                 </span>
               ) : (
-                '📷 更换头像'
+                (<><Camera size={16} className="mr-1.5 inline" /> 更换头像</>)
               )}
             </span>
           </div>
@@ -131,7 +132,7 @@ export default function AvatarUpload({ userId, currentAvatarUrl, onAvatarUpdate 
 
       {/* 提示信息 */}
       <p className="mt-3 text-xs text-(--color-text-tertiary) flex items-center">
-        <span className="mr-1">💡</span> 支持 JPG、PNG，最大 2MB
+        <Lightbulb size={14} className="mr-1.5" /> 支持 JPG、PNG，最大 2MB
       </p>
 
       {/* 消息提示 */}
@@ -141,7 +142,7 @@ export default function AvatarUpload({ userId, currentAvatarUrl, onAvatarUpdate 
             ? 'bg-(--color-success)/15 text-(--color-success)'
             : 'bg-(--color-error)/15 text-(--color-error)'
         }`}>
-          <span className="mr-2">{message.includes('成功') ? '✅' : '❌'}</span>
+          <span className="mr-2">{message.includes('成功') ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}</span>
           {message}
         </div>
       )}

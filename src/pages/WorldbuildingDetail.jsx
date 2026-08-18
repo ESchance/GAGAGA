@@ -14,6 +14,8 @@ import { checkIsAdmin } from '../lib/admin'
 import { validateComment } from '../lib/validation'
 import { useToast } from '../components/Toast'
 import Avatar from '../components/Avatar'
+import { BookIcon, MaskIcon, GlobeIcon, LightbulbIcon } from '../components/Icons'
+import { Heart, MessageCircle, PenLine, Trash2, LogIn, AlertTriangle, Send, MessageSquare, Inbox, FileText } from 'lucide-react'
 
 export default function WorldbuildingDetail() {
   const { id } = useParams()
@@ -127,12 +129,13 @@ export default function WorldbuildingDetail() {
 
   const getTypeIcon = (type) => {
     const icons = {
-      story: '📖',
-      character: '🎭',
-      setting: '🌍',
-      idea: '💡'
+      story: BookIcon,
+      character: MaskIcon,
+      setting: GlobeIcon,
+      idea: LightbulbIcon
     }
-    return icons[type] || '📝'
+    const Icon = icons[type] || FileText
+    return <Icon className="w-7 h-7 text-[var(--color-primary)]" />
   }
 
   const getTypeName = (type) => {
@@ -167,7 +170,7 @@ export default function WorldbuildingDetail() {
             ← 返回创作列表
           </button>
           <div className="text-center py-16">
-            <div className="text-6xl mb-4">😕</div>
+            <Inbox size={64} className="mx-auto mb-4 text-(--color-text-tertiary)" />
             <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">内容不存在</h3>
             <p className="text-(--color-text-tertiary)">该内容可能已被删除</p>
           </div>
@@ -212,7 +215,7 @@ export default function WorldbuildingDetail() {
               <div className="flex items-center space-x-2">
                 <span className="font-semibold text-(--color-text-primary)">{post.profiles?.username || '匿名用户'}</span>
                 {post.profiles?.role === 'admin' && (
-                  <span className="text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-full font-medium">
+                  <span className="text-xs admin-badge px-2 py-0.5 rounded-full font-medium">
                     管理员
                   </span>
                 )}
@@ -240,16 +243,16 @@ export default function WorldbuildingDetail() {
                 onClick={handleLike}
                 className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-200 ${
                   liked
-                    ? 'bg-(--color-error)/10 text-red-500'
+                    ? 'bg-(--color-error)/10 text-(--color-error)'
                     : 'text-(--color-text-tertiary) hover:bg-(--color-bg-tertiary)'
                 }`}
               >
-                <span>{liked ? '❤️' : '🤍'}</span>
+                <Heart size={18} className={liked ? 'fill-current' : ''} />
                 <span>{post.likes_count || 0}</span>
               </button>
 
               <div className="flex items-center space-x-2 text-(--color-text-tertiary)">
-                <span>💬</span>
+                <MessageCircle size={18} />
                 <span>{comments.length}</span>
               </div>
             </div>
@@ -261,17 +264,17 @@ export default function WorldbuildingDetail() {
                 {user.id === post.user_id && (
                   <button
                     onClick={() => navigate(`/worldbuilding/${id}/edit`)}
-                    className="px-4 py-2 text-[var(--color-secondary)] hover:text-white hover:bg-[var(--color-secondary)] rounded-full transition-all duration-200 text-sm font-medium"
+                    className="px-4 py-2 text-[var(--color-secondary)] hover:text-white hover:bg-[var(--color-secondary)] rounded-full transition-all duration-200 text-sm font-medium inline-flex items-center gap-1.5"
                   >
-                    ✏️ 编辑
+                    <PenLine size={16} /> 编辑
                   </button>
                 )}
                 {/* 作者和管理员都可以删除 */}
                 <button
                   onClick={() => setShowDeleteModal(true)}
-                  className="px-4 py-2 text-red-500 hover:text-white hover:bg-(--color-error)/100 rounded-full transition-all duration-200 text-sm font-medium"
+                  className="px-4 py-2 text-(--color-error) hover:text-white hover:bg-(--color-error) rounded-full transition-all duration-200 text-sm font-medium inline-flex items-center gap-1.5"
                 >
-                  🗑️ 删除
+                  <Trash2 size={16} /> 删除
                 </button>
               </div>
             )}
@@ -280,8 +283,8 @@ export default function WorldbuildingDetail() {
 
         {/* 评论区 */}
         <div className="glass-effect p-6 rounded-2xl shadow-lg animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-          <h3 className="text-xl font-bold text-(--color-text-primary) mb-6">
-            💬 评论 ({comments.length})
+          <h3 className="text-xl font-bold text-(--color-text-primary) mb-6 flex items-center gap-2">
+            <MessageCircle size={20} /> 评论 ({comments.length})
           </h3>
 
           {/* 评论输入框 */}
@@ -290,15 +293,15 @@ export default function WorldbuildingDetail() {
               <p className="text-(--color-text-secondary) mb-3">请先登录后再发表评论</p>
               <button
                 onClick={() => navigate('/login')}
-                className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate"
+                className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-flex items-center"
               >
-                👋 登录
+                <LogIn size={16} className="mr-1.5" /> 登录
               </button>
             </div>
           ) : !userProfile?.race_selected ? (
             <div className="mb-6 p-4 bg-(--color-warning)/10 border border-(--color-warning)/30 rounded-xl text-center">
               <p className="text-(--color-warning) text-sm">
-                ⚠️ 你还没有选择种族，无法发表评论。
+                <AlertTriangle size={16} className="mr-1.5" /> 你还没有选择种族，无法发表评论。
                 <a href={`/profile/${user.id}`} className="ml-2 text-(--color-warning) underline">
                   去选择种族
                 </a>
@@ -318,9 +321,9 @@ export default function WorldbuildingDetail() {
                 <button
                   type="submit"
                   disabled={submitting || !newComment.trim()}
-                  className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate disabled:opacity-50"
+                  className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate disabled:opacity-50 inline-flex items-center"
                 >
-                  {submitting ? '发送中...' : '✨ 发表评论'}
+                  {submitting ? '发送中...' : (<><Send size={16} className="mr-1.5" /> 发表评论</>)}
                 </button>
               </div>
             </form>
@@ -330,7 +333,7 @@ export default function WorldbuildingDetail() {
           <div className="space-y-4">
             {comments.length === 0 ? (
               <div className="text-center py-8">
-                <div className="text-4xl mb-3">💭</div>
+                <MessageSquare size={48} className="mx-auto mb-3 text-(--color-text-tertiary)" />
                 <p className="text-(--color-text-tertiary)">暂无评论，快来发表第一条评论吧！</p>
               </div>
             ) : (
@@ -379,7 +382,7 @@ export default function WorldbuildingDetail() {
           <div className="bg-(--color-surface) rounded-2xl shadow-2xl max-w-md w-full animate-fade-in-up">
             <div className="p-6">
               <div className="text-center mb-6">
-                <div className="text-5xl mb-4">⚠️</div>
+                <AlertTriangle size={56} className="mx-auto mb-4 text-(--color-warning)" />
                 <h3 className="text-xl font-bold text-(--color-text-primary) mb-2">确认删除</h3>
                 <p className="text-(--color-text-tertiary)">确定要删除这个创作吗？此操作不可撤销。</p>
               </div>
@@ -395,9 +398,9 @@ export default function WorldbuildingDetail() {
                 <button
                   onClick={handleDelete}
                   disabled={deleting}
-                  className="flex-1 px-6 py-3 bg-(--color-error)/100 text-white rounded-xl font-medium hover:bg-red-600 transition-all duration-200 disabled:opacity-50"
+                  className="flex-1 px-6 py-3 bg-(--color-error) text-white rounded-xl font-medium hover:bg-(--color-error-hover) transition-all duration-200 disabled:opacity-50 inline-flex items-center justify-center gap-1.5"
                 >
-                  {deleting ? '删除中...' : '🗑️ 确认删除'}
+                  {deleting ? '删除中...' : (<><Trash2 size={16} /> 确认删除</>)}
                 </button>
               </div>
             </div>

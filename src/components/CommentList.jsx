@@ -6,6 +6,7 @@ import { RACES } from '../lib/worldbuilding'
 import { validateComment } from '../lib/validation'
 import { useToast } from './Toast'
 import Avatar from './Avatar'
+import { LogIn, AlertTriangle, Send, MessageSquare, Clock, Crown } from 'lucide-react'
 
 export default function CommentList({ postId, requireRace = false }) {
   const { showToast } = useToast()
@@ -158,8 +159,8 @@ export default function CommentList({ postId, requireRace = false }) {
 
   return (
     <div className="glass-effect p-6 rounded-2xl shadow-lg animate-fade-in-up">
-      <h3 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
-        💬 评论 ({comments.length})
+      <h3 className="text-xl font-bold heading-gradient mb-6">
+        评论 ({comments.length})
       </h3>
 
       {/* 评论输入框 */}
@@ -169,16 +170,16 @@ export default function CommentList({ postId, requireRace = false }) {
           <p className="text-(--color-text-secondary) mb-3">请先登录后再发表评论</p>
           <Link
             to="/login"
-            className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-block"
+            className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-flex items-center"
           >
-            👋 登录
+            <LogIn size={16} className="mr-1.5" /> 登录
           </Link>
         </div>
       ) : requireRace && !currentUserProfile?.race_selected ? (
         // 需要种族选择但未选择（仅嘎宇宙创作）
         <div className="mb-6 p-4 bg-(--color-warning)/10 border border-(--color-warning)/30 rounded-xl text-center">
           <p className="text-(--color-warning) text-sm">
-            ⚠️ 你还没有选择种族，无法发表评论。
+            <AlertTriangle size={16} className="mr-1.5" /> 你还没有选择种族，无法发表评论。
             <Link to={`/profile/${user.id}`} className="ml-2 text-(--color-warning) underline">
               去选择种族
             </Link>
@@ -206,7 +207,7 @@ export default function CommentList({ postId, requireRace = false }) {
               <button
                 type="submit"
                 disabled={loading || !newComment.trim()}
-                className="mt-3 btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate disabled:opacity-50 disabled:cursor-not-allowed"
+                className="mt-3 btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center"
               >
                 {loading ? (
                   <span className="flex items-center">
@@ -214,7 +215,7 @@ export default function CommentList({ postId, requireRace = false }) {
                     发送中...
                   </span>
                 ) : (
-                  '✨ 发表评论'
+                  <><Send size={16} className="mr-1.5" /> 发表评论</>
                 )}
               </button>
             </div>
@@ -226,7 +227,7 @@ export default function CommentList({ postId, requireRace = false }) {
       <div className="space-y-4">
         {comments.length === 0 ? (
           <div className="text-center py-8">
-            <div className="text-4xl mb-3">💭</div>
+            <MessageSquare size={48} className="mx-auto mb-3 text-(--color-text-tertiary)" />
             <p className="text-(--color-text-tertiary)">暂无评论，快来发表第一条评论吧！</p>
           </div>
         ) : (
@@ -237,7 +238,7 @@ export default function CommentList({ postId, requireRace = false }) {
               <div
                 key={comment.id}
                 className="p-4 bg-gradient-to-r from-(--color-bg-secondary) to-(--color-bg-tertiary) rounded-xl animate-fade-in-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                style={{ animationDelay: `${Math.min(index, 8) * 0.03}s` }}
               >
                 <div className="flex items-start space-x-4">
                   <Avatar
@@ -253,12 +254,12 @@ export default function CommentList({ postId, requireRace = false }) {
                           {comment.profiles?.username || '匿名用户'}
                         </span>
                         {comment.profiles?.role === 'admin' && (
-                          <span className="hidden sm:inline text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-full font-medium">
+                          <span className="hidden sm:inline text-xs admin-badge px-2 py-0.5 rounded-full font-medium">
                             管理员
                           </span>
                         )}
                         {comment.profiles?.role === 'admin' && (
-                          <span className="sm:hidden text-xs" title="管理员">👑</span>
+                          <span className="sm:hidden text-xs" title="管理员"><Crown size={14} /></span>
                         )}
                         {comment.profiles?.member_code && (
                           <span className="text-xs text-(--color-text-tertiary)">
@@ -267,13 +268,13 @@ export default function CommentList({ postId, requireRace = false }) {
                         )}
                       </div>
                       <div className="flex items-center space-x-2">
-                        <span className="text-xs text-(--color-text-tertiary) bg-(--color-surface) px-2 py-1 rounded-full">
-                          🕐 {new Date(comment.created_at).toLocaleString('zh-CN')}
+                        <span className="text-xs text-(--color-text-tertiary) bg-(--color-surface) px-2 py-1 rounded-full inline-flex items-center">
+                          <Clock size={14} className="mr-1" /> {new Date(comment.created_at).toLocaleString('zh-CN')}
                         </span>
                         {canDeleteComment && (
                           <button
                             onClick={() => handleDeleteComment(comment.id, comment.user_id)}
-                            className="text-red-500 hover:text-white hover:bg-(--color-error)/100 p-1 rounded-full transition-all duration-200"
+                            className="text-(--color-error) hover:text-white hover:bg-(--color-error)/100 p-1 rounded-full transition-all duration-200"
                             title="删除评论"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

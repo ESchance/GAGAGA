@@ -1,4 +1,5 @@
 import { RACES } from '../lib/worldbuilding'
+import { ClipboardList, BookOpen } from 'lucide-react'
 
 export default function WorldInfo({ profile, showStory = false, compact = false }) {
   if (!profile) return null
@@ -24,7 +25,7 @@ export default function WorldInfo({ profile, showStory = false, compact = false 
       {/* 身份信息卡片 */}
       <div className="bg-gradient-to-r from-[var(--color-primary-light)] to-[var(--color-bg-tertiary)] rounded-2xl p-4 border border-[var(--color-border)]">
         <h4 className="text-sm font-semibold text-(--color-text-secondary) mb-3 flex items-center">
-          <span className="mr-2">📋</span> 身份信息
+          <ClipboardList size={16} className="mr-2" /> 身份信息
         </h4>
         <div className="space-y-2">
           {profile.member_code && (
@@ -52,7 +53,7 @@ export default function WorldInfo({ profile, showStory = false, compact = false 
       {showStory && profile.defaultStory && (
         <div className="bg-gradient-to-r from-[var(--color-primary-light)] to-[var(--color-bg-tertiary)] rounded-2xl p-4 border border-[var(--color-border)]">
           <h4 className="text-sm font-semibold text-(--color-text-secondary) mb-3 flex items-center">
-            <span className="mr-2">📖</span> 我的起源故事
+            <BookOpen size={16} className="mr-2" /> 我的起源故事
             <span className="ml-2 text-xs text-(--color-text-tertiary) font-normal">（不可编辑）</span>
           </h4>
           <div className="bg-(--color-surface) bg-opacity-60 rounded-xl p-4">

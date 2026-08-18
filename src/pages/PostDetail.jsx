@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { checkIsAdmin, togglePinPost } from '../lib/admin'
 import { RACES } from '../lib/worldbuilding'
 import CommentList from '../components/CommentList'
+import { Pin, Crown, Clock, Trash2, RefreshCw, Home, Inbox, AlertCircle } from 'lucide-react'
 import Avatar from '../components/Avatar'
 import { useToast } from '../components/Toast'
 
@@ -110,17 +111,17 @@ export default function PostDetail() {
             ← 返回首页
           </Link>
           <div className="text-center py-16">
-            <div className="text-6xl mb-4">❌</div>
+            <AlertCircle size={64} className="mx-auto mb-4 text-(--color-error)" />
             <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">加载失败</h3>
             <p className="text-(--color-text-tertiary) mb-4">{error}</p>
             <button
               onClick={fetchPost}
-              className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate mr-4"
+              className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate mr-4 inline-flex items-center"
             >
-              🔄 重试
+              <RefreshCw size={16} className="mr-1.5" /> 重试
             </button>
             <Link to="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-[var(--color-primary)]">
-              🏠 返回首页
+              <Home size={16} className="mr-1.5" /> 返回首页
             </Link>
           </div>
         </div>
@@ -136,11 +137,11 @@ export default function PostDetail() {
             ← 返回首页
           </Link>
           <div className="text-center py-16">
-            <div className="text-6xl mb-4">😕</div>
+            <Inbox size={64} className="mx-auto mb-4 text-(--color-text-tertiary)" />
             <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">帖子不存在</h3>
             <p className="text-(--color-text-tertiary) mb-4">该帖子可能已被删除</p>
             <Link to="/" className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-block">
-              🏠 返回首页
+              <Home size={16} className="mr-1.5" /> 返回首页
             </Link>
           </div>
         </div>
@@ -158,10 +159,10 @@ export default function PostDetail() {
           ← 返回
         </Link>
 
-        <article className={`glass-effect p-8 rounded-2xl shadow-lg mb-6 animate-fade-in-up ${post.is_pinned ? 'ring-1 ring-yellow-400/50' : ''}`}>
+        <article className={`glass-effect p-8 rounded-2xl shadow-lg mb-6 animate-fade-in-up ${post.is_pinned ? 'ring-1 ring-(--color-warning)/50' : ''}`}>
           {post.is_pinned && (
             <div className="inline-flex items-center mb-4 px-3 py-1 bg-(--color-warning)/15 text-(--color-warning) text-sm font-medium rounded-full">
-              📌 置顶
+              <Pin size={16} className="mr-1.5" /> 置顶
             </div>
           )}
 
@@ -210,12 +211,12 @@ export default function PostDetail() {
                 <div className="flex items-center space-x-2">
                   <span className="font-semibold text-(--color-text-primary)">{post.profiles?.username || '匿名用户'}</span>
                   {post.profiles?.role === 'admin' && (
-                    <span className="hidden sm:inline text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-full font-medium">
+                    <span className="hidden sm:inline text-xs admin-badge px-2 py-0.5 rounded-full font-medium">
                       管理员
                     </span>
                   )}
                   {post.profiles?.role === 'admin' && (
-                    <span className="sm:hidden text-xs" title="管理员">👑</span>
+                    <span className="sm:hidden text-xs" title="管理员"><Crown size={14} /></span>
                   )}
                 </div>
                 {post.profiles?.member_code ? (
@@ -232,7 +233,7 @@ export default function PostDetail() {
 
             <div className="flex items-center space-x-3">
               <span className="text-sm text-(--color-text-tertiary) bg-(--color-bg-tertiary) px-3 py-1 rounded-full">
-                🕐 {new Date(post.created_at).toLocaleString('zh-CN')}
+                <Clock size={14} className="mr-1.5" /> {new Date(post.created_at).toLocaleString('zh-CN')}
               </span>
 
               {isAdmin && (
@@ -241,19 +242,19 @@ export default function PostDetail() {
                   className={`px-4 py-2 rounded-full transition-all duration-200 font-medium ${
                     post.is_pinned
                       ? 'text-(--color-warning) hover:text-white hover:bg-(--color-warning)/100 bg-(--color-warning)/10'
-                      : 'text-yellow-500 hover:text-white hover:bg-(--color-warning)/100'
+                      : 'text-(--color-warning) hover:text-white hover:bg-(--color-warning)'
                   }`}
                 >
-                  {post.is_pinned ? '📌 取消置顶' : '📌 置顶'}
+                  <><Pin size={16} /> {post.is_pinned ? '取消置顶' : '置顶'}</>
                 </button>
               )}
 
               {canDelete && (
                 <button
                   onClick={handleDelete}
-                  className="px-4 py-2 text-red-500 hover:text-white hover:bg-(--color-error)/100 rounded-full transition-all duration-200 font-medium"
+                  className="px-4 py-2 text-(--color-error) hover:text-white hover:bg-(--color-error) rounded-full transition-all duration-200 font-medium"
                 >
-                  🗑️ 删除
+                  <Trash2 size={16} className="mr-1.5" /> 删除
                 </button>
               )}
             </div>

@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { RACES } from '../lib/worldbuilding'
+import { AlertTriangle, CheckCircle2 } from 'lucide-react'
+import { GalaxyIcon } from './Icons'
 
 export default function RaceSelector({ onSelect }) {
   const [selectedRace, setSelectedRace] = useState(null)
@@ -24,10 +26,10 @@ export default function RaceSelector({ onSelect }) {
       <div className="bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 rounded-3xl shadow-2xl max-w-2xl w-full animate-fade-in-up overflow-hidden border border-purple-500 border-opacity-30">
         {/* 头部 */}
         <div className="text-center py-8 px-6">
-          <div className="text-6xl mb-4">🌌</div>
+          <GalaxyIcon className="w-20 h-20 mx-auto mb-4 text-purple-300" />
           <h2 className="text-3xl font-bold text-white mb-2">欢迎来到嘎宇宙</h2>
           <p className="text-purple-200 text-sm">在开始你的旅程之前，请选择你的种族</p>
-          <p className="text-yellow-400 text-xs mt-2">⚠️ 种族选择后不可更改，请慎重选择</p>
+          <p className="text-(--color-warning) text-xs mt-2 flex items-center justify-center gap-1"><AlertTriangle size={14} /> 种族选择后不可更改，请慎重选择</p>
         </div>
 
         {/* 种族选择网格 */}
@@ -67,7 +69,7 @@ export default function RaceSelector({ onSelect }) {
               <p className="text-gray-300 text-sm">
                 你确定要选择 <span className="text-purple-400 font-medium">{RACES[selectedRace].name}</span> 吗？
                 <br />
-                <span className="text-yellow-400 text-xs">此操作不可更改！</span>
+                <span className="text-(--color-warning) text-xs">此操作不可更改！</span>
               </p>
             </div>
 
@@ -81,7 +83,7 @@ export default function RaceSelector({ onSelect }) {
               <button
                 onClick={handleConfirm}
                 disabled={selecting}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl font-medium hover:from-purple-600 hover:to-blue-600 transition-all duration-200 disabled:opacity-50"
+                className="flex-1 px-6 py-3 gradient-header text-white rounded-xl font-medium hover:opacity-90 transition-all duration-200 disabled:opacity-50 inline-flex items-center justify-center"
               >
                 {selecting ? (
                   <span className="flex items-center justify-center">
@@ -89,7 +91,7 @@ export default function RaceSelector({ onSelect }) {
                     确认中...
                   </span>
                 ) : (
-                  '✨ 确认选择'
+                  <><CheckCircle2 size={16} className="mr-1.5" /> 确认选择</>
                 )}
               </button>
             </div>

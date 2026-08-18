@@ -8,7 +8,7 @@ export default function Login() {
 
       <p className="text-center mt-6 text-(--color-text-secondary) animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
         还没有账号？{' '}
-        <Link to="/register" className="font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-purple-600 hover:to-blue-600 transition-all duration-300">
+        <Link to="/register" className="font-semibold heading-gradient hover:opacity-80 transition-opacity duration-300">
           点击注册
         </Link>
       </p>

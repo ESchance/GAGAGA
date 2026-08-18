@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth'
 import PostCard from '../components/PostCard'
 import AnnouncementBar from '../components/AnnouncementBar'
 import SiteAnnouncementAdmin from '../components/SiteAnnouncementAdmin'
+import { Megaphone, FileText, PenLine } from 'lucide-react'
 
 export default function Home() {
   const [posts, setPosts] = useState([])
@@ -85,8 +86,8 @@ export default function Home() {
       <div className="py-8">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-8 animate-fade-in-up">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-              🌟 最新帖子
+            <h1 className="text-4xl font-bold heading-gradient mb-2">
+              最新帖子
             </h1>
             <p className="text-(--color-text-tertiary)">发现精彩内容，参与讨论</p>
             <div className="mt-4 flex items-center justify-center space-x-5">
@@ -96,7 +97,7 @@ export default function Home() {
                   className="inline-flex items-center space-x-1.5 text-sm text-[var(--color-text-tertiary)] hover:text-[var(--color-primary)] transition-colors"
                   title="管理更新公告"
                 >
-                  <span>📣</span>
+                  <Megaphone size={16} />
                   <span>管理公告</span>
                 </button>
               )}
@@ -105,14 +106,14 @@ export default function Home() {
 
           {posts.length === 0 ? (
             <div className="text-center py-16 animate-fade-in-up">
-              <div className="empty-state-icon mb-4">📝</div>
+              <div className="empty-state-icon mb-4"><FileText size={28} /></div>
               <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">还没有帖子</h3>
               <p className="text-(--color-text-tertiary) mb-6">快来发第一个帖子吧！</p>
               <Link
                 to="/create"
-                className="btn-gradient text-white px-6 py-3 rounded-full font-medium btn-animate inline-block"
+                className="btn-gradient text-white px-6 py-3 rounded-full font-medium btn-animate inline-flex items-center"
               >
-                ✏️ 发帖
+                <PenLine size={18} className="mr-1.5" /> 发帖
               </Link>
             </div>
           ) : (
