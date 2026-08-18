@@ -4,6 +4,7 @@ import { checkIsSuperAdmin } from '../lib/admin'
 import { useEffect, useState, useCallback } from 'react'
 import Avatar from './Avatar'
 import ThemeToggle from './ThemeToggle'
+import { PenLine } from 'lucide-react'
 
 export default function Navbar() {
   const [user, setUser] = useState(null)
@@ -101,7 +102,7 @@ export default function Navbar() {
                   to="/create"
                   className="btn btn-primary btn-sm"
                 >
-                  发帖
+                  <PenLine size={16} className="mr-1.5" /> 发帖
                 </Link>
                 <NavLink
                   to="/admin/users"
@@ -167,7 +168,7 @@ export default function Navbar() {
 
         {/* 移动端菜单 */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-3 border-t border-[var(--color-border)] animate-fade-in">
+          <div className="md:hidden py-3 border-t border-[var(--color-border)] animate-slide-down">
             {user ? (
               <div className="space-y-1">
                 <Link
@@ -193,10 +194,10 @@ export default function Navbar() {
                 </NavLink>
                 <Link
                   to="/create"
-                  className="block px-3 py-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] rounded-md transition-colors text-sm"
+                  className="flex items-center gap-1.5 px-3 py-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] rounded-md transition-colors text-sm"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  发帖
+                  <PenLine size={16} /> 发帖
                 </Link>
                 <NavLink
                   to="/admin/users"

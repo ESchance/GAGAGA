@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useFocusTrap } from '../hooks/useFocusTrap'
 import { supabase } from '../lib/supabase'
 import { checkIsAdmin } from '../lib/admin'
 import { useToast } from './Toast'
@@ -12,6 +13,7 @@ export default function AnnouncementBar() {
   const [showEditModal, setShowEditModal] = useState(false)
   const [editContent, setEditContent] = useState('')
   const [saving, setSaving] = useState(false)
+  const editModalRef = useRef(null)
 
   useEffect(() => {
     fetchAnnouncement()
@@ -85,6 +87,8 @@ export default function AnnouncementBar() {
     setShowEditModal(true)
   }
 
+  useFocusTrap(showEditModal, () => setShowEditModal(false), editModalRef)
+
   if (!announcement) {
     return null
   }
@@ -117,8 +121,11 @@ export default function AnnouncementBar() {
 
       {/* 编辑弹窗 */}
       {showEditModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-(--color-surface) rounded-2xl shadow-2xl max-w-lg w-full animate-scale-in overflow-hidden">
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowEditModal(false) }}
+        >
+          <div ref={editModalRef} className="bg-(--color-surface) rounded-2xl shadow-2xl max-w-lg w-full animate-scale-in overflow-hidden">
             <div className="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] px-6 py-4">
               <h3 className="text-xl font-bold text-white flex items-center gap-2"><FileText size={20} /> 编辑公告</h3>
             </div>

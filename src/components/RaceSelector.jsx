@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
+import { useFocusTrap } from '../hooks/useFocusTrap'
 import { RACES } from '../lib/worldbuilding'
 import { AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { GalaxyIcon } from './Icons'
@@ -7,11 +8,14 @@ export default function RaceSelector({ onSelect }) {
   const [selectedRace, setSelectedRace] = useState(null)
   const [showConfirm, setShowConfirm] = useState(false)
   const [selecting, setSelecting] = useState(false)
+  const modalRef = useRef(null)
 
   const handleSelect = (race) => {
     setSelectedRace(race)
     setShowConfirm(true)
   }
+
+  useFocusTrap(true, () => onSelect(null), modalRef)
 
   const handleConfirm = async () => {
     if (!selectedRace) return
@@ -23,7 +27,7 @@ export default function RaceSelector({ onSelect }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 rounded-3xl shadow-2xl max-w-2xl w-full animate-fade-in-up overflow-hidden border border-purple-500 border-opacity-30">
+      <div ref={modalRef} className="bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 rounded-3xl shadow-2xl max-w-2xl w-full animate-fade-in-up overflow-hidden border border-purple-500 border-opacity-30">
         {/* 头部 */}
         <div className="text-center py-8 px-6">
           <GalaxyIcon className="w-20 h-20 mx-auto mb-4 text-purple-300" />

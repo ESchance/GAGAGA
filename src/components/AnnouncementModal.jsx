@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { useFocusTrap } from '../hooks/useFocusTrap'
 import { useLocation } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 
@@ -9,6 +10,7 @@ const ANNOUNCEMENT_KEY = 'gagaga_announcement_dismissed'
 export default function AnnouncementModal() {
   const [show, setShow] = useState(false)
   const [announcement, setAnnouncement] = useState(null)
+  const modalRef = useRef(null)
   const location = useLocation()
 
   // 监听路由变化，在首页时检查是否需要弹出公告
@@ -58,6 +60,8 @@ export default function AnnouncementModal() {
     setShow(false)
   }, [])
 
+  useFocusTrap(show, handleClose, modalRef)
+
   const handleDismiss = useCallback(() => {
     // 记住当前版本，下次不再显示
     if (announcement) {
@@ -71,8 +75,11 @@ export default function AnnouncementModal() {
   const sections = Array.isArray(announcement.sections) ? announcement.sections : []
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-(--color-primary)/30 to-(--color-secondary)/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-(--color-surface) rounded-2xl shadow-2xl max-w-lg w-full max-h-[80vh] overflow-hidden animate-fade-in-up">
+    <div
+      className="fixed inset-0 bg-gradient-to-br from-(--color-primary)/30 to-(--color-secondary)/30 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
+    >
+      <div ref={modalRef} className="bg-(--color-surface) rounded-2xl shadow-2xl max-w-lg w-full max-h-[80vh] overflow-hidden animate-fade-in-up">
         {/* 头部 */}
         <div className="gradient-header px-6 py-4">
           <div className="flex justify-between items-center">

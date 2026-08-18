@@ -600,6 +600,45 @@ textarea:focus-visible {
   color: #fff;
 }
 
+/* Toast 滑入（P2） */
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.toast-in {
+  animation: toast-in 0.22s cubic-bezier(0.21, 1.02, 0.73, 1) forwards;
+}
+
+/* Toast 自动消失进度条（P2） */
+@keyframes toast-progress {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+.toast-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  background: currentColor;
+  opacity: 0.35;
+  animation-name: toast-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+/* 移动端菜单滑入（P2） */
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-down {
+  animation: slide-down 0.2s ease-out forwards;
+}
+
+
 /* 骨架屏（P1） */
 .skeleton {
   position: relative;

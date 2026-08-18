@@ -31,10 +31,10 @@ const BORDER_COLORS = {
 }
 
 function ToastItem({ toast, onClose }) {
-  const { message, type } = toast
+  const { message, type, duration = 3000 } = toast
   return (
     <div
-      className={`pointer-events-auto w-full max-w-sm flex items-center justify-between gap-3 px-4 py-3 rounded-xl shadow-lg bg-[var(--color-surface)] border ${BORDER_COLORS[type] || BORDER_COLORS.info} animate-fade-in-up`}
+      className={`pointer-events-auto w-full max-w-sm flex items-center justify-between gap-3 px-4 py-3 rounded-xl shadow-lg bg-[var(--color-surface)] border ${BORDER_COLORS[type] || BORDER_COLORS.info} toast-in relative overflow-hidden`}
     >
       <div className="flex items-center space-x-2 min-w-0">
         <span className="flex-shrink-0">{ICONS[type] || ICONS.info}</span>
@@ -49,6 +49,8 @@ function ToastItem({ toast, onClose }) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
+      {/* 自动消失进度条 */}
+      <div className="toast-progress" style={{ animationDuration: duration + 'ms' }} aria-hidden="true" />
     </div>
   )
 }
@@ -63,8 +65,8 @@ export function ToastProvider({ children }) {
   const showToast = useCallback(
     (message, type = 'info') => {
       const id = ++toastId
-      setToasts((prev) => [...prev, { id, message, type }])
       const duration = type === 'error' ? 4500 : 3000
+      setToasts((prev) => [...prev, { id, message, type, duration }])
       setTimeout(() => removeToast(id), duration)
     },
     [removeToast]

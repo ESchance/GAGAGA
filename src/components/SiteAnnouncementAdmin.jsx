@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useFocusTrap } from '../hooks/useFocusTrap'
 import { supabase } from '../lib/supabase'
 import { Megaphone, Lightbulb, Save } from 'lucide-react'
 
@@ -11,6 +12,7 @@ export default function SiteAnnouncementAdmin({ onClose, onSaved }) {
   const [sections, setSections] = useState([])
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
+  const modalRef = useRef(null)
 
   // 读取当前启用的公告，用于填充表单
   useEffect(() => {
@@ -55,6 +57,8 @@ export default function SiteAnnouncementAdmin({ onClose, onSaved }) {
   const removeSection = (index) => {
     setSections((prev) => prev.filter((_, i) => i !== index))
   }
+
+  useFocusTrap(true, onClose, modalRef)
 
   const handleSave = async () => {
     if (!version.trim() || !title.trim()) {
@@ -113,7 +117,7 @@ export default function SiteAnnouncementAdmin({ onClose, onSaved }) {
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-(--color-primary)/30 to-(--color-secondary)/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-(--color-surface) rounded-2xl shadow-2xl max-w-xl w-full max-h-[85vh] overflow-hidden animate-fade-in-up">
+      <div ref={modalRef} className="bg-(--color-surface) rounded-2xl shadow-2xl max-w-xl w-full max-h-[85vh] overflow-hidden animate-fade-in-up">
         {/* 头部 */}
         <div className="gradient-header px-6 py-4 flex justify-between items-center">
           <h2 className="text-xl font-bold text-white flex items-center gap-2"><Megaphone size={20} /> 管理更新公告</h2>
