@@ -17,6 +17,7 @@ const WorldbuildingCreate = lazy(() => import('./pages/WorldbuildingCreate'))
 const WorldbuildingDetail = lazy(() => import('./pages/WorldbuildingDetail'))
 const WorldbuildingEdit = lazy(() => import('./pages/WorldbuildingEdit'))
 const UserManagement = lazy(() => import('./pages/UserManagement'))
+const NotFound = lazy(() => import('./pages/NotFound'))
 
 // 加载状态组件
 function LoadingFallback() {
@@ -51,6 +52,7 @@ function App() {
                 <Route path="/worldbuilding/:id" element={<WorldbuildingDetail />} />
                 <Route path="/worldbuilding/:id/edit" element={<WorldbuildingEdit />} />
                 <Route path="/admin/users" element={<UserManagement />} />
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
           </div>

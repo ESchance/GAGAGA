@@ -20,6 +20,13 @@ export default function Worldbuilding() {
   const [user, setUser] = useState(null)
   const navigate = useNavigate()
 
+  const fetchPosts = useCallback(async () => {
+    setLoading(true)
+    const data = await getWorldbuildingList(activeFilter)
+    setPosts(data)
+    setLoading(false)
+  }, [activeFilter])
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
@@ -27,13 +34,6 @@ export default function Worldbuilding() {
 
     fetchPosts()
   }, [activeFilter, fetchPosts])
-
-  const fetchPosts = useCallback(async () => {
-    setLoading(true)
-    const data = await getWorldbuildingList(activeFilter)
-    setPosts(data)
-    setLoading(false)
-  }, [activeFilter])
 
   const formatDate = (dateString) => {
     const date = new Date(dateString)

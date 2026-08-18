@@ -31,20 +31,6 @@ export default function WorldbuildingDetail() {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        checkLiked(session.user.id, id).then(setLiked)
-        checkIsAdmin(session.user.id).then(setIsAdmin)
-        fetchUserProfile(session.user.id)
-      }
-    })
-
-    fetchPost()
-    fetchComments()
-  }, [id, fetchPost, fetchComments, fetchUserProfile])
-
   const fetchPost = useCallback(async () => {
     const data = await getWorldbuildingDetail(id)
     setPost(data)
@@ -70,6 +56,20 @@ export default function WorldbuildingDetail() {
       console.error('获取用户资料失败:', error)
     }
   }, [])
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+      if (session?.user) {
+        checkLiked(session.user.id, id).then(setLiked)
+        checkIsAdmin(session.user.id).then(setIsAdmin)
+        fetchUserProfile(session.user.id)
+      }
+    })
+
+    fetchPost()
+    fetchComments()
+  }, [id, fetchPost, fetchComments, fetchUserProfile])
 
   const handleLike = async () => {
     if (!user) {

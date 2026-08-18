@@ -25,20 +25,6 @@ export default function Profile() {
   const [backstoryText, setBackstoryText] = useState('')
   const [saving, setSaving] = useState(false)
 
-  useEffect(() => {
-    // 获取当前登录用户
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setCurrentUser(session?.user ?? null)
-      if (session?.user) {
-        checkIsAdmin(session.user.id).then(setIsAdmin)
-      }
-    })
-
-    fetchProfile()
-    fetchWorldInfo()
-    fetchUserPosts()
-  }, [id, fetchProfile, fetchWorldInfo, fetchUserPosts])
-
   const fetchProfile = useCallback(async () => {
     try {
       const { data, error } = await supabase
@@ -86,6 +72,20 @@ export default function Profile() {
       setLoading(false)
     }
   }, [id])
+
+  useEffect(() => {
+    // 获取当前登录用户
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setCurrentUser(session?.user ?? null)
+      if (session?.user) {
+        checkIsAdmin(session.user.id).then(setIsAdmin)
+      }
+    })
+
+    fetchProfile()
+    fetchWorldInfo()
+    fetchUserPosts()
+  }, [id, fetchProfile, fetchWorldInfo, fetchUserPosts])
 
   const handleDeletePost = (postId) => {
     setPosts(prev => prev.filter(post => post.id !== postId))

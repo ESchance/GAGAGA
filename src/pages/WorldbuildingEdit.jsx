@@ -23,18 +23,6 @@ export default function WorldbuildingEdit() {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        navigate('/login')
-        return
-      }
-      setUser(session.user)
-    })
-
-    fetchPost()
-  }, [id, navigate, fetchPost])
-
   const fetchPost = useCallback(async () => {
     const data = await getWorldbuildingDetail(id)
     if (!data) {
@@ -49,6 +37,18 @@ export default function WorldbuildingEdit() {
     setContent(data.content)
     setLoading(false)
   }, [id])
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        navigate('/login')
+        return
+      }
+      setUser(session.user)
+    })
+
+    fetchPost()
+  }, [id, navigate, fetchPost])
 
   const handleSubmit = async (e) => {
     e.preventDefault()

@@ -16,6 +16,36 @@ export default function CommentList({ postId, requireRace = false }) {
   const [currentUserProfile, setCurrentUserProfile] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
 
+  const fetchCurrentUserProfile = useCallback(async (userId) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username, avatar_url, role, race_selected')
+        .eq('id', userId)
+        .single()
+
+      if (error) throw error
+      setCurrentUserProfile(data)
+    } catch (error) {
+      console.error('获取用户资料失败:', error)
+    }
+  }, [])
+
+  const fetchComments = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('comments')
+        .select('*, profiles(username, avatar_url, role)')
+        .eq('post_id', postId)
+        .order('created_at', { ascending: true })
+
+      if (error) throw error
+      setComments(data || [])
+    } catch (error) {
+      console.error('获取评论失败:', error)
+    }
+  }, [postId])
+
   useEffect(() => {
     // 获取当前用户
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -64,36 +94,6 @@ export default function CommentList({ postId, requireRace = false }) {
       subscription.unsubscribe()
     }
   }, [postId, fetchCurrentUserProfile, fetchComments])
-
-  const fetchCurrentUserProfile = useCallback(async (userId) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('username, avatar_url, role, race_selected')
-        .eq('id', userId)
-        .single()
-
-      if (error) throw error
-      setCurrentUserProfile(data)
-    } catch (error) {
-      console.error('获取用户资料失败:', error)
-    }
-  }, [])
-
-  const fetchComments = useCallback(async () => {
-    try {
-      const { data, error } = await supabase
-        .from('comments')
-        .select('*, profiles(username, avatar_url, role)')
-        .eq('post_id', postId)
-        .order('created_at', { ascending: true })
-
-      if (error) throw error
-      setComments(data || [])
-    } catch (error) {
-      console.error('获取评论失败:', error)
-    }
-  }, [postId])
 
   const handleSubmit = async (e) => {
     e.preventDefault()

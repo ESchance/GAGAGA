@@ -12,6 +12,24 @@ export default function Home() {
   const [showAnnouncementAdmin, setShowAnnouncementAdmin] = useState(false)
   const { user, isAdmin, isSuperAdmin } = useAuth()
 
+  const fetchPosts = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('id, title, content, created_at, is_pinned, user_id, profiles(username, avatar_url, role)')
+        .order('is_pinned', { ascending: false })
+        .order('created_at', { ascending: false })
+        .limit(50)  // 限制返回数量
+
+      if (error) throw error
+      setPosts(data || [])
+    } catch (error) {
+      console.error('获取帖子失败:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
   useEffect(() => {
     // 获取所有帖子
     fetchPosts()
@@ -36,25 +54,7 @@ export default function Home() {
     return () => {
       subscription.unsubscribe()
     }
-  }, [])
-
-  const fetchPosts = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('posts')
-        .select('id, title, content, created_at, is_pinned, user_id, profiles(username, avatar_url, role)')
-        .order('is_pinned', { ascending: false })
-        .order('created_at', { ascending: false })
-        .limit(50)  // 限制返回数量
-
-      if (error) throw error
-      setPosts(data || [])
-    } catch (error) {
-      console.error('获取帖子失败:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  }, [fetchPosts])
 
   const handleDeletePost = useCallback((postId) => {
     setPosts(prev => prev.filter(post => post.id !== postId))

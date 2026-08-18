@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import AuthForm from '../components/AuthForm'
 import { allowedEmails } from '../lib/allowedEmails'
@@ -7,11 +7,7 @@ import { allowedEmails } from '../lib/allowedEmails'
 export default function Register() {
   const [registeredEmails, setRegisteredEmails] = useState([])
 
-  useEffect(() => {
-    fetchRegisteredEmails()
-  }, [])
-
-  const fetchRegisteredEmails = async () => {
+  const fetchRegisteredEmails = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .rpc('get_registered_emails')
@@ -21,7 +17,11 @@ export default function Register() {
     } catch (error) {
       console.error('获取已注册邮箱失败:', error)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchRegisteredEmails()
+  }, [fetchRegisteredEmails])
 
   return (
     <div className="page-container py-12 px-4">

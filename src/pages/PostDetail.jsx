@@ -17,19 +17,6 @@ export default function PostDetail() {
   const [user, setUser] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        checkIsAdmin(session.user.id).then(setIsAdmin)
-      }
-    }).catch(err => {
-      console.error('获取会话失败:', err)
-    })
-
-    fetchPost()
-  }, [id, fetchPost])
-
   const fetchPost = useCallback(async () => {
     try {
       setLoading(true)
@@ -54,6 +41,19 @@ export default function PostDetail() {
       setLoading(false)
     }
   }, [id])
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+      if (session?.user) {
+        checkIsAdmin(session.user.id).then(setIsAdmin)
+      }
+    }).catch(err => {
+      console.error('获取会话失败:', err)
+    })
+
+    fetchPost()
+  }, [id, fetchPost])
 
   const handleDelete = async () => {
     if (!post || !user) return
