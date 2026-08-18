@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
+import Home from './pages/Home'
 import Navbar from './components/Navbar'
 import ErrorBoundary from './components/ErrorBoundary'
 import AnnouncementModal from './components/AnnouncementModal'
@@ -7,8 +8,7 @@ import { ToastProvider } from './components/Toast'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
 
-// 代码分割
-const Home = lazy(() => import('./pages/Home'))
+// 代码分割（首屏 Home 直接打包，其余路由懒加载）
 const Login = lazy(() => import('./pages/Login'))
 const Register = lazy(() => import('./pages/Register'))
 const CreatePost = lazy(() => import('./pages/CreatePost'))
