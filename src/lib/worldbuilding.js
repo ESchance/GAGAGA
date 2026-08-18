@@ -372,16 +372,6 @@ export const toggleLike = async (userId, worldbuildingId) => {
 
     const likeCount = count ?? 0
 
-    // 更新帖子的点赞数
-    const { error: updateError } = await supabase
-      .from('worldbuilding')
-      .update({ likes_count: likeCount })
-      .eq('id', worldbuildingId)
-
-    if (updateError) {
-      console.error('更新点赞数失败:', updateError)
-    }
-
     return { isLiked, count: likeCount }
   } catch (error) {
     console.error('点赞操作失败:', error)
@@ -427,21 +417,6 @@ export const addWorldbuildingComment = async (userId, worldbuildingId, content) 
       .single()
 
     if (error) throw error
-
-    // 更新评论数（读取当前值 +1 后写回，避免把 Promise 当作值写入）
-    const { data: current, error: fetchCountError } = await supabase
-      .from('worldbuilding')
-      .select('comments_count')
-      .eq('id', worldbuildingId)
-      .single()
-
-    if (!fetchCountError) {
-      const newCount = (current?.comments_count || 0) + 1
-      await supabase
-        .from('worldbuilding')
-        .update({ comments_count: newCount })
-        .eq('id', worldbuildingId)
-    }
 
     return data
   } catch (error) {

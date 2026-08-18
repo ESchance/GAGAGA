@@ -20,6 +20,7 @@ export default function WorldbuildingCreate() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [raceSelected, setRaceSelected] = useState(false)
+  const [raceLoading, setRaceLoading] = useState(true)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -30,7 +31,10 @@ export default function WorldbuildingCreate() {
       setUser(session.user)
 
       // 检查是否已选择种族
-      checkRaceSelected(session.user.id).then(setRaceSelected)
+      checkRaceSelected(session.user.id).then((selected) => {
+        setRaceSelected(selected)
+        setRaceLoading(false)
+      })
     })
   }, [navigate])
 
@@ -90,7 +94,12 @@ export default function WorldbuildingCreate() {
             <p className="text-(--color-text-tertiary) mt-2">在嘎宇宙中留下你的印记</p>
           </div>
 
-          {!raceSelected ? (
+          {raceLoading ? (
+            <div className="text-center py-8">
+              <div className="loading-spinner mx-auto mb-4"></div>
+              <p className="text-(--color-text-tertiary)">加载中...</p>
+            </div>
+          ) : !raceSelected ? (
             <div className="text-center py-8">
               <div className="text-6xl mb-4">🌌</div>
               <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">请先选择种族</h3>
