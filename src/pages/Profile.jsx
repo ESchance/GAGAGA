@@ -191,7 +191,7 @@ export default function Profile() {
                   <div className="flex items-center justify-center sm:justify-start space-x-3 text-sm">
                     {worldInfo.member_code ? (
                       <>
-                        <span className="font-mono text-purple-600 font-bold">{worldInfo.member_code}</span>
+                        <span className="font-mono text-[var(--color-secondary)] font-bold">{worldInfo.member_code}</span>
                         <span className="text-(--color-text-secondary)">
                           {worldInfo.raceInfo?.icon} {worldInfo.raceInfo?.name}
                         </span>
@@ -207,7 +207,7 @@ export default function Profile() {
                   {isOwnProfile && !worldInfo.member_code && (
                     <button
                       onClick={() => setShowRaceSelector(true)}
-                      className="mt-2 text-sm text-blue-500 hover:text-blue-700 underline"
+                      className="mt-2 text-sm text-[var(--color-info)] hover:text-[var(--color-primary)] underline"
                     >
                       选择种族
                     </button>
@@ -252,7 +252,7 @@ export default function Profile() {
                       setBackstoryText(profile?.custom_backstory || '')
                       setEditingBackstory(true)
                     }}
-                    className="text-xs text-blue-500 hover:text-blue-700"
+                    className="text-xs text-[var(--color-info)] hover:text-[var(--color-primary)]"
                   >
                     ✏️ 编辑
                   </button>
@@ -265,7 +265,7 @@ export default function Profile() {
                     value={backstoryText}
                     onChange={(e) => setBackstoryText(e.target.value)}
                     rows={4}
-                    className="w-full px-4 py-3 border-2 border-(--color-success)/30 rounded-xl focus:border-green-500 focus:outline-none resize-none"
+                    className="w-full px-4 py-3 border-2 border-(--color-success)/30 rounded-xl focus:border-[var(--color-primary)] focus:outline-none resize-none"
                     placeholder="在这里写下你的个人故事..."
                   />
                   <div className="flex justify-end space-x-3 mt-3">
@@ -300,13 +300,13 @@ export default function Profile() {
         {/* 数据统计 */}
         {worldInfo && (
           <div className="mb-8 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-100">
+            <div className="bg-gradient-to-r from-[var(--color-bg-secondary)] to-[var(--color-bg-tertiary)] rounded-2xl p-4 border border-[var(--color-border)]">
               <h4 className="text-sm font-semibold text-(--color-text-secondary) mb-3 flex items-center">
                 <span className="mr-2">📊</span> 数据统计
               </h4>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-2xl font-bold text-blue-600">{posts.length}</div>
+                  <div className="text-2xl font-bold text-[var(--color-info)]">{posts.length}</div>
                   <div className="text-xs text-(--color-text-tertiary)">帖子</div>
                 </div>
                 <div>
@@ -314,7 +314,7 @@ export default function Profile() {
                   <div className="text-xs text-(--color-text-tertiary)">成就</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-purple-600">
+                  <div className="text-2xl font-bold text-[var(--color-secondary)]">
                     {worldInfo.member_code ? worldInfo.member_code.replace('GZ-', '#') : '#0000'}
                   </div>
                   <div className="text-xs text-(--color-text-tertiary)">编号</div>

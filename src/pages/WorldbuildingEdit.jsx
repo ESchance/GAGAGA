@@ -104,7 +104,7 @@ export default function WorldbuildingEdit() {
         <div className="max-w-2xl mx-auto px-4">
           <button
             onClick={() => navigate('/worldbuilding')}
-            className="inline-flex items-center text-(--color-text-secondary) hover:text-purple-600 mb-6 transition-colors"
+            className="inline-flex items-center text-(--color-text-secondary) hover:text-[var(--color-primary)] mb-6 transition-colors"
           >
             ← 返回创作列表
           </button>
@@ -125,7 +125,7 @@ export default function WorldbuildingEdit() {
         <div className="max-w-2xl mx-auto px-4">
           <button
             onClick={() => navigate(`/worldbuilding/${id}`)}
-            className="inline-flex items-center text-(--color-text-secondary) hover:text-purple-600 mb-6 transition-colors"
+            className="inline-flex items-center text-(--color-text-secondary) hover:text-[var(--color-primary)] mb-6 transition-colors"
           >
             ← 返回详情
           </button>
@@ -145,7 +145,7 @@ export default function WorldbuildingEdit() {
         {/* 返回按钮 */}
         <button
           onClick={() => navigate(`/worldbuilding/${id}`)}
-          className="inline-flex items-center text-(--color-text-secondary) hover:text-purple-600 mb-6 transition-colors"
+          className="inline-flex items-center text-(--color-text-secondary) hover:text-[var(--color-primary)] mb-6 transition-colors"
         >
           ← 返回详情
         </button>
@@ -172,7 +172,7 @@ export default function WorldbuildingEdit() {
                     onClick={() => setType(option.value)}
                     className={`p-4 rounded-xl border-2 text-left transition-all duration-200 ${
                       type === option.value
-                        ? 'border-purple-500 bg-purple-50'
+                        ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)]'
                         : 'border-(--color-border) hover:border-(--color-border)'
                     }`}
                   >
@@ -192,7 +192,7 @@ export default function WorldbuildingEdit() {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl focus:border-purple-500 focus:outline-none"
+                className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl focus:border-[var(--color-primary)] focus:outline-none"
                 placeholder="请输入标题"
                 required
               />
@@ -207,7 +207,7 @@ export default function WorldbuildingEdit() {
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 rows={12}
-                className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl focus:border-purple-500 focus:outline-none resize-none"
+                className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl focus:border-[var(--color-primary)] focus:outline-none resize-none"
                 placeholder="在这里写下你的创作..."
                 required
               />

@@ -22,7 +22,7 @@ export default function WorldInfo({ profile, showStory = false, compact = false 
   return (
     <div className="space-y-4">
       {/* 身份信息卡片 */}
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-4 border border-purple-100">
+      <div className="bg-gradient-to-r from-[var(--color-primary-light)] to-[var(--color-bg-tertiary)] rounded-2xl p-4 border border-[var(--color-border)]">
         <h4 className="text-sm font-semibold text-(--color-text-secondary) mb-3 flex items-center">
           <span className="mr-2">📋</span> 身份信息
         </h4>
@@ -30,7 +30,7 @@ export default function WorldInfo({ profile, showStory = false, compact = false 
           {profile.member_code && (
             <div className="flex items-center justify-between">
               <span className="text-(--color-text-secondary) text-sm">编号</span>
-              <span className="font-mono font-bold text-purple-600">{profile.member_code}</span>
+              <span className="font-mono font-bold text-[var(--color-secondary)]">{profile.member_code}</span>
             </div>
           )}
           <div className="flex items-center justify-between">
@@ -50,7 +50,7 @@ export default function WorldInfo({ profile, showStory = false, compact = false 
 
       {/* 默认背景故事 */}
       {showStory && profile.defaultStory && (
-        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-4 border border-indigo-100">
+        <div className="bg-gradient-to-r from-[var(--color-primary-light)] to-[var(--color-bg-tertiary)] rounded-2xl p-4 border border-[var(--color-border)]">
           <h4 className="text-sm font-semibold text-(--color-text-secondary) mb-3 flex items-center">
             <span className="mr-2">📖</span> 我的起源故事
             <span className="ml-2 text-xs text-(--color-text-tertiary) font-normal">（不可编辑）</span>

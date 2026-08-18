@@ -4,6 +4,8 @@ import Navbar from './components/Navbar'
 import ErrorBoundary from './components/ErrorBoundary'
 import AnnouncementModal from './components/AnnouncementModal'
 import { ToastProvider } from './components/Toast'
+import Footer from './components/Footer'
+import ScrollToTop from './components/ScrollToTop'
 
 // 代码分割
 const Home = lazy(() => import('./pages/Home'))
@@ -37,10 +39,12 @@ function App() {
       <Router>
         <ToastProvider>
           <AnnouncementModal />
-          <div className="min-h-screen">
+          <div className="min-h-screen flex flex-col">
+            <ScrollToTop />
             <Navbar />
-            <Suspense fallback={<LoadingFallback />}>
-              <Routes>
+            <div className="flex-1">
+              <Suspense fallback={<LoadingFallback />}>
+                <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
@@ -54,7 +58,9 @@ function App() {
                 <Route path="/admin/users" element={<UserManagement />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </Suspense>
+              </Suspense>
+            </div>
+            <Footer />
           </div>
         </ToastProvider>
       </Router>

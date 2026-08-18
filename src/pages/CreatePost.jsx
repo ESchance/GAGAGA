@@ -84,7 +84,7 @@ export default function CreatePost() {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl input-animate focus:border-blue-500 focus:outline-none"
+              className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl input-animate focus:border-[var(--color-primary)] focus:outline-none"
               placeholder="请输入帖子标题"
               required
             />
@@ -98,7 +98,7 @@ export default function CreatePost() {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               rows={10}
-              className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl input-animate focus:border-blue-500 focus:outline-none resize-none"
+              className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl input-animate focus:border-[var(--color-primary)] focus:outline-none resize-none"
               placeholder="请输入帖子内容..."
               required
             />

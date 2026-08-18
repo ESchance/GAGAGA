@@ -123,9 +123,17 @@ export default function Worldbuilding() {
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-16 animate-fade-in-up">
-            <div className="text-6xl mb-4 opacity-50">📝</div>
-            <h3 className="text-xl font-semibold text-[var(--color-text-primary)] mb-2">还没有创作</h3>
-            <p className="text-[var(--color-text-secondary)]">成为第一个创作者吧！</p>
+            <div className="empty-state-icon mb-4">📝</div>
+            <h3 className="text-xl font-semibold text-[var(--color-text-secondary)] mb-2">还没有创作</h3>
+            <p className="text-[var(--color-text-tertiary)] mb-6">成为第一个创作者吧！</p>
+            {user && (
+              <Link
+                to="/worldbuilding/create"
+                className="btn-gradient text-white px-6 py-3 rounded-full font-medium btn-animate inline-block"
+              >
+                ✏️ 开始创作
+              </Link>
+            )}
           </div>
         ) : (
           <div className="space-y-4">

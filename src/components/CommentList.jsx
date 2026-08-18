@@ -165,7 +165,7 @@ export default function CommentList({ postId, requireRace = false }) {
       {/* 评论输入框 */}
       {!user ? (
         // 未登录
-        <div className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl text-center">
+        <div className="mb-6 p-6 bg-gradient-to-r from-(--color-bg-secondary) to-(--color-bg-tertiary) rounded-xl text-center">
           <p className="text-(--color-text-secondary) mb-3">请先登录后再发表评论</p>
           <Link
             to="/login"

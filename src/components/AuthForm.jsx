@@ -113,7 +113,7 @@ export default function AuthForm({ type = 'login' }) {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl input-animate focus:border-blue-500 focus:outline-none"
+              className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl input-animate focus:border-[var(--color-primary)] focus:outline-none"
               placeholder="请输入用户名"
               required
             />
@@ -128,7 +128,7 @@ export default function AuthForm({ type = 'login' }) {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl input-animate focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl input-animate focus:outline-none focus:border-[var(--color-primary)]"
             placeholder="请输入邮箱"
             required
           />
@@ -147,7 +147,7 @@ export default function AuthForm({ type = 'login' }) {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl input-animate focus:border-blue-500 focus:outline-none"
+            className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl input-animate focus:border-[var(--color-primary)] focus:outline-none"
             placeholder="请输入密码"
             required
             minLength={6}

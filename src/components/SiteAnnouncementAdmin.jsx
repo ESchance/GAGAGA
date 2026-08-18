@@ -230,7 +230,7 @@ export default function SiteAnnouncementAdmin({ onClose, onSaved }) {
               </div>
 
               {/* 提示 */}
-              <p className="text-xs text-(--color-text-tertiary) bg-blue-50 rounded-lg p-3">
+              <p className="text-xs text-(--color-text-tertiary) bg-[var(--color-bg-tertiary)] rounded-lg p-3">
                 💡 保存后，版本号如有变化，所有用户下次打开首页都会看到这份公告。
               </p>
 

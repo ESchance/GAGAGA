@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { checkIsSuperAdmin } from '../lib/admin'
 import { useEffect, useState, useCallback } from 'react'
@@ -85,24 +85,36 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-1">
             {user ? (
               <>
-                <Link
+                <NavLink
                   to="/worldbuilding"
-                  className="px-3 py-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-tertiary)] rounded-md transition-all duration-150 text-sm"
+                  className={({ isActive }) =>
+                    `px-3 py-1.5 rounded-md transition-all duration-150 text-sm ${
+                      isActive
+                        ? 'text-[var(--color-primary)] bg-[var(--color-primary-light)] font-medium'
+                        : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-tertiary)]'
+                    }`
+                  }
                 >
                   创作
-                </Link>
+                </NavLink>
                 <Link
                   to="/create"
                   className="btn btn-primary btn-sm"
                 >
                   发帖
                 </Link>
-                <Link
+                <NavLink
                   to="/admin/users"
-                  className="px-3 py-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-tertiary)] rounded-md transition-all duration-150 text-sm"
+                  className={({ isActive }) =>
+                    `px-3 py-1.5 rounded-md transition-all duration-150 text-sm ${
+                      isActive
+                        ? 'text-[var(--color-primary)] bg-[var(--color-primary-light)] font-medium'
+                        : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-tertiary)]'
+                    }`
+                  }
                 >
                   {isSuperAdmin ? '管理' : '住户'}
-                </Link>
+                </NavLink>
                 <div className="w-px h-4 bg-[var(--color-border)] mx-2"></div>
                 <Link
                   to={`/profile/${user.id}`}
@@ -166,13 +178,19 @@ export default function Navbar() {
                   <Avatar url={profile?.avatar_url} username={profile?.username} size="sm" />
                   <span className="text-[var(--color-text-primary)] text-sm">{profile?.username}</span>
                 </Link>
-                <Link
+                <NavLink
                   to="/worldbuilding"
-                  className="block px-3 py-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] rounded-md transition-colors text-sm"
+                  className={({ isActive }) =>
+                    `block px-3 py-2 rounded-md transition-colors text-sm ${
+                      isActive
+                        ? 'text-[var(--color-primary)] bg-[var(--color-primary-light)] font-medium'
+                        : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)]'
+                    }`
+                  }
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   创作
-                </Link>
+                </NavLink>
                 <Link
                   to="/create"
                   className="block px-3 py-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] rounded-md transition-colors text-sm"
@@ -180,13 +198,19 @@ export default function Navbar() {
                 >
                   发帖
                 </Link>
-                <Link
+                <NavLink
                   to="/admin/users"
-                  className="block px-3 py-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] rounded-md transition-colors text-sm"
+                  className={({ isActive }) =>
+                    `block px-3 py-2 rounded-md transition-colors text-sm ${
+                      isActive
+                        ? 'text-[var(--color-primary)] bg-[var(--color-primary-light)] font-medium'
+                        : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)]'
+                    }`
+                  }
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {isSuperAdmin ? '管理' : '住户'}
-                </Link>
+                </NavLink>
                 <div className="border-t border-[var(--color-border)] my-1"></div>
                 <div className="flex items-center px-3 py-2">
                   <ThemeToggle />

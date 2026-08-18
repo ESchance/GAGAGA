@@ -81,7 +81,7 @@ export default function WorldbuildingCreate() {
         {/* 返回按钮 */}
         <button
           onClick={() => navigate('/worldbuilding')}
-          className="inline-flex items-center text-(--color-text-secondary) hover:text-purple-600 mb-6 transition-colors"
+          className="inline-flex items-center text-(--color-text-secondary) hover:text-[var(--color-primary)] mb-6 transition-colors"
         >
           ← 返回创作列表
         </button>
@@ -126,7 +126,7 @@ export default function WorldbuildingCreate() {
                       onClick={() => setType(option.value)}
                       className={`p-4 rounded-xl border-2 text-left transition-all duration-200 ${
                         type === option.value
-                          ? 'border-purple-500 bg-purple-50'
+                          ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)]'
                           : 'border-(--color-border) hover:border-(--color-border)'
                       }`}
                     >
@@ -146,7 +146,7 @@ export default function WorldbuildingCreate() {
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl focus:border-purple-500 focus:outline-none"
+                  className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl focus:border-[var(--color-primary)] focus:outline-none"
                   placeholder="请输入标题"
                   required
                 />
@@ -161,16 +161,16 @@ export default function WorldbuildingCreate() {
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   rows={12}
-                  className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl focus:border-purple-500 focus:outline-none resize-none"
+                  className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl focus:border-[var(--color-primary)] focus:outline-none resize-none"
                   placeholder="在这里写下你的创作..."
                   required
                 />
               </div>
 
               {/* 创作提示 */}
-              <div className="bg-purple-50 rounded-xl p-4">
-                <h4 className="text-sm font-semibold text-purple-800 mb-2">💡 创作提示</h4>
-                <ul className="text-xs text-purple-600 space-y-1">
+              <div className="bg-[var(--color-primary-light)] rounded-xl p-4">
+                <h4 className="text-sm font-semibold text-[var(--color-primary)] mb-2">💡 创作提示</h4>
+                <ul className="text-xs text-[var(--color-secondary)] space-y-1">
                   <li>• 故事类：可以描写你在嘎宇宙中的冒险经历</li>
                   <li>• 角色类：可以设定你角色的背景故事和性格</li>
                   <li>• 设定类：可以补充嘎宇宙的世界观设定</li>

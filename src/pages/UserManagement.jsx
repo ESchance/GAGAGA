@@ -118,7 +118,7 @@ export default function UserManagement() {
         {/* 返回按钮 */}
         <button
           onClick={() => navigate('/')}
-          className="inline-flex items-center text-(--color-text-secondary) hover:text-blue-600 mb-6 transition-colors"
+          className="inline-flex items-center text-(--color-text-secondary) hover:text-[var(--color-primary)] mb-6 transition-colors"
         >
           ← 返回首页
         </button>
@@ -140,7 +140,7 @@ export default function UserManagement() {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl focus:border-blue-500 focus:outline-none"
+            className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl focus:border-[var(--color-primary)] focus:outline-none"
             placeholder="搜索用户名或编号..."
           />
         </div>
@@ -170,7 +170,7 @@ export default function UserManagement() {
                   </div>
                   <div className={isSuperAdmin ? 'col-span-2' : 'col-span-3'}>
                     <span className="font-medium text-(--color-text-primary)">{userData.username}</span>
-                    {isCurrentUser && <span className="ml-2 text-xs text-blue-500">(我)</span>}
+                    {isCurrentUser && <span className="ml-2 text-xs text-[var(--color-info)]">(我)</span>}
                   </div>
                   <div className={`${isSuperAdmin ? 'col-span-3' : 'col-span-3'} text-sm text-(--color-text-tertiary) font-mono`}>{userData.member_code || '-'}</div>
                   <div className={isSuperAdmin ? 'col-span-2' : 'col-span-3'}>
@@ -180,7 +180,7 @@ export default function UserManagement() {
                     <div className="col-span-4 text-right">
                       {userData.role !== 'superadmin' && !isCurrentUser && (
                         <div className="flex justify-end space-x-2">
-                          <button onClick={() => handleToggleAdmin(userData.id, userData.role)} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${userData.role === 'admin' ? 'text-orange-600 hover:bg-orange-50' : 'text-blue-600 hover:bg-blue-50'}`}>
+                          <button onClick={() => handleToggleAdmin(userData.id, userData.role)} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${userData.role === 'admin' ? 'text-[var(--color-warning)] hover:bg-(--color-warning)/10' : 'text-[var(--color-info)] hover:bg-(--color-info)/10'}`}>
                             {userData.role === 'admin' ? '撤销管理' : '设为管理员'}
                           </button>
                           <button onClick={() => handleDeleteClick(userData)} className="px-3 py-1 text-red-500 hover:bg-(--color-error)/10 rounded-full text-xs font-medium transition-colors">删除</button>
@@ -210,7 +210,7 @@ export default function UserManagement() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2">
                         <span className="font-medium text-(--color-text-primary) truncate">{userData.username}</span>
-                        {isCurrentUser && <span className="text-xs text-blue-500">(我)</span>}
+                        {isCurrentUser && <span className="text-xs text-[var(--color-info)]">(我)</span>}
                       </div>
                       <div className="text-xs text-(--color-text-tertiary) font-mono">{userData.member_code || '未分配编号'}</div>
                     </div>
@@ -219,7 +219,7 @@ export default function UserManagement() {
                   {/* 只有超级管理员才能看到操作按钮 */}
                   {isSuperAdmin && userData.role !== 'superadmin' && !isCurrentUser && (
                     <div className="flex space-x-2 pt-2 border-t border-(--color-border-light)">
-                      <button onClick={() => handleToggleAdmin(userData.id, userData.role)} className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${userData.role === 'admin' ? 'text-orange-600 bg-orange-50 hover:bg-orange-100' : 'text-blue-600 bg-blue-50 hover:bg-blue-100'}`}>
+                      <button onClick={() => handleToggleAdmin(userData.id, userData.role)} className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${userData.role === 'admin' ? 'text-[var(--color-warning)] bg-(--color-warning)/10 hover:bg-(--color-warning)/15' : 'text-[var(--color-info)] bg-(--color-info)/10 hover:bg-(--color-info)/15'}`}>
                         {userData.role === 'admin' ? '撤销管理' : '设为管理员'}
                       </button>
                       <button onClick={() => handleDeleteClick(userData)} className="flex-1 px-3 py-2 text-red-500 bg-(--color-error)/10 hover:bg-(--color-error)/15 rounded-lg text-xs font-medium transition-colors">删除</button>

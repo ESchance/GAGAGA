@@ -90,7 +90,7 @@ export default function PostDetail() {
     return (
       <div className="page-container py-8">
         <div className="max-w-4xl mx-auto px-4">
-          <Link to="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-blue-600 mb-6 transition-colors">
+          <Link to="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-[var(--color-primary)] mb-6 transition-colors">
             ← 返回首页
           </Link>
           <div className="text-center py-16">
@@ -106,7 +106,7 @@ export default function PostDetail() {
     return (
       <div className="page-container py-8">
         <div className="max-w-4xl mx-auto px-4">
-          <Link to="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-blue-600 mb-6 transition-colors">
+          <Link to="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-[var(--color-primary)] mb-6 transition-colors">
             ← 返回首页
           </Link>
           <div className="text-center py-16">
@@ -119,7 +119,7 @@ export default function PostDetail() {
             >
               🔄 重试
             </button>
-            <Link to="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-blue-600">
+            <Link to="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-[var(--color-primary)]">
               🏠 返回首页
             </Link>
           </div>
@@ -132,7 +132,7 @@ export default function PostDetail() {
     return (
       <div className="page-container py-8">
         <div className="max-w-4xl mx-auto px-4">
-          <Link to="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-blue-600 mb-6 transition-colors">
+          <Link to="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-[var(--color-primary)] mb-6 transition-colors">
             ← 返回首页
           </Link>
           <div className="text-center py-16">

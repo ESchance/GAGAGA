@@ -162,7 +162,7 @@ export default function WorldbuildingDetail() {
         <div className="max-w-4xl mx-auto px-4">
           <button
             onClick={() => navigate('/worldbuilding')}
-            className="inline-flex items-center text-(--color-text-secondary) hover:text-purple-600 mb-6 transition-colors"
+            className="inline-flex items-center text-(--color-text-secondary) hover:text-[var(--color-primary)] mb-6 transition-colors"
           >
             ← 返回创作列表
           </button>
@@ -182,7 +182,7 @@ export default function WorldbuildingDetail() {
         {/* 返回按钮 */}
         <button
           onClick={() => navigate('/worldbuilding')}
-          className="inline-flex items-center text-(--color-text-secondary) hover:text-purple-600 mb-6 transition-colors"
+          className="inline-flex items-center text-(--color-text-secondary) hover:text-[var(--color-primary)] mb-6 transition-colors"
         >
           ← 返回创作列表
         </button>
@@ -261,7 +261,7 @@ export default function WorldbuildingDetail() {
                 {user.id === post.user_id && (
                   <button
                     onClick={() => navigate(`/worldbuilding/${id}/edit`)}
-                    className="px-4 py-2 text-purple-500 hover:text-white hover:bg-purple-500 rounded-full transition-all duration-200 text-sm font-medium"
+                    className="px-4 py-2 text-[var(--color-secondary)] hover:text-white hover:bg-[var(--color-secondary)] rounded-full transition-all duration-200 text-sm font-medium"
                   >
                     ✏️ 编辑
                   </button>
@@ -286,7 +286,7 @@ export default function WorldbuildingDetail() {
 
           {/* 评论输入框 */}
           {!user ? (
-            <div className="mb-6 p-6 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl text-center">
+            <div className="mb-6 p-6 bg-gradient-to-r from-(--color-bg-secondary) to-(--color-bg-tertiary) rounded-xl text-center">
               <p className="text-(--color-text-secondary) mb-3">请先登录后再发表评论</p>
               <button
                 onClick={() => navigate('/login')}
@@ -310,7 +310,7 @@ export default function WorldbuildingDetail() {
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 rows={3}
-                className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl focus:border-purple-500 focus:outline-none resize-none"
+                className="w-full px-4 py-3 border-2 border-(--color-border) rounded-xl focus:border-[var(--color-primary)] focus:outline-none resize-none"
                 placeholder="写下你的评论..."
                 required
               />
