@@ -9,6 +9,8 @@ import Skeleton from '../components/Skeleton'
 import EmptyState from '../components/EmptyState'
 import Avatar from '../components/Avatar'
 import { useToast } from '../components/Toast'
+import { RaceInsignia } from '../components/RaceBadge'
+import { RACE_COLORS } from '../lib/raceVisuals'
 
 export default function PostDetail() {
   const { id } = useParams()
@@ -27,7 +29,7 @@ export default function PostDetail() {
 
       const { data, error } = await supabase
         .from('posts')
-        .select('*, profiles(username, avatar_url, role)')
+        .select('*, profiles(username, avatar_url, role, race, member_code)')
         .eq('id', id)
         .maybeSingle()
 
@@ -195,6 +197,7 @@ export default function PostDetail() {
                 username={post.profiles?.username}
                 size="md"
                 role={post.profiles?.role}
+                race={post.profiles?.race}
               />
               <div>
                 <div className="flex items-center space-x-2">
@@ -225,6 +228,7 @@ export default function PostDetail() {
                 username={post.profiles?.username}
                 size="md"
                 role={post.profiles?.role}
+                race={post.profiles?.race}
               />
               <div>
                 <div className="flex items-center space-x-2">
@@ -240,8 +244,10 @@ export default function PostDetail() {
                 </div>
                 {post.profiles?.member_code ? (
                   <div className="flex items-center space-x-2 text-xs text-(--color-text-tertiary)">
-                    <span>{RACES[post.profiles?.race]?.icon || '🧑'}</span>
-                    <span className="font-mono">{post.profiles.member_code}</span>
+                    <span className="inline-flex" style={{ color: RACE_COLORS[post.profiles?.race] }}>
+                      <RaceInsignia race={post.profiles?.race} className="w-3.5 h-3.5" />
+                    </span>
+                    <span className="member-code">{post.profiles.member_code}</span>
                     <span>{RACES[post.profiles?.race]?.name || '人类'}</span>
                   </div>
                 ) : (

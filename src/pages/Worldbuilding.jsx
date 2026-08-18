@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { getWorldbuildingList, RACES } from '../lib/worldbuilding'
+import { getWorldbuildingList } from '../lib/worldbuilding'
 import Avatar from '../components/Avatar'
 import { GalaxyIcon, BookIcon, MaskIcon, GlobeIcon, LightbulbIcon, StarIcon } from '../components/Icons'
+import { RaceInsignia } from '../components/RaceBadge'
+import { RACE_COLORS } from '../lib/raceVisuals'
 import { PenLine, Heart, MessageCircle, FileText } from 'lucide-react'
 import Skeleton from '../components/Skeleton'
 import EmptyState from '../components/EmptyState'
@@ -147,7 +149,7 @@ export default function Worldbuilding() {
           <EmptyState
             icon={<FileText size={28} />}
             title="还没有创作"
-            description="成为第一个创作者吧！"
+            description="星域的记录还是一片空白，写下第一篇吧"
           >
             {user && (
               <Link
@@ -192,6 +194,7 @@ export default function Worldbuilding() {
                       username={post.profiles?.username}
                       size="sm"
                       role={post.profiles?.role}
+                      race={post.profiles?.race}
                     />
                     <div>
                       <div className="flex items-center space-x-2">
@@ -206,8 +209,10 @@ export default function Worldbuilding() {
                       </div>
                       {post.profiles?.member_code && (
                         <div className="flex items-center space-x-2 text-xs text-[var(--color-text-tertiary)]">
-                          <span>{RACES[post.profiles?.race]?.icon || '🧑'}</span>
-                          <span className="font-mono">{post.profiles.member_code}</span>
+                          <span className="inline-flex" style={{ color: RACE_COLORS[post.profiles?.race] }}>
+                            <RaceInsignia race={post.profiles?.race} className="w-3.5 h-3.5" />
+                          </span>
+                          <span className="member-code">{post.profiles.member_code}</span>
                         </div>
                       )}
                     </div>

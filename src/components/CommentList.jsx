@@ -2,12 +2,13 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { checkIsAdmin, adminDeleteComment } from '../lib/admin'
-import { RACES } from '../lib/worldbuilding'
 import { validateComment } from '../lib/validation'
 import { useToast } from './Toast'
 import Avatar from './Avatar'
 import { LogIn, AlertTriangle, Send, MessageSquare, Clock, Crown } from 'lucide-react'
 import EmptyState from './EmptyState'
+import { RaceInsignia } from './RaceBadge'
+import { RACE_COLORS } from '../lib/raceVisuals'
 
 export default function CommentList({ postId, requireRace = false }) {
   const { showToast } = useToast()
@@ -22,7 +23,7 @@ export default function CommentList({ postId, requireRace = false }) {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('username, avatar_url, role, race_selected')
+        .select('username, avatar_url, role, race_selected, race')
         .eq('id', userId)
         .single()
 
@@ -37,7 +38,7 @@ export default function CommentList({ postId, requireRace = false }) {
     try {
       const { data, error } = await supabase
         .from('comments')
-        .select('*, profiles(username, avatar_url, role)')
+        .select('*, profiles(username, avatar_url, role, race, member_code)')
         .eq('post_id', postId)
         .order('created_at', { ascending: true })
 
@@ -195,6 +196,7 @@ export default function CommentList({ postId, requireRace = false }) {
               username={currentUserProfile?.username}
               size="md"
               role={currentUserProfile?.role}
+              race={currentUserProfile?.race}
             />
             <div className="flex-1">
               <textarea
@@ -249,6 +251,7 @@ export default function CommentList({ postId, requireRace = false }) {
                     username={comment.profiles?.username}
                     size="md"
                     role={comment.profiles?.role}
+                    race={comment.profiles?.race}
                   />
                   <div className="flex-1">
                     <div className="flex justify-between items-center mb-2">
@@ -265,8 +268,11 @@ export default function CommentList({ postId, requireRace = false }) {
                           <span className="sm:hidden text-xs" title="管理员"><Crown size={14} /></span>
                         )}
                         {comment.profiles?.member_code && (
-                          <span className="text-xs text-(--color-text-tertiary)">
-                            {RACES[comment.profiles?.race]?.icon || '🧑'} {comment.profiles.member_code}
+                          <span className="text-xs text-(--color-text-tertiary) inline-flex items-center space-x-1">
+                            <span className="inline-flex" style={{ color: RACE_COLORS[comment.profiles?.race] }}>
+                              <RaceInsignia race={comment.profiles?.race} className="w-3.5 h-3.5" />
+                            </span>
+                            <span className="member-code">{comment.profiles.member_code}</span>
                           </span>
                         )}
                       </div>

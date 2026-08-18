@@ -83,7 +83,7 @@ export default function Home() {
       : posts
 
   const emptyTitle = activeFilter === 'pinned' ? '暂无置顶帖子' : '还没有帖子'
-  const emptyDescription = activeFilter === 'pinned' ? '管理员可以将重要帖子置顶' : '快来发第一个帖子吧！'
+  const emptyDescription = activeFilter === 'pinned' ? '管理员可以将重要帖子置顶' : '这片星域还很安静，发出第一个信号吧'
 
   if (loading) {
     return (

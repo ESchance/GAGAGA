@@ -12,6 +12,8 @@ import { useToast } from '../components/Toast'
 import { Crown, FileText, PenLine, Save, BarChart3, Lightbulb } from 'lucide-react'
 import Skeleton from '../components/Skeleton'
 import EmptyState from '../components/EmptyState'
+import { RaceInsignia } from '../components/RaceBadge'
+import { RACE_COLORS } from '../lib/raceVisuals'
 
 export default function Profile() {
   const { id } = useParams()
@@ -191,6 +193,7 @@ export default function Profile() {
                   username={profile?.username}
                   size="xl"
                   role={profile?.role}
+                  race={profile?.race}
                 />
               )}
             </div>
@@ -214,9 +217,12 @@ export default function Profile() {
                   <div className="flex items-center justify-center sm:justify-start space-x-3 text-sm">
                     {worldInfo.member_code ? (
                       <>
-                        <span className="font-mono text-[var(--color-secondary)] font-bold">{worldInfo.member_code}</span>
-                        <span className="text-(--color-text-secondary)">
-                          {worldInfo.raceInfo?.icon} {worldInfo.raceInfo?.name}
+                        <span className="member-code text-[var(--color-secondary)] font-bold">{worldInfo.member_code}</span>
+                        <span className="inline-flex items-center space-x-1.5 text-(--color-text-secondary)">
+                          <span className="inline-flex" style={{ color: RACE_COLORS[worldInfo.race] }}>
+                            <RaceInsignia race={worldInfo.race} className="w-4 h-4" />
+                          </span>
+                          <span>{worldInfo.raceInfo?.name}</span>
                         </span>
                         {worldInfo.title && (
                           <span className="text-(--color-warning)">· {worldInfo.title}</span>
@@ -329,15 +335,15 @@ export default function Profile() {
               </h4>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-2xl font-bold text-[var(--color-info)]">{posts.length}</div>
+                  <div className="text-2xl font-bold text-[var(--color-info)] stat-number">{posts.length}</div>
                   <div className="text-xs text-(--color-text-tertiary)">帖子</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-(--color-success)">{worldInfo.achievements?.length || 0}</div>
+                  <div className="text-2xl font-bold text-(--color-success) stat-number">{worldInfo.achievements?.length || 0}</div>
                   <div className="text-xs text-(--color-text-tertiary)">成就</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-[var(--color-secondary)]">
+                  <div className="text-2xl font-bold text-[var(--color-secondary)] stat-number">
                     {worldInfo.member_code ? worldInfo.member_code.replace('GZ-', '#') : '#0000'}
                   </div>
                   <div className="text-xs text-(--color-text-tertiary)">编号</div>

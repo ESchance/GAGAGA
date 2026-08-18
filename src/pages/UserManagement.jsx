@@ -168,13 +168,13 @@ export default function UserManagement() {
               return (
                 <div key={userData.id} className={`grid gap-4 p-4 border-b border-(--color-border-light) hover:bg-(--color-bg-secondary) transition-colors items-center ${isSuperAdmin ? 'grid-cols-12' : 'grid-cols-10'}`}>
                   <div className={isSuperAdmin ? 'col-span-1' : 'col-span-1'}>
-                    <Avatar url={userData.avatar_url} username={userData.username} size="sm" role={userData.role} />
+                    <Avatar url={userData.avatar_url} username={userData.username} size="sm" role={userData.role} race={userData.race} />
                   </div>
                   <div className={isSuperAdmin ? 'col-span-2' : 'col-span-3'}>
                     <span className="font-medium text-(--color-text-primary)">{userData.username}</span>
                     {isCurrentUser && <span className="ml-2 text-xs text-[var(--color-info)]">(我)</span>}
                   </div>
-                  <div className={`${isSuperAdmin ? 'col-span-3' : 'col-span-3'} text-sm text-(--color-text-tertiary) font-mono`}>{userData.member_code || '-'}</div>
+                  <div className={`${isSuperAdmin ? 'col-span-3' : 'col-span-3'} text-sm text-(--color-text-tertiary) member-code`}>{userData.member_code || '-'}</div>
                   <div className={isSuperAdmin ? 'col-span-2' : 'col-span-3'}>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${roleDisplay.color}`}>{roleDisplay.text}</span>
                   </div>
@@ -210,13 +210,13 @@ export default function UserManagement() {
               return (
                 <div key={userData.id} className="glass-effect rounded-xl p-4 shadow-sm">
                   <div className="flex items-center space-x-3 mb-3">
-                    <Avatar url={userData.avatar_url} username={userData.username} size="md" role={userData.role} />
+                    <Avatar url={userData.avatar_url} username={userData.username} size="md" role={userData.role} race={userData.race} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2">
                         <span className="font-medium text-(--color-text-primary) truncate">{userData.username}</span>
                         {isCurrentUser && <span className="text-xs text-[var(--color-info)]">(我)</span>}
                       </div>
-                      <div className="text-xs text-(--color-text-tertiary) font-mono">{userData.member_code || '未分配编号'}</div>
+                      <div className="text-xs text-(--color-text-tertiary) member-code">{userData.member_code || '未分配编号'}</div>
                     </div>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${roleDisplay.color}`}>{roleDisplay.text}</span>
                   </div>

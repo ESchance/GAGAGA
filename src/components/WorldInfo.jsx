@@ -1,4 +1,6 @@
 import { RACES } from '../lib/worldbuilding'
+import { RaceInsignia } from './RaceBadge'
+import { RACE_COLORS } from '../lib/raceVisuals'
 import { ClipboardList, BookOpen } from 'lucide-react'
 
 export default function WorldInfo({ profile, showStory = false, compact = false }) {
@@ -10,10 +12,12 @@ export default function WorldInfo({ profile, showStory = false, compact = false 
   if (compact) {
     return (
       <div className="flex items-center space-x-2 text-xs">
-        <span>{raceInfo.icon}</span>
+        <span className="inline-flex" style={{ color: RACE_COLORS[profile.race] }}>
+          <RaceInsignia race={profile.race} className="w-4 h-4" />
+        </span>
         <span className="text-(--color-text-tertiary)">{raceInfo.name}</span>
         {profile.member_code && (
-          <span className="text-(--color-text-tertiary)">{profile.member_code}</span>
+          <span className="member-code text-(--color-text-tertiary)">{profile.member_code}</span>
         )}
       </div>
     )
@@ -31,13 +35,16 @@ export default function WorldInfo({ profile, showStory = false, compact = false 
           {profile.member_code && (
             <div className="flex items-center justify-between">
               <span className="text-(--color-text-secondary) text-sm">编号</span>
-              <span className="font-mono font-bold text-[var(--color-secondary)]">{profile.member_code}</span>
+              <span className="member-code font-bold text-[var(--color-secondary)]">{profile.member_code}</span>
             </div>
           )}
           <div className="flex items-center justify-between">
             <span className="text-(--color-text-secondary) text-sm">种族</span>
-            <span className="font-medium text-(--color-text-primary)">
-              {raceInfo.icon} {raceInfo.name}
+            <span className="font-medium text-(--color-text-primary) inline-flex items-center space-x-1.5">
+              <span className="inline-flex" style={{ color: RACE_COLORS[profile.race] }}>
+                <RaceInsignia race={profile.race} className="w-4 h-4" />
+              </span>
+              <span>{raceInfo.name}</span>
             </span>
           </div>
           {profile.title && (

@@ -15,6 +15,8 @@ import { validateComment } from '../lib/validation'
 import { useToast } from '../components/Toast'
 import Avatar from '../components/Avatar'
 import { BookIcon, MaskIcon, GlobeIcon, LightbulbIcon } from '../components/Icons'
+import { RaceInsignia } from '../components/RaceBadge'
+import { RACE_COLORS } from '../lib/raceVisuals'
 import { Heart, MessageCircle, PenLine, Trash2, LogIn, AlertTriangle, Send, MessageSquare, Inbox, FileText } from 'lucide-react'
 import Skeleton from '../components/Skeleton'
 import EmptyState from '../components/EmptyState'
@@ -233,6 +235,7 @@ export default function WorldbuildingDetail() {
               username={post.profiles?.username}
               size="md"
               role={post.profiles?.role}
+              race={post.profiles?.race}
             />
             <div>
               <div className="flex items-center space-x-2">
@@ -245,8 +248,10 @@ export default function WorldbuildingDetail() {
               </div>
               {post.profiles?.member_code && (
                 <div className="flex items-center space-x-2 text-xs text-(--color-text-tertiary)">
-                  <span>{RACES[post.profiles?.race]?.icon || '🧑'}</span>
-                  <span className="font-mono">{post.profiles.member_code}</span>
+                  <span className="inline-flex" style={{ color: RACE_COLORS[post.profiles?.race] }}>
+                    <RaceInsignia race={post.profiles?.race} className="w-3.5 h-3.5" />
+                  </span>
+                  <span className="member-code">{post.profiles.member_code}</span>
                   <span>{RACES[post.profiles?.race]?.name || '人类'}</span>
                 </div>
               )}
@@ -372,6 +377,7 @@ export default function WorldbuildingDetail() {
                       username={comment.profiles?.username}
                       size="md"
                       role={comment.profiles?.role}
+                      race={comment.profiles?.race}
                     />
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-2">
@@ -379,8 +385,11 @@ export default function WorldbuildingDetail() {
                           {comment.profiles?.username || '匿名用户'}
                         </span>
                         {comment.profiles?.member_code && (
-                          <span className="text-xs text-(--color-text-tertiary)">
-                            {RACES[comment.profiles?.race]?.icon || '🧑'} {comment.profiles.member_code}
+                          <span className="text-xs text-(--color-text-tertiary) inline-flex items-center space-x-1">
+                            <span className="inline-flex" style={{ color: RACE_COLORS[comment.profiles?.race] }}>
+                              <RaceInsignia race={comment.profiles?.race} className="w-3.5 h-3.5" />
+                            </span>
+                            <span className="member-code">{comment.profiles.member_code}</span>
                           </span>
                         )}
                         <span className="text-xs text-(--color-text-tertiary)">

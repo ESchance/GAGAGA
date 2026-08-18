@@ -43,7 +43,7 @@ export default function Navbar() {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('username, avatar_url')
+        .select('username, avatar_url, race')
         .eq('id', userId)
         .single()
 
@@ -121,7 +121,7 @@ export default function Navbar() {
                   to={`/profile/${user.id}`}
                   className="flex items-center space-x-2 px-2 py-1 rounded-md hover:bg-[var(--color-bg-tertiary)] transition-colors duration-150"
                 >
-                  <Avatar url={profile?.avatar_url} username={profile?.username} size="sm" />
+                  <Avatar url={profile?.avatar_url} username={profile?.username} size="sm" race={profile?.race} />
                   <span className="text-[var(--color-text-primary)] text-sm">{profile?.username}</span>
                 </Link>
                 <ThemeToggle />
@@ -176,7 +176,7 @@ export default function Navbar() {
                   className="flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-[var(--color-bg-tertiary)] transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <Avatar url={profile?.avatar_url} username={profile?.username} size="sm" />
+                  <Avatar url={profile?.avatar_url} username={profile?.username} size="sm" race={profile?.race} />
                   <span className="text-[var(--color-text-primary)] text-sm">{profile?.username}</span>
                 </Link>
                 <NavLink

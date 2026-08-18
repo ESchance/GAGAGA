@@ -7,6 +7,7 @@ import AnnouncementModal from './components/AnnouncementModal'
 import { ToastProvider } from './components/Toast'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
+import SpaceBackground from './components/SpaceBackground'
 
 // 代码分割（首屏 Home 直接打包，其余路由懒加载）
 const Login = lazy(() => import('./pages/Login'))
@@ -27,7 +28,7 @@ function LoadingFallback() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
         <div className="loading-spinner mx-auto mb-4"></div>
-        <p className="text-[var(--color-text-secondary)] text-sm">加载中...</p>
+        <p className="text-[var(--color-text-secondary)] text-sm">正在同步星历…</p>
       </div>
     </div>
   )
@@ -40,6 +41,7 @@ function App() {
         <ToastProvider>
           <AnnouncementModal />
           <div className="min-h-screen flex flex-col">
+            <SpaceBackground />
             <ScrollToTop />
             <Navbar />
             <div className="flex-1">

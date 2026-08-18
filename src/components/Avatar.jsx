@@ -1,5 +1,6 @@
 import { memo, useMemo } from 'react'
 import { Crown } from 'lucide-react'
+import { RACE_COLORS } from '../lib/raceVisuals'
 
 // 常量移到组件外部
 const SIZE_CLASSES = {
@@ -39,14 +40,17 @@ const getGradient = (username) => {
   return GRADIENTS[index]
 }
 
-const Avatar = memo(function Avatar({ url, username, size = 'md', role = 'user' }) {
+const Avatar = memo(function Avatar({ url, username, size = 'md', role = 'user', race }) {
   // 使用 useMemo 缓存计算结果
   const gradient = useMemo(() => getGradient(username), [username])
   const initial = useMemo(() => username?.charAt(0).toUpperCase() || '?', [username])
 
   return (
     <div className="relative inline-block">
-      <div className={`${SIZE_CLASSES[size]} rounded-full overflow-hidden flex-shrink-0 shadow-lg`}>
+      <div
+        className={`${SIZE_CLASSES[size]} rounded-full overflow-hidden flex-shrink-0 shadow-lg ${race ? 'ring-2' : ''}`}
+        style={race ? { '--tw-ring-color': RACE_COLORS[race] } : undefined}
+      >
         {url ? (
           <img
             src={url}

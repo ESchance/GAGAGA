@@ -26,7 +26,7 @@ export default function ThemeToggle() {
     localStorage.setItem(THEME_KEY, newTheme)
     document.documentElement.setAttribute('data-theme', newTheme)
     const themeColor = document.querySelector('meta[name="theme-color"]')
-    if (themeColor) themeColor.setAttribute('content', newTheme === 'dark' ? '#0F1115' : '#5E6AD2')
+    if (themeColor) themeColor.setAttribute('content', newTheme === 'dark' ? '#070B14' : '#5E6AD2')
   }, [theme])
 
   return (
