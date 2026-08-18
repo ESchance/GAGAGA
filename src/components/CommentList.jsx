@@ -215,7 +215,7 @@ export default function CommentList({ postId, requireRace = false }) {
                 {loading ? (
                   <span className="flex items-center">
                     <div className="loading-spinner mr-2" style={{ width: '16px', height: '16px', borderWidth: '2px' }}></div>
-                    发送中...
+                    正在发射…
                   </span>
                 ) : (
                   <><Send size={16} className="mr-1.5" /> 发表评论</>
@@ -231,8 +231,8 @@ export default function CommentList({ postId, requireRace = false }) {
         {comments.length === 0 ? (
           <EmptyState
             icon={<MessageSquare size={28} />}
-            title="暂无评论"
-            description="快来发表第一条评论吧！"
+            title="还没有回波"
+            description="发出第一条回波吧"
             className="py-10"
           />
         ) : (

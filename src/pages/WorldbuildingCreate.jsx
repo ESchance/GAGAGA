@@ -99,7 +99,7 @@ export default function WorldbuildingCreate() {
           {raceLoading ? (
             <div className="text-center py-8">
               <div className="loading-spinner mx-auto mb-4"></div>
-              <p className="text-(--color-text-tertiary)">加载中...</p>
+              <p className="text-(--color-text-tertiary)">正在同步星历…</p>
             </div>
           ) : !raceSelected ? (
             <div className="text-center py-8">
@@ -197,7 +197,7 @@ export default function WorldbuildingCreate() {
                   {loading ? (
                     <span className="flex items-center">
                       <div className="loading-spinner mr-2" style={{ width: '16px', height: '16px', borderWidth: '2px' }}></div>
-                      发布中...
+                      正在点火…
                     </span>
                   ) : (
                     <><Rocket size={16} className="mr-1.5" /> 发布</>

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useEffect, useRef } from 'react'
 
 // 星点分层：数量/透明度递增，避免同帧全部闪烁（box-shadow 静态渲染，性能友好）
 const STAR_LAYERS = [
@@ -20,15 +20,45 @@ const buildStars = (layer) => {
 
 export default function SpaceBackground() {
   const stars = useMemo(() => STAR_LAYERS.map(buildStars), [])
+  const starRef1 = useRef(null)
+  const starRef2 = useRef(null)
+  const starRef3 = useRef(null)
+
+  // 桌面端滚动视差：仅 transform，移动端 / reduced-motion 关闭
+  useEffect(() => {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches
+    if (reduceMotion || !isDesktop) return
+
+    const refs = [starRef1, starRef2, starRef3]
+    const factors = [0.2, 0.35, 0.5]
+    let raf = 0
+    const apply = () => {
+      const y = window.scrollY || window.pageYOffset || 0
+      refs.forEach((ref, i) => {
+        if (ref.current) ref.current.style.transform = `translate3d(0, ${y * factors[i]}px, 0)`
+      })
+    }
+    const onScroll = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(apply)
+    }
+    apply()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [])
 
   return (
     <div className="space-bg" aria-hidden="true">
       <div className="space-nebula space-nebula-1" />
       <div className="space-nebula space-nebula-2" />
       <div className="space-nebula space-nebula-3" />
-      <div className="space-stars space-stars-1" style={{ boxShadow: stars[0] }} />
-      <div className="space-stars space-stars-2" style={{ boxShadow: stars[1] }} />
-      <div className="space-stars space-stars-3" style={{ boxShadow: stars[2] }} />
+      <div ref={starRef1} className="space-stars space-stars-1" style={{ boxShadow: stars[0] }} />
+      <div ref={starRef2} className="space-stars space-stars-2" style={{ boxShadow: stars[1] }} />
+      <div ref={starRef3} className="space-stars space-stars-3" style={{ boxShadow: stars[2] }} />
       <div className="space-wash" />
       <div className="space-vignette" />
     </div>

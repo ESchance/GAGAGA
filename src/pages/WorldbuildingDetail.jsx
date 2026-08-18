@@ -17,6 +17,7 @@ import Avatar from '../components/Avatar'
 import { BookIcon, MaskIcon, GlobeIcon, LightbulbIcon } from '../components/Icons'
 import { RaceInsignia } from '../components/RaceBadge'
 import { RACE_COLORS } from '../lib/raceVisuals'
+import { TYPE_COLORS } from '../lib/typeVisuals'
 import { Heart, MessageCircle, PenLine, Trash2, LogIn, AlertTriangle, Send, MessageSquare, Inbox, FileText } from 'lucide-react'
 import Skeleton from '../components/Skeleton'
 import EmptyState from '../components/EmptyState'
@@ -139,7 +140,7 @@ export default function WorldbuildingDetail() {
       idea: LightbulbIcon
     }
     const Icon = icons[type] || FileText
-    return <Icon className="w-7 h-7 text-[var(--color-primary)]" />
+    return <Icon className="w-7 h-7" style={{ color: TYPE_COLORS[type] || 'var(--color-primary)' }} />
   }
 
   const getTypeName = (type) => {
@@ -196,8 +197,8 @@ export default function WorldbuildingDetail() {
           </button>
           <EmptyState
             icon={<Inbox size={28} />}
-            title="内容不存在"
-            description="该内容可能已被删除"
+            title="星域档案不存在"
+            description="这份档案可能已被撤销或删除"
           />
         </div>
       </div>
@@ -220,7 +221,7 @@ export default function WorldbuildingDetail() {
           {/* 类型标签 */}
           <div className="flex items-center space-x-2 mb-4">
             <span className="text-2xl">{getTypeIcon(post.type)}</span>
-            <span className="text-sm text-(--color-text-tertiary) bg-(--color-bg-tertiary) px-3 py-1 rounded-full">
+            <span className="text-sm bg-(--color-bg-tertiary) px-3 py-1 rounded-full" style={{ color: TYPE_COLORS[post.type] || 'var(--color-text-tertiary)' }}>
               {getTypeName(post.type)}
             </span>
           </div>
@@ -351,7 +352,7 @@ export default function WorldbuildingDetail() {
                   disabled={submitting || !newComment.trim()}
                   className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate disabled:opacity-50 inline-flex items-center"
                 >
-                  {submitting ? '发送中...' : (<><Send size={16} className="mr-1.5" /> 发表评论</>)}
+                  {submitting ? '正在发射…' : (<><Send size={16} className="mr-1.5" /> 发表评论</>)}
                 </button>
               </div>
             </form>
@@ -362,7 +363,7 @@ export default function WorldbuildingDetail() {
             {comments.length === 0 ? (
               <div className="text-center py-8">
                 <MessageSquare size={48} className="mx-auto mb-3 text-(--color-text-tertiary)" />
-                <p className="text-(--color-text-tertiary)">暂无评论，快来发表第一条评论吧！</p>
+                <p className="text-(--color-text-tertiary)">还没有回波，发出第一条回波吧</p>
               </div>
             ) : (
               comments.map((comment, index) => (

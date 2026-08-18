@@ -151,7 +151,7 @@ export default function AnnouncementBar() {
                   disabled={saving || !editContent.trim()}
                   className="btn btn-primary disabled:opacity-50"
                 >
-                  {saving ? '保存中...' : (<><Save size={16} className="mr-1.5" /> 保存</>)}
+                  {saving ? '正在同步…' : (<><Save size={16} className="mr-1.5" /> 保存</>)}
                 </button>
               </div>
             </div>

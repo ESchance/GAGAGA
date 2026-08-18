@@ -21,15 +21,15 @@ class ErrorBoundary extends Component {
         <div className="min-h-screen bg-(--color-bg-secondary) flex items-center justify-center p-4">
           <div className="text-center max-w-md">
             <AlertCircle size={64} className="mx-auto mb-4 text-(--color-error)" />
-            <h2 className="text-2xl font-bold text-(--color-text-primary) mb-2">出错了</h2>
+            <h2 className="text-2xl font-bold text-(--color-text-primary) mb-2">信号中断</h2>
             <p className="text-(--color-text-secondary) mb-4">
-              页面遇到了一个错误，请尝试刷新页面。
+              页面遇到了未知干扰，请尝试重新建立连接。
             </p>
             <button
               onClick={() => window.location.reload()}
               className="btn-gradient text-white px-6 py-2 rounded-full font-medium"
             >
-              刷新页面
+              重新连接
             </button>
           </div>
         </div>

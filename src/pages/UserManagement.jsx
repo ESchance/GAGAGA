@@ -108,7 +108,7 @@ export default function UserManagement() {
       <div className="page-container flex items-center justify-center">
         <div className="text-center">
           <div className="loading-spinner mx-auto mb-4"></div>
-          <p className="text-(--color-text-tertiary)">加载中...</p>
+          <p className="text-(--color-text-tertiary)">正在同步星历…</p>
         </div>
       </div>
     )
@@ -159,7 +159,7 @@ export default function UserManagement() {
           </div>
 
           {filteredUsers.length === 0 ? (
-            <EmptyState icon={<Search size={28} />} title="没有找到匹配的用户" className="py-10" />
+            <EmptyState icon={<Search size={28} />} title="没有找到匹配的舱员" className="py-10" />
           ) : (
             filteredUsers.map((userData) => {
               const roleDisplay = getRoleDisplay(userData.role)
@@ -200,7 +200,7 @@ export default function UserManagement() {
         <div className="md:hidden space-y-3 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
           {filteredUsers.length === 0 ? (
             <div className="glass-effect rounded-2xl">
-              <EmptyState icon={<Search size={28} />} title="没有找到匹配的用户" className="py-10" />
+              <EmptyState icon={<Search size={28} />} title="没有找到匹配的舱员" className="py-10" />
             </div>
           ) : (
             filteredUsers.map((userData) => {

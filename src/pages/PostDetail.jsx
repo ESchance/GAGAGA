@@ -158,8 +158,8 @@ export default function PostDetail() {
           </Link>
           <EmptyState
             icon={<Inbox size={28} />}
-            title="帖子不存在"
-            description="该帖子可能已被删除"
+            title="信号已丢失"
+            description="这个信号可能已被撤销或删除"
           >
             <Link to="/" className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-flex items-center">
               <Home size={16} className="mr-1.5" /> 返回首页

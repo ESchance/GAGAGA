@@ -5,6 +5,7 @@ import { useEffect, useState, useCallback } from 'react'
 import Avatar from './Avatar'
 import ThemeToggle from './ThemeToggle'
 import { PenLine } from 'lucide-react'
+import { GalaxyIcon } from './Icons'
 
 export default function Navbar() {
   const [user, setUser] = useState(null)
@@ -74,10 +75,8 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-14">
           {/* Logo - 更简洁 */}
           <Link to="/" className="flex items-center space-x-2 group">
-            <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center transition-transform group-hover:scale-105">
-              <span className="text-white font-bold text-xs">嘎</span>
-            </div>
-            <span className="text-base font-semibold text-[var(--color-text-primary)] hidden sm:block">
+            <GalaxyIcon className="w-7 h-7 text-[var(--color-primary)] transition-transform duration-200 group-hover:scale-105" />
+            <span className="text-base font-semibold text-[var(--color-text-primary)] display-font hidden sm:block">
               嘎宇宙
             </span>
           </Link>
@@ -91,7 +90,7 @@ export default function Navbar() {
                   className={({ isActive }) =>
                     `px-3 py-1.5 rounded-md transition-all duration-150 text-sm ${
                       isActive
-                        ? 'text-[var(--color-primary)] bg-[var(--color-primary-light)] font-medium'
+                        ? 'text-[var(--color-primary)] font-medium nav-link-active'
                         : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-tertiary)]'
                     }`
                   }
@@ -109,7 +108,7 @@ export default function Navbar() {
                   className={({ isActive }) =>
                     `px-3 py-1.5 rounded-md transition-all duration-150 text-sm ${
                       isActive
-                        ? 'text-[var(--color-primary)] bg-[var(--color-primary-light)] font-medium'
+                        ? 'text-[var(--color-primary)] font-medium nav-link-active'
                         : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-tertiary)]'
                     }`
                   }
@@ -184,7 +183,7 @@ export default function Navbar() {
                   className={({ isActive }) =>
                     `block px-3 py-2 rounded-md transition-colors text-sm ${
                       isActive
-                        ? 'text-[var(--color-primary)] bg-[var(--color-primary-light)] font-medium'
+                        ? 'text-[var(--color-primary)] font-medium nav-link-active'
                         : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)]'
                     }`
                   }
@@ -204,7 +203,7 @@ export default function Navbar() {
                   className={({ isActive }) =>
                     `block px-3 py-2 rounded-md transition-colors text-sm ${
                       isActive
-                        ? 'text-[var(--color-primary)] bg-[var(--color-primary-light)] font-medium'
+                        ? 'text-[var(--color-primary)] font-medium nav-link-active'
                         : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)]'
                     }`
                   }

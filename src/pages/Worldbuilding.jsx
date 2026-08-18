@@ -6,6 +6,7 @@ import Avatar from '../components/Avatar'
 import { GalaxyIcon, BookIcon, MaskIcon, GlobeIcon, LightbulbIcon, StarIcon } from '../components/Icons'
 import { RaceInsignia } from '../components/RaceBadge'
 import { RACE_COLORS } from '../lib/raceVisuals'
+import { TYPE_COLORS } from '../lib/typeVisuals'
 import { PenLine, Heart, MessageCircle, FileText } from 'lucide-react'
 import Skeleton from '../components/Skeleton'
 import EmptyState from '../components/EmptyState'
@@ -171,8 +172,8 @@ export default function Worldbuilding() {
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center space-x-2">
-                    <div className="text-[var(--color-primary)]">{getTypeIcon(post.type, "w-5 h-5")}</div>
-                    <span className="text-xs text-[var(--color-text-secondary)] bg-[var(--color-bg-tertiary)] px-2 py-1 rounded-full">
+                    <div style={{ color: TYPE_COLORS[post.type] || 'var(--color-primary)' }}>{getTypeIcon(post.type, "w-5 h-5")}</div>
+                    <span className="text-xs bg-[var(--color-bg-tertiary)] px-2 py-1 rounded-full" style={{ color: TYPE_COLORS[post.type] || 'var(--color-text-secondary)' }}>
                       {getTypeName(post.type)}
                     </span>
                   </div>

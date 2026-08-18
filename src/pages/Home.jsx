@@ -7,7 +7,8 @@ import AnnouncementBar from '../components/AnnouncementBar'
 import SiteAnnouncementAdmin from '../components/SiteAnnouncementAdmin'
 import Skeleton from '../components/Skeleton'
 import EmptyState from '../components/EmptyState'
-import { Megaphone, FileText, PenLine, Sparkles } from 'lucide-react'
+import { Megaphone, FileText, PenLine, Sparkles, Users } from 'lucide-react'
+import { useOnlinePresence } from '../hooks/useOnlinePresence'
 
 const FILTERS = [
   { key: 'all', label: '全部' },
@@ -20,7 +21,9 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState('all')
   const [showAnnouncementAdmin, setShowAnnouncementAdmin] = useState(false)
+  const [stats, setStats] = useState({ posts: null, creations: null })
   const { user, isAdmin, isSuperAdmin } = useAuth()
+  const onlineCount = useOnlinePresence()
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -40,9 +43,22 @@ export default function Home() {
     }
   }, [])
 
+  const fetchStats = useCallback(async () => {
+    try {
+      const [postsRes, creationsRes] = await Promise.all([
+        supabase.from('posts').select('id', { count: 'exact', head: true }),
+        supabase.from('worldbuilding').select('id', { count: 'exact', head: true })
+      ])
+      setStats({ posts: postsRes.count ?? 0, creations: creationsRes.count ?? 0 })
+    } catch (error) {
+      console.error('获取社区统计失败:', error)
+    }
+  }, [])
+
   useEffect(() => {
-    // 获取所有帖子
+    // 获取所有帖子与社区统计
     fetchPosts()
+    fetchStats()
 
     // 订阅新帖子和删除帖子的实时更新
     const subscription = supabase
@@ -64,7 +80,7 @@ export default function Home() {
     return () => {
       subscription.unsubscribe()
     }
-  }, [fetchPosts])
+  }, [fetchPosts, fetchStats])
 
   const handleDeletePost = useCallback((postId) => {
     setPosts(prev => prev.filter(post => post.id !== postId))
@@ -132,13 +148,13 @@ export default function Home() {
 
       <div className="py-8">
         <div className="max-w-4xl mx-auto px-4">
-          {/* 欢迎区 */}
+          {/* 欢迎区（星港） */}
           <div className="text-center mb-10 animate-fade-in-up">
             <h1 className="text-3xl sm:text-4xl font-bold heading-gradient mb-3">
               欢迎来到嘎宇宙
             </h1>
-            <p className="text-(--color-text-tertiary) mb-7">发现精彩内容，参与讨论，创作属于你的宇宙故事</p>
-            <div className="flex items-center justify-center gap-3">
+            <p className="text-(--color-text-tertiary) mb-6">这里是嘎宇宙星港：浏览信号、参与讨论、创作属于你的星域档案。</p>
+            <div className="flex items-center justify-center gap-3 mb-6">
               <Link
                 to="/create"
                 className="btn btn-primary btn-lg"
@@ -149,8 +165,28 @@ export default function Home() {
                 to="/worldbuilding"
                 className="btn btn-secondary btn-lg"
               >
-                <Sparkles size={18} className="mr-1.5" /> 去创作
+                <Sparkles size={18} className="mr-1.5" /> 探索星域
               </Link>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-(--color-text-tertiary)">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-(--color-bg-tertiary)">
+                <FileText size={14} className="text-[var(--color-primary)]" />
+                <span>总帖</span>
+                <span className="stat-number font-semibold text-(--color-text-primary)">{stats.posts ?? '…'}</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-(--color-bg-tertiary)">
+                <Sparkles size={14} className="text-[var(--color-secondary)]" />
+                <span>总创作</span>
+                <span className="stat-number font-semibold text-(--color-text-primary)">{stats.creations ?? '…'}</span>
+              </span>
+              {onlineCount != null && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-(--color-bg-tertiary)">
+                  <Users size={14} className="text-[var(--color-success)]" />
+                  <span>在轨</span>
+                  <span className="stat-number font-semibold text-(--color-text-primary)">{onlineCount}</span>
+                  <span>人</span>
+                </span>
+              )}
             </div>
           </div>
 

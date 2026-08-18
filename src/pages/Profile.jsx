@@ -9,11 +9,12 @@ import AvatarUpload from '../components/AvatarUpload'
 import RaceSelector from '../components/RaceSelector'
 import WorldInfo from '../components/WorldInfo'
 import { useToast } from '../components/Toast'
-import { Crown, FileText, PenLine, Save, BarChart3, Lightbulb } from 'lucide-react'
+import { Crown, FileText, PenLine, Save, BarChart3, Lightbulb, BookOpen, Rocket, User } from 'lucide-react'
 import Skeleton from '../components/Skeleton'
 import EmptyState from '../components/EmptyState'
 import { RaceInsignia } from '../components/RaceBadge'
 import { RACE_COLORS } from '../lib/raceVisuals'
+import { deriveAchievements } from '../lib/achievements'
 
 export default function Profile() {
   const { id } = useParams()
@@ -29,6 +30,7 @@ export default function Profile() {
   const [editingBackstory, setEditingBackstory] = useState(false)
   const [backstoryText, setBackstoryText] = useState('')
   const [saving, setSaving] = useState(false)
+  const [creationCount, setCreationCount] = useState(0)
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -78,6 +80,20 @@ export default function Profile() {
     }
   }, [id])
 
+  const fetchCreationCount = useCallback(async () => {
+    try {
+      const { count, error } = await supabase
+        .from('worldbuilding')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', id)
+
+      if (error) throw error
+      setCreationCount(count ?? 0)
+    } catch (error) {
+      console.error('获取创作数量失败:', error)
+    }
+  }, [id])
+
   useEffect(() => {
     // 获取当前登录用户
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -90,7 +106,8 @@ export default function Profile() {
     fetchProfile()
     fetchWorldInfo()
     fetchUserPosts()
-  }, [id, fetchProfile, fetchWorldInfo, fetchUserPosts])
+    fetchCreationCount()
+  }, [id, fetchProfile, fetchWorldInfo, fetchUserPosts, fetchCreationCount])
 
   const handleDeletePost = (postId) => {
     setPosts(prev => prev.filter(post => post.id !== postId))
@@ -169,6 +186,19 @@ export default function Profile() {
         </div>
       </div>
     )
+  }
+
+  const achievements = deriveAchievements({
+    posts: posts.length,
+    creations: creationCount,
+    hasMemberCode: !!worldInfo?.member_code,
+    role: profile?.role
+  })
+  const achievementIcons = {
+    member: <User size={14} />,
+    pioneer: <Rocket size={14} />,
+    chronicler: <BookOpen size={14} />,
+    sentinel: <Crown size={14} />
   }
 
   const isOwnProfile = currentUser && currentUser.id === id
@@ -309,7 +339,7 @@ export default function Profile() {
                       disabled={saving}
                       className="px-4 py-2 bg-(--color-success) text-white rounded-full text-sm font-medium hover:bg-(--color-success-hover) transition-all duration-200 disabled:opacity-50 inline-flex items-center gap-1.5"
                     >
-                      {saving ? '保存中...' : (<><Save size={16} /> 保存</>)}
+                      {saving ? '正在同步…' : (<><Save size={16} /> 保存</>)}
                     </button>
                   </div>
                 </div>
@@ -331,7 +361,7 @@ export default function Profile() {
           <div className="mb-8 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             <div className="bg-gradient-to-r from-[var(--color-bg-secondary)] to-[var(--color-bg-tertiary)] rounded-2xl p-4 border border-[var(--color-border)]">
               <h4 className="text-sm font-semibold text-(--color-text-secondary) mb-3 flex items-center">
-                <BarChart3 size={16} className="mr-2" /> 数据统计
+                <BarChart3 size={16} className="mr-2" /> 星历数据面板
               </h4>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
@@ -339,7 +369,7 @@ export default function Profile() {
                   <div className="text-xs text-(--color-text-tertiary)">帖子</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-(--color-success) stat-number">{worldInfo.achievements?.length || 0}</div>
+                  <div className="text-2xl font-bold text-(--color-success) stat-number">{achievements.filter(a => a.earned).length}</div>
                   <div className="text-xs text-(--color-text-tertiary)">成就</div>
                 </div>
                 <div>
@@ -348,6 +378,20 @@ export default function Profile() {
                   </div>
                   <div className="text-xs text-(--color-text-tertiary)">编号</div>
                 </div>
+              </div>
+              <div className="mt-4 pt-3 border-t border-(--color-border)">
+                {achievements.some(a => a.earned) ? (
+                  <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+                    {achievements.filter(a => a.earned).map(a => (
+                      <span key={a.id} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-(--color-bg-tertiary) text-(--color-text-primary)" title={a.description}>
+                        {achievementIcons[a.id]}
+                        {a.name}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-(--color-text-tertiary) text-center">尚未解锁成就</p>
+                )}
               </div>
             </div>
           </div>
@@ -363,8 +407,8 @@ export default function Profile() {
             <div className="glass-effect rounded-2xl">
               <EmptyState
                 icon={<FileText size={28} />}
-                title="还没有帖子"
-                description="去发布第一个帖子吧！"
+                title="这片星域还没有信号"
+                description="发出第一个信号吧"
                 className="py-10"
               />
             </div>

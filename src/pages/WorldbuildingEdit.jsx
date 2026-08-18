@@ -94,7 +94,7 @@ export default function WorldbuildingEdit() {
       <div className="page-container flex items-center justify-center">
         <div className="text-center">
           <div className="loading-spinner mx-auto mb-4"></div>
-          <p className="text-(--color-text-tertiary)">加载中...</p>
+          <p className="text-(--color-text-tertiary)">正在同步星历…</p>
         </div>
       </div>
     )
@@ -232,7 +232,7 @@ export default function WorldbuildingEdit() {
                 {saving ? (
                   <span className="flex items-center">
                     <div className="loading-spinner mr-2" style={{ width: '16px', height: '16px', borderWidth: '2px' }}></div>
-                    保存中...
+                    正在同步…
                   </span>
                 ) : (
                   <><Save size={16} className="mr-1.5" /> 保存修改</>

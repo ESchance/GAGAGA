@@ -245,7 +245,7 @@ export default function AuthForm({ type = 'login' }) {
           {loading ? (
             <span className="flex items-center justify-center">
               <div className="loading-spinner mr-2" style={{ width: '20px', height: '20px', borderWidth: '2px' }}></div>
-              处理中...
+              正在同步…
             </span>
           ) : (
             type === 'register' ? '注册' : '登录'

@@ -137,7 +137,7 @@ export default function SiteAnnouncementAdmin({ onClose, onSaved }) {
           {loading ? (
             <div className="text-center py-8">
               <div className="loading-spinner mx-auto mb-4"></div>
-              <p className="text-(--color-text-tertiary) text-sm">加载中...</p>
+              <p className="text-(--color-text-tertiary) text-sm">正在同步星历…</p>
             </div>
           ) : (
             <div className="space-y-5">
@@ -266,7 +266,7 @@ export default function SiteAnnouncementAdmin({ onClose, onSaved }) {
             disabled={saving || loading}
             className="btn-gradient text-white px-6 py-2 rounded-lg font-medium btn-animate disabled:opacity-50"
           >
-            {saving ? '保存中...' : (<><Save size={16} className="mr-1.5" /> 保存公告</>)}
+            {saving ? '正在同步…' : (<><Save size={16} className="mr-1.5" /> 保存公告</>)}
           </button>
         </div>
       </div>

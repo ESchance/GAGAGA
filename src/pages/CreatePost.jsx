@@ -113,7 +113,7 @@ export default function CreatePost() {
             {loading ? (
               <span className="flex items-center justify-center">
                 <div className="loading-spinner mr-2" style={{ width: '20px', height: '20px', borderWidth: '2px' }}></div>
-                发布中...
+                正在点火…
               </span>
             ) : (
               <><Rocket size={16} className="mr-1.5" /> 发布帖子</>

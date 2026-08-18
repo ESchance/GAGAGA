@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { GalaxyIcon } from './Icons'
 
 export default function Footer() {
   const year = new Date().getFullYear()
@@ -7,9 +8,7 @@ export default function Footer() {
     <footer className="border-t border-[var(--color-border-light)] bg-[var(--color-bg)]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-[var(--color-text-tertiary)]">
         <div className="flex items-center space-x-2">
-          <div className="w-5 h-5 rounded bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center">
-            <span className="text-white font-bold text-[10px]">嘎</span>
-          </div>
+          <GalaxyIcon className="w-5 h-5 text-[var(--color-primary)]" />
           <span>嘎宇宙 · 多人实时在线交流论坛</span>
         </div>
         <div className="flex items-center space-x-5">

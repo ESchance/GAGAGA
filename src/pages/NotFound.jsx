@@ -9,11 +9,11 @@ export default function NotFound() {
       <div className="px-4 w-full">
         <EmptyState
           icon={<GalaxyIcon className="w-8 h-8 text-[var(--color-primary)]" />}
-          title="页面不存在"
-          description="你访问的页面可能已被移动或删除。"
+          title="迷失星域"
+          description="这个坐标没有对应的星门，可能已被移动或删除。"
         >
           <Link to="/" className="btn-gradient text-white px-6 py-3 rounded-full font-medium btn-animate inline-flex items-center">
-            <Home size={16} className="mr-1.5" /> 返回首页
+            <Home size={16} className="mr-1.5" /> 返回星港
           </Link>
         </EmptyState>
       </div>
