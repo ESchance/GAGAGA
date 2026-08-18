@@ -16,6 +16,8 @@ import { useToast } from '../components/Toast'
 import Avatar from '../components/Avatar'
 import { BookIcon, MaskIcon, GlobeIcon, LightbulbIcon } from '../components/Icons'
 import { Heart, MessageCircle, PenLine, Trash2, LogIn, AlertTriangle, Send, MessageSquare, Inbox, FileText } from 'lucide-react'
+import Skeleton from '../components/Skeleton'
+import EmptyState from '../components/EmptyState'
 
 export default function WorldbuildingDetail() {
   const { id } = useParams()
@@ -150,10 +152,31 @@ export default function WorldbuildingDetail() {
 
   if (loading) {
     return (
-      <div className="page-container flex items-center justify-center">
-        <div className="text-center">
-          <div className="loading-spinner mx-auto mb-4"></div>
-          <p className="text-(--color-text-tertiary)">加载中...</p>
+      <div className="page-container py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="glass-effect p-8 rounded-2xl shadow-lg mb-6">
+            <div className="flex items-center space-x-2 mb-4">
+              <Skeleton className="h-7 w-7 rounded-full" />
+              <Skeleton className="h-5 w-12 rounded-full" />
+            </div>
+            <Skeleton className="h-8 w-3/4 mb-6" />
+            <div className="flex items-center space-x-4 mb-6 pb-6 border-b border-(--color-border)">
+              <Skeleton className="h-10 w-10 rounded-full" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-3 w-32" />
+              </div>
+            </div>
+            <Skeleton className="h-4 w-full mb-3" />
+            <Skeleton className="h-4 w-11/12 mb-3" />
+            <Skeleton className="h-4 w-4/5 mb-3" />
+            <Skeleton className="h-4 w-2/3" />
+          </div>
+          <Skeleton className="h-8 w-40 mb-4" />
+          <div className="space-y-3">
+            <Skeleton className="h-16 w-full rounded-xl" />
+            <Skeleton className="h-16 w-full rounded-xl" />
+          </div>
         </div>
       </div>
     )
@@ -169,11 +192,11 @@ export default function WorldbuildingDetail() {
           >
             ← 返回创作列表
           </button>
-          <div className="text-center py-16">
-            <Inbox size={64} className="mx-auto mb-4 text-(--color-text-tertiary)" />
-            <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">内容不存在</h3>
-            <p className="text-(--color-text-tertiary)">该内容可能已被删除</p>
-          </div>
+          <EmptyState
+            icon={<Inbox size={28} />}
+            title="内容不存在"
+            description="该内容可能已被删除"
+          />
         </div>
       </div>
     )

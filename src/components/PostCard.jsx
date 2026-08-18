@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { memo, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { togglePinPost } from '../lib/admin'
+import { RACES } from '../lib/worldbuilding'
 import { useToast } from './Toast'
 import Avatar from './Avatar'
 import { Pin, MapPin, Trash2, Crown } from 'lucide-react'
@@ -91,17 +92,25 @@ const PostCard = memo(function PostCard({ post, onDelete, onPinChange, isAdmin =
               size="sm"
               role={post.profiles?.role}
             />
-            <div className="flex items-center space-x-1.5">
-              <span className="text-sm text-[var(--color-text-primary)]">
-                {post.profiles?.username || '匿名用户'}
-              </span>
-              {post.profiles?.role === 'admin' && (
-                <span className="hidden sm:inline text-xs bg-[var(--color-primary-light)] text-[var(--color-primary)] px-1.5 py-0.5 rounded font-medium">
-                  管理
+            <div className="min-w-0">
+              <div className="flex items-center space-x-1.5">
+                <span className="text-sm text-[var(--color-text-primary)] truncate">
+                  {post.profiles?.username || '匿名用户'}
                 </span>
-              )}
-              {post.profiles?.role === 'admin' && (
-                <span className="sm:hidden text-xs" title="管理员"><Crown size={14} /></span>
+                {post.profiles?.role === 'admin' && (
+                  <span className="hidden sm:inline text-xs bg-[var(--color-primary-light)] text-[var(--color-primary)] px-1.5 py-0.5 rounded font-medium">
+                    管理
+                  </span>
+                )}
+                {post.profiles?.role === 'admin' && (
+                  <span className="sm:hidden text-xs" title="管理员"><Crown size={14} /></span>
+                )}
+              </div>
+              {post.profiles?.member_code && (
+                <div className="flex items-center space-x-1 text-xs text-(--color-text-tertiary)">
+                  <span>{RACES[post.profiles?.race]?.icon || '🧑'}</span>
+                  <span className="font-mono">{post.profiles.member_code}</span>
+                </div>
               )}
             </div>
           </div>

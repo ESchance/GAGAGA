@@ -7,6 +7,7 @@ import { validateComment } from '../lib/validation'
 import { useToast } from './Toast'
 import Avatar from './Avatar'
 import { LogIn, AlertTriangle, Send, MessageSquare, Clock, Crown } from 'lucide-react'
+import EmptyState from './EmptyState'
 
 export default function CommentList({ postId, requireRace = false }) {
   const { showToast } = useToast()
@@ -226,10 +227,12 @@ export default function CommentList({ postId, requireRace = false }) {
       {/* 评论列表 */}
       <div className="space-y-4">
         {comments.length === 0 ? (
-          <div className="text-center py-8">
-            <MessageSquare size={48} className="mx-auto mb-3 text-(--color-text-tertiary)" />
-            <p className="text-(--color-text-tertiary)">暂无评论，快来发表第一条评论吧！</p>
-          </div>
+          <EmptyState
+            icon={<MessageSquare size={28} />}
+            title="暂无评论"
+            description="快来发表第一条评论吧！"
+            className="py-10"
+          />
         ) : (
           comments.map((comment, index) => {
             const canDeleteComment = user && (user.id === comment.user_id || isAdmin)

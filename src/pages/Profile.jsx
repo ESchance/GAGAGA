@@ -10,6 +10,8 @@ import RaceSelector from '../components/RaceSelector'
 import WorldInfo from '../components/WorldInfo'
 import { useToast } from '../components/Toast'
 import { Crown, FileText, PenLine, Save, BarChart3, Lightbulb } from 'lucide-react'
+import Skeleton from '../components/Skeleton'
+import EmptyState from '../components/EmptyState'
 
 export default function Profile() {
   const { id } = useParams()
@@ -138,10 +140,30 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="page-container flex items-center justify-center">
-        <div className="text-center">
-          <div className="loading-spinner mx-auto mb-4"></div>
-          <p className="text-(--color-text-tertiary)">加载中...</p>
+      <div className="page-container py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          {/* 用户信息卡骨架 */}
+          <div className="glass-effect p-8 rounded-2xl shadow-lg mb-8">
+            <div className="flex flex-col sm:flex-row items-center gap-8">
+              <Skeleton className="w-32 h-32 rounded-full" />
+              <div className="flex-1 text-center sm:text-left space-y-3">
+                <Skeleton className="h-8 w-48 mx-auto sm:mx-0" />
+                <Skeleton className="h-4 w-64 max-w-full mx-auto sm:mx-0" />
+                <Skeleton className="h-8 w-24 mx-auto sm:mx-0 rounded-full" />
+              </div>
+            </div>
+          </div>
+
+          {/* 帖子列表骨架 */}
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="post-card">
+                <Skeleton className="h-5 w-2/3 mb-3" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-5/6" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     )
@@ -332,10 +354,13 @@ export default function Profile() {
           </h2>
 
           {posts.length === 0 ? (
-            <div className="text-center py-12 glass-effect rounded-2xl">
-              <FileText size={56} className="mx-auto mb-4 text-(--color-text-tertiary)" />
-              <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">还没有帖子</h3>
-              <p className="text-(--color-text-tertiary)">去发布第一个帖子吧！</p>
+            <div className="glass-effect rounded-2xl">
+              <EmptyState
+                icon={<FileText size={28} />}
+                title="还没有帖子"
+                description="去发布第一个帖子吧！"
+                className="py-10"
+              />
             </div>
           ) : (
             <div className="space-y-4">

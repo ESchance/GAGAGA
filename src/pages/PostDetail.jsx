@@ -5,6 +5,8 @@ import { checkIsAdmin, togglePinPost } from '../lib/admin'
 import { RACES } from '../lib/worldbuilding'
 import CommentList from '../components/CommentList'
 import { Pin, Crown, Clock, Trash2, RefreshCw, Home, Inbox, AlertCircle } from 'lucide-react'
+import Skeleton from '../components/Skeleton'
+import EmptyState from '../components/EmptyState'
 import Avatar from '../components/Avatar'
 import { useToast } from '../components/Toast'
 
@@ -94,9 +96,24 @@ export default function PostDetail() {
           <Link to="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-[var(--color-primary)] mb-6 transition-colors">
             ← 返回首页
           </Link>
-          <div className="text-center py-16">
-            <div className="loading-spinner mx-auto mb-4"></div>
-            <p className="text-(--color-text-tertiary)">加载中...</p>
+          <div className="glass-effect p-8 rounded-2xl shadow-lg mb-6">
+            <Skeleton className="h-8 w-3/4 mb-5" />
+            <div className="flex items-center space-x-3 mb-6 pb-6 border-b border-(--color-border)">
+              <Skeleton className="h-10 w-10 rounded-full" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-3 w-32" />
+              </div>
+            </div>
+            <Skeleton className="h-4 w-full mb-3" />
+            <Skeleton className="h-4 w-11/12 mb-3" />
+            <Skeleton className="h-4 w-4/5 mb-3" />
+            <Skeleton className="h-4 w-2/3" />
+          </div>
+          <Skeleton className="h-8 w-40 mb-4" />
+          <div className="space-y-3">
+            <Skeleton className="h-16 w-full rounded-xl" />
+            <Skeleton className="h-16 w-full rounded-xl" />
           </div>
         </div>
       </div>
@@ -110,10 +127,11 @@ export default function PostDetail() {
           <Link to="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-[var(--color-primary)] mb-6 transition-colors">
             ← 返回首页
           </Link>
-          <div className="text-center py-16">
-            <AlertCircle size={64} className="mx-auto mb-4 text-(--color-error)" />
-            <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">加载失败</h3>
-            <p className="text-(--color-text-tertiary) mb-4">{error}</p>
+          <EmptyState
+            icon={<AlertCircle size={28} className="text-(--color-error)" />}
+            title="加载失败"
+            description={error}
+          >
             <button
               onClick={fetchPost}
               className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate mr-4 inline-flex items-center"
@@ -123,7 +141,7 @@ export default function PostDetail() {
             <Link to="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-[var(--color-primary)]">
               <Home size={16} className="mr-1.5" /> 返回首页
             </Link>
-          </div>
+          </EmptyState>
         </div>
       </div>
     )
@@ -136,14 +154,15 @@ export default function PostDetail() {
           <Link to="/" className="inline-flex items-center text-(--color-text-secondary) hover:text-[var(--color-primary)] mb-6 transition-colors">
             ← 返回首页
           </Link>
-          <div className="text-center py-16">
-            <Inbox size={64} className="mx-auto mb-4 text-(--color-text-tertiary)" />
-            <h3 className="text-xl font-semibold text-(--color-text-secondary) mb-2">帖子不存在</h3>
-            <p className="text-(--color-text-tertiary) mb-4">该帖子可能已被删除</p>
-            <Link to="/" className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-block">
+          <EmptyState
+            icon={<Inbox size={28} />}
+            title="帖子不存在"
+            description="该帖子可能已被删除"
+          >
+            <Link to="/" className="btn-gradient text-white px-5 py-2 rounded-full font-medium btn-animate inline-flex items-center">
               <Home size={16} className="mr-1.5" /> 返回首页
             </Link>
-          </div>
+          </EmptyState>
         </div>
       </div>
     )

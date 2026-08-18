@@ -5,6 +5,8 @@ import { getWorldbuildingList, RACES } from '../lib/worldbuilding'
 import Avatar from '../components/Avatar'
 import { GalaxyIcon, BookIcon, MaskIcon, GlobeIcon, LightbulbIcon, StarIcon } from '../components/Icons'
 import { PenLine, Heart, MessageCircle, FileText } from 'lucide-react'
+import Skeleton from '../components/Skeleton'
+import EmptyState from '../components/EmptyState'
 
 const TYPE_FILTERS = [
   { key: null, label: '全部', Icon: GalaxyIcon },
@@ -118,15 +120,35 @@ export default function Worldbuilding() {
 
         {/* 创作列表 */}
         {loading ? (
-          <div className="text-center py-16">
-            <div className="loading-spinner mx-auto mb-4"></div>
-            <p className="text-[var(--color-text-secondary)]">加载中...</p>
+          <div className="space-y-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="post-card">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    <Skeleton className="h-5 w-5 rounded-full" />
+                    <Skeleton className="h-4 w-12 rounded-full" />
+                  </div>
+                  <Skeleton className="h-4 w-16" />
+                </div>
+                <Skeleton className="h-5 w-2/3 mb-2" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-5/6 mb-4" />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Skeleton className="h-8 w-8 rounded-full" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                  <Skeleton className="h-4 w-16" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : posts.length === 0 ? (
-          <div className="text-center py-16 animate-fade-in-up">
-            <div className="empty-state-icon mb-4"><FileText size={28} /></div>
-            <h3 className="text-xl font-semibold text-[var(--color-text-secondary)] mb-2">还没有创作</h3>
-            <p className="text-[var(--color-text-tertiary)] mb-6">成为第一个创作者吧！</p>
+          <EmptyState
+            icon={<FileText size={28} />}
+            title="还没有创作"
+            description="成为第一个创作者吧！"
+          >
             {user && (
               <Link
                 to="/worldbuilding/create"
@@ -135,7 +157,7 @@ export default function Worldbuilding() {
                 <PenLine size={16} className="mr-1.5" /> 开始创作
               </Link>
             )}
-          </div>
+          </EmptyState>
         ) : (
           <div className="space-y-4">
             {posts.map((post, index) => (

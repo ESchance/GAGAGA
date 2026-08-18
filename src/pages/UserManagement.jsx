@@ -4,7 +4,8 @@ import { supabase } from '../lib/supabase'
 import { getUsersList, toggleAdmin, deleteUser, checkIsSuperAdmin } from '../lib/admin'
 import Avatar from '../components/Avatar'
 import { useToast } from '../components/Toast'
-import { AlertTriangle, Trash2 } from 'lucide-react'
+import { AlertTriangle, Trash2, Search } from 'lucide-react'
+import EmptyState from '../components/EmptyState'
 
 export default function UserManagement() {
   const navigate = useNavigate()
@@ -158,7 +159,7 @@ export default function UserManagement() {
           </div>
 
           {filteredUsers.length === 0 ? (
-            <div className="p-8 text-center text-(--color-text-tertiary)">没有找到匹配的用户</div>
+            <EmptyState icon={<Search size={28} />} title="没有找到匹配的用户" className="py-10" />
           ) : (
             filteredUsers.map((userData) => {
               const roleDisplay = getRoleDisplay(userData.role)
@@ -198,7 +199,9 @@ export default function UserManagement() {
         {/* 移动端：卡片布局 */}
         <div className="md:hidden space-y-3 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
           {filteredUsers.length === 0 ? (
-            <div className="p-8 text-center text-(--color-text-tertiary) glass-effect rounded-2xl">没有找到匹配的用户</div>
+            <div className="glass-effect rounded-2xl">
+              <EmptyState icon={<Search size={28} />} title="没有找到匹配的用户" className="py-10" />
+            </div>
           ) : (
             filteredUsers.map((userData) => {
               const roleDisplay = getRoleDisplay(userData.role)
