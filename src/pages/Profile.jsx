@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { checkIsAdmin } from '../lib/admin'
@@ -37,9 +37,9 @@ export default function Profile() {
     fetchProfile()
     fetchWorldInfo()
     fetchUserPosts()
-  }, [id])
+  }, [id, fetchProfile, fetchWorldInfo, fetchUserPosts])
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -58,18 +58,18 @@ export default function Profile() {
     } catch (error) {
       console.error('获取用户信息失败:', error)
     }
-  }
+  }, [id])
 
-  const fetchWorldInfo = async () => {
+  const fetchWorldInfo = useCallback(async () => {
     try {
       const info = await getUserWorldInfo(id)
       setWorldInfo(info)
     } catch (error) {
       console.error('获取世界观信息失败:', error)
     }
-  }
+  }, [id])
 
-  const fetchUserPosts = async () => {
+  const fetchUserPosts = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('posts')
@@ -85,7 +85,7 @@ export default function Profile() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [id])
 
   const handleDeletePost = (postId) => {
     setPosts(prev => prev.filter(post => post.id !== postId))

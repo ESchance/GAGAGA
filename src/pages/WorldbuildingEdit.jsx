@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { getWorldbuildingDetail, updateWorldbuilding } from '../lib/worldbuilding'
@@ -33,9 +33,9 @@ export default function WorldbuildingEdit() {
     })
 
     fetchPost()
-  }, [id, navigate])
+  }, [id, navigate, fetchPost])
 
-  const fetchPost = async () => {
+  const fetchPost = useCallback(async () => {
     const data = await getWorldbuildingDetail(id)
     if (!data) {
       setMessage('内容不存在')
@@ -48,7 +48,7 @@ export default function WorldbuildingEdit() {
     setTitle(data.title)
     setContent(data.content)
     setLoading(false)
-  }
+  }, [id])
 
   const handleSubmit = async (e) => {
     e.preventDefault()

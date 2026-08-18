@@ -92,21 +92,14 @@ export const toggleAdmin = async (userId, currentRole) => {
 // 3. 前端调用 RPC 必须正确传递参数
 export const deleteUser = async (userId) => {
   try {
-    // 1. 删除所有关联数据（按外键依赖顺序）
-    await supabase.from('worldbuilding_comments').delete().eq('user_id', userId)
-    await supabase.from('worldbuilding_likes').delete().eq('user_id', userId)
-    await supabase.from('worldbuilding').delete().eq('user_id', userId)
-    await supabase.from('member_codes').delete().eq('user_id', userId)
-    await supabase.from('comments').delete().eq('user_id', userId)
-    await supabase.from('posts').delete().eq('user_id', userId)
-
-    // 2. 调用 SQL 函数删除 profiles 和 auth.users
+    // 关联数据、profiles 和 auth.users 统一交给 SQL 函数 delete_user 删除；
+    // 该函数为 SECURITY DEFINER，并在内部校验调用者必须是超级管理员。
     const { data, error } = await supabase.rpc('delete_user', {
       target_user_id: userId
     })
 
     if (error) {
-      console.error('❌ RPC 错误:', error)
+      console.error('❌ 删除用户 RPC 失败:', error)
       throw error
     }
 

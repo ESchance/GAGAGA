@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { checkIsAdmin, togglePinPost } from '../lib/admin'
@@ -28,9 +28,9 @@ export default function PostDetail() {
     })
 
     fetchPost()
-  }, [id])
+  }, [id, fetchPost])
 
-  const fetchPost = async () => {
+  const fetchPost = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -53,7 +53,7 @@ export default function PostDetail() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [id])
 
   const handleDelete = async () => {
     if (!post || !user) return

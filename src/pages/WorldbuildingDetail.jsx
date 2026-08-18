@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import {
@@ -43,20 +43,20 @@ export default function WorldbuildingDetail() {
 
     fetchPost()
     fetchComments()
-  }, [id])
+  }, [id, fetchPost, fetchComments, fetchUserProfile])
 
-  const fetchPost = async () => {
+  const fetchPost = useCallback(async () => {
     const data = await getWorldbuildingDetail(id)
     setPost(data)
     setLoading(false)
-  }
+  }, [id])
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     const data = await getWorldbuildingComments(id)
     setComments(data)
-  }
+  }, [id])
 
-  const fetchUserProfile = async (userId) => {
+  const fetchUserProfile = useCallback(async (userId) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -69,7 +69,7 @@ export default function WorldbuildingDetail() {
     } catch (error) {
       console.error('获取用户资料失败:', error)
     }
-  }
+  }, [])
 
   const handleLike = async () => {
     if (!user) {

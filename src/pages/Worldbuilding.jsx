@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { getWorldbuildingList, RACES } from '../lib/worldbuilding'
@@ -26,14 +26,14 @@ export default function Worldbuilding() {
     })
 
     fetchPosts()
-  }, [activeFilter])
+  }, [activeFilter, fetchPosts])
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     setLoading(true)
     const data = await getWorldbuildingList(activeFilter)
     setPosts(data)
     setLoading(false)
-  }
+  }, [activeFilter])
 
   const formatDate = (dateString) => {
     const date = new Date(dateString)

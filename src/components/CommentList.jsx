@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { checkIsAdmin, adminDeleteComment } from '../lib/admin'
@@ -63,9 +63,9 @@ export default function CommentList({ postId, requireRace = false }) {
     return () => {
       subscription.unsubscribe()
     }
-  }, [postId])
+  }, [postId, fetchCurrentUserProfile, fetchComments])
 
-  const fetchCurrentUserProfile = async (userId) => {
+  const fetchCurrentUserProfile = useCallback(async (userId) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -78,9 +78,9 @@ export default function CommentList({ postId, requireRace = false }) {
     } catch (error) {
       console.error('获取用户资料失败:', error)
     }
-  }
+  }, [])
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('comments')
@@ -93,7 +93,7 @@ export default function CommentList({ postId, requireRace = false }) {
     } catch (error) {
       console.error('获取评论失败:', error)
     }
-  }
+  }, [postId])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
