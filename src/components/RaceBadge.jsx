@@ -1,3 +1,6 @@
+import { RACES } from '../lib/worldbuilding'
+import { RACE_AVATARS, RACE_COLORS } from '../lib/raceVisuals'
+
 // ============ 种族徽记（P4：统一 SVG 几何符号） ============
 const InsigniaBase = ({ children, className = 'w-5 h-5', style }) => (
   <svg className={className} style={style} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -57,4 +60,21 @@ const RACE_ICONS = {
 export const RaceInsignia = ({ race, className = 'w-5 h-5', color }) => {
   const Icon = RACE_ICONS[race] || RACE_ICONS.human
   return <Icon className={className} style={color ? { color } : undefined} />
+}
+
+// 种族头像（高清透明 PNG），无对应头像时回退到 SVG 徽记
+export const RaceAvatar = ({ race, className = 'w-16 h-16', fallbackClassName }) => {
+  const src = RACE_AVATARS[race]
+  if (!src) {
+    return <RaceInsignia race={race} className={fallbackClassName || className} color={RACE_COLORS[race]} />
+  }
+  return (
+    <img
+      src={src}
+      alt={(RACES[race]?.name || '种族') + '头像'}
+      className={`object-contain ${className}`}
+      loading="lazy"
+      decoding="async"
+    />
+  )
 }

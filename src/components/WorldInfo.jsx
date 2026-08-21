@@ -1,5 +1,5 @@
 import { RACES } from '../lib/worldbuilding'
-import { RaceInsignia } from './RaceBadge'
+import { RaceInsignia, RaceAvatar } from './RaceBadge'
 import { RACE_COLORS } from '../lib/raceVisuals'
 import { ClipboardList, BookOpen } from 'lucide-react'
 
@@ -40,10 +40,13 @@ export default function WorldInfo({ profile, showStory = false, compact = false 
           )}
           <div className="flex items-center justify-between">
             <span className="text-(--color-text-secondary) text-sm">种族</span>
-            <span className="font-medium text-(--color-text-primary) inline-flex items-center space-x-1.5">
-              <span className="inline-flex" style={{ color: RACE_COLORS[profile.race] }}>
-                <RaceInsignia race={profile.race} className="w-4 h-4" />
-              </span>
+            <span className="font-medium text-(--color-text-primary) inline-flex items-center space-x-2">
+              <RaceAvatar
+                race={profile.race}
+                className="w-8 h-8"
+                fallbackClassName="w-4 h-4"
+                style={{ filter: `drop-shadow(0 0 8px ${RACE_COLORS[profile.race]})` }}
+              />
               <span>{raceInfo.name}</span>
             </span>
           </div>

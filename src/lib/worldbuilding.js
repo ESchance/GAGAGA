@@ -2,12 +2,12 @@ import { supabase } from './supabase'
 
 // 种族配置
 export const RACES = {
-  human: { name: '人类', color: 'blue', description: '平衡型，适应力强' },
-  mech: { name: '机械族', color: 'gray', description: '理性冷静，擅长逻辑' },
-  alien: { name: '星际族', color: 'green', description: '拥有预知能力' },
-  elf: { name: '灵族', color: 'purple', description: '擅长魔法，感知力强' },
-  dragon: { name: '龙裔', color: 'red', description: '力量强大，威严庄重' },
-  void: { name: '虚空族', color: 'black', description: '神秘莫测，难以捉摸' }
+  human: { name: '人类', color: 'blue', description: '群星之子，以平凡之躯丈量宇宙。' },
+  mech: { name: '机械族', color: 'gray', description: '钢铁躯壳之下，涌动着求知的灵魂。' },
+  alien: { name: '星际族', color: 'green', description: '目光越过当下，投向群星尽头的命运。' },
+  elf: { name: '灵族', color: 'purple', description: '聆听星辰与生命的低语。' },
+  dragon: { name: '龙裔', color: 'red', description: '龙血在胸，燃尽万古长夜。' },
+  void: { name: '虚空族', color: 'black', description: '从虚无中来，向无尽处去。' }
 }
 
 // 种族称号映射
