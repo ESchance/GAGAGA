@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { memo, useCallback } from 'react'
-import { supabase } from '../lib/supabase'
-import { togglePinPost } from '../lib/admin'
+import { deletePost, togglePinPost } from '../lib/admin'
 import { useToast } from './Toast'
 import Avatar from './Avatar'
 import { Pin, MapPin, Trash2, Crown, MessageCircle } from 'lucide-react'
@@ -37,17 +36,11 @@ const PostCard = memo(function PostCard({ post, onDelete, onPinChange, isAdmin =
 
     if (!confirm(confirmMessage)) return
 
-    try {
-      const { error } = await supabase
-        .from('posts')
-        .delete()
-        .eq('id', post.id)
-
-      if (error) throw error
+    const success = await deletePost(post.id)
+    if (success) {
       if (onDelete) onDelete(post.id)
-    } catch (error) {
-      console.error('删除帖子失败:', error)
-      showToast('删除失败：' + error.message, 'error')
+    } else {
+      showToast('删除失败', 'error')
     }
   }, [currentUserId, isAdmin, post.id, post.user_id, onDelete, showToast])
 

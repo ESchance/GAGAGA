@@ -1,27 +1,22 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
+import { useAuth } from '../hooks/useAuth'
 import { validateTitle, validateContent } from '../lib/validation'
 import { Pin, FileText, Rocket, CheckCircle2, AlertCircle } from 'lucide-react'
 
 export default function CreatePost() {
+  const { user } = useAuth()
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
-  const [user, setUser] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
-    // 检查用户是否已登录
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        navigate('/login')
-        return
-      }
-      setUser(session.user)
-    })
-  }, [navigate])
+    if (!user) {
+      navigate('/login')
+    }
+  }, [user, navigate])
 
   const handleSubmit = async (e) => {
     e.preventDefault()

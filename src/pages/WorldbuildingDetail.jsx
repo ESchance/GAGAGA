@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
 import {
   getWorldbuildingDetail,
   getWorldbuildingComments,
@@ -10,7 +9,7 @@ import {
   deleteWorldbuilding,
   RACES
 } from '../lib/worldbuilding'
-import { checkIsAdmin } from '../lib/admin'
+import { useAuth } from '../hooks/useAuth'
 import { validateComment } from '../lib/validation'
 import { useToast } from '../components/Toast'
 import Avatar from '../components/Avatar'
@@ -28,9 +27,7 @@ export default function WorldbuildingDetail() {
   const [post, setPost] = useState(null)
   const [comments, setComments] = useState([])
   const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState(null)
-  const [userProfile, setUserProfile] = useState(null)
-  const [isAdmin, setIsAdmin] = useState(false)
+  const { user, profile: userProfile, isAdmin } = useAuth()
   const [liked, setLiked] = useState(false)
   const [newComment, setNewComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -48,34 +45,14 @@ export default function WorldbuildingDetail() {
     setComments(data)
   }, [id])
 
-  const fetchUserProfile = useCallback(async (userId) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('username, avatar_url, role, race_selected')
-        .eq('id', userId)
-        .single()
-
-      if (error) throw error
-      setUserProfile(data)
-    } catch (error) {
-      console.error('获取用户资料失败:', error)
-    }
-  }, [])
-
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        checkLiked(session.user.id, id).then(setLiked)
-        checkIsAdmin(session.user.id).then(setIsAdmin)
-        fetchUserProfile(session.user.id)
-      }
-    })
+    if (user) {
+      checkLiked(user.id, id).then(setLiked)
+    }
 
     fetchPost()
     fetchComments()
-  }, [id, fetchPost, fetchComments, fetchUserProfile])
+  }, [id, user, fetchPost, fetchComments])
 
   const handleLike = async () => {
     if (!user) {

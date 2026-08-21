@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
-import { getUsersList, toggleAdmin, deleteUser, checkIsSuperAdmin } from '../lib/admin'
+import { useAuth } from '../hooks/useAuth'
+import { getUsersList, toggleAdmin, deleteUser } from '../lib/admin'
 import Avatar from '../components/Avatar'
 import { useToast } from '../components/Toast'
 import { AlertTriangle, Trash2, Search } from 'lucide-react'
@@ -12,30 +12,20 @@ export default function UserManagement() {
   const { showToast } = useToast()
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState(null)
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false)
+  const { user, isSuperAdmin, loading: authLoading } = useAuth()
   const [searchTerm, setSearchTerm] = useState('')
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
   const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        navigate('/login')
-        return
-      }
-      setUser(session.user)
-
-      // 检查是否是超级管理员
-      checkIsSuperAdmin(session.user.id).then((isAdmin) => {
-        setIsSuperAdmin(isAdmin)
-      })
-
-      // 所有登录用户都可以访问，获取用户列表
-      fetchUsers()
-    })
-  }, [navigate])
+    if (authLoading) return
+    if (!user) {
+      navigate('/login')
+      return
+    }
+    fetchUsers()
+  }, [user, authLoading, navigate])
 
   const fetchUsers = async () => {
     setLoading(true)
@@ -163,7 +153,7 @@ export default function UserManagement() {
           ) : (
             filteredUsers.map((userData) => {
               const roleDisplay = getRoleDisplay(userData.role)
-              const isCurrentUser = userData.id === user?.id
+              const isCurrentUser = userData.id === user.id
 
               return (
                 <div key={userData.id} className={`grid gap-4 p-4 border-b border-(--color-border-light) hover:bg-(--color-bg-secondary) transition-colors items-center ${isSuperAdmin ? 'grid-cols-12' : 'grid-cols-10'}`}>
@@ -205,7 +195,7 @@ export default function UserManagement() {
           ) : (
             filteredUsers.map((userData) => {
               const roleDisplay = getRoleDisplay(userData.role)
-              const isCurrentUser = userData.id === user?.id
+              const isCurrentUser = userData.id === user.id
 
               return (
                 <div key={userData.id} className="glass-effect rounded-xl p-4 shadow-sm">

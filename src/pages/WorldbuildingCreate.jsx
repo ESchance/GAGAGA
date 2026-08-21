@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
+import { useAuth } from '../hooks/useAuth'
 import { createWorldbuilding, checkRaceSelected } from '../lib/worldbuilding'
 import { validateTitle, validateContent } from '../lib/validation'
 import { BookIcon, MaskIcon, GlobeIcon, LightbulbIcon, GalaxyIcon } from '../components/Icons'
@@ -15,7 +15,7 @@ const TYPE_OPTIONS = [
 
 export default function WorldbuildingCreate() {
   const navigate = useNavigate()
-  const [user, setUser] = useState(null)
+  const { user } = useAuth()
   const [type, setType] = useState('story')
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
@@ -25,20 +25,16 @@ export default function WorldbuildingCreate() {
   const [raceLoading, setRaceLoading] = useState(true)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        navigate('/login')
-        return
-      }
-      setUser(session.user)
-
-      // 检查是否已选择种族
-      checkRaceSelected(session.user.id).then((selected) => {
-        setRaceSelected(selected)
-        setRaceLoading(false)
-      })
+    if (!user) {
+      navigate('/login')
+      return
+    }
+    // 检查是否已选择种族
+    checkRaceSelected(user.id).then((selected) => {
+      setRaceSelected(selected)
+      setRaceLoading(false)
     })
-  }, [navigate])
+  }, [user, navigate])
 
   const handleSubmit = async (e) => {
     e.preventDefault()

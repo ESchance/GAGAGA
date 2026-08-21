@@ -1,67 +1,24 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { checkIsSuperAdmin } from '../lib/admin'
-import { useEffect, useState, useCallback } from 'react'
+import { useAuth } from '../hooks/useAuth'
+import { useState, useCallback } from 'react'
 import Avatar from './Avatar'
 import ThemeToggle from './ThemeToggle'
 import { PenLine } from 'lucide-react'
 import { GalaxyIcon } from './Icons'
 
 export default function Navbar() {
-  const [user, setUser] = useState(null)
-  const [profile, setProfile] = useState(null)
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false)
+  const { user, profile, isSuperAdmin } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const navigate = useNavigate()
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        fetchProfile(session.user.id)
-        checkIsSuperAdmin(session.user.id).then(setIsSuperAdmin)
-      }
-    })
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setUser(session?.user ?? null)
-        if (session?.user) {
-          await fetchProfile(session.user.id)
-          const superAdminStatus = await checkIsSuperAdmin(session.user.id)
-          setIsSuperAdmin(superAdminStatus)
-        } else {
-          setProfile(null)
-          setIsSuperAdmin(false)
-        }
-      }
-    )
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  const fetchProfile = async (userId) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('username, avatar_url, race')
-        .eq('id', userId)
-        .single()
-
-      if (error) throw error
-      setProfile(data)
-    } catch (error) {
-      console.error('获取用户资料失败:', error)
-    }
-  }
 
   const handleLogout = useCallback(async () => {
     try {
       await supabase.auth.signOut()
       setMobileMenuOpen(false)
       navigate('/login')
-    } catch (error) {
-      console.error('退出登录失败:', error)
+    } catch {
+      // 登出失败不阻断导航
     }
   }, [navigate])
 

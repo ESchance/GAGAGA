@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
-import { checkIsAdmin, adminDeleteComment } from '../lib/admin'
+import { deleteComment } from '../lib/admin'
 import { validateComment } from '../lib/validation'
 import { useToast } from './Toast'
 import Avatar from './Avatar'
@@ -11,27 +12,10 @@ import { RaceAvatar } from './RaceBadge'
 
 export default function CommentList({ postId, requireRace = false }) {
   const { showToast } = useToast()
+  const { user, profile: currentUserProfile, isAdmin } = useAuth()
   const [comments, setComments] = useState([])
   const [newComment, setNewComment] = useState('')
   const [loading, setLoading] = useState(false)
-  const [user, setUser] = useState(null)
-  const [currentUserProfile, setCurrentUserProfile] = useState(null)
-  const [isAdmin, setIsAdmin] = useState(false)
-
-  const fetchCurrentUserProfile = useCallback(async (userId) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('username, avatar_url, role, race_selected, race')
-        .eq('id', userId)
-        .single()
-
-      if (error) throw error
-      setCurrentUserProfile(data)
-    } catch (error) {
-      console.error('获取用户资料失败:', error)
-    }
-  }, [])
 
   const fetchComments = useCallback(async () => {
     try {
@@ -49,15 +33,6 @@ export default function CommentList({ postId, requireRace = false }) {
   }, [postId])
 
   useEffect(() => {
-    // 获取当前用户
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        fetchCurrentUserProfile(session.user.id)
-        checkIsAdmin(session.user.id).then(setIsAdmin)
-      }
-    })
-
     // 获取评论列表
     fetchComments()
 
@@ -95,7 +70,7 @@ export default function CommentList({ postId, requireRace = false }) {
     return () => {
       subscription.unsubscribe()
     }
-  }, [postId, fetchCurrentUserProfile, fetchComments])
+  }, [postId, fetchComments])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -152,7 +127,7 @@ export default function CommentList({ postId, requireRace = false }) {
 
     if (!confirm(confirmMessage)) return
 
-    const success = await adminDeleteComment(commentId)
+    const success = await deleteComment(commentId)
     if (success) {
       setComments(prev => prev.filter(c => c.id !== commentId))
     }

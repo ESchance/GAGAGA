@@ -1,15 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
+import { useAuth } from '../hooks/useAuth'
 import { useFocusTrap } from '../hooks/useFocusTrap'
 import { supabase } from '../lib/supabase'
-import { checkIsAdmin } from '../lib/admin'
 import { useToast } from './Toast'
 import { PenLine, FileText, Save } from 'lucide-react'
 
 export default function AnnouncementBar() {
   const { showToast } = useToast()
+  const { user, isAdmin } = useAuth()
   const [announcement, setAnnouncement] = useState(null)
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [user, setUser] = useState(null)
   const [showEditModal, setShowEditModal] = useState(false)
   const [editContent, setEditContent] = useState('')
   const [saving, setSaving] = useState(false)
@@ -17,13 +16,6 @@ export default function AnnouncementBar() {
 
   useEffect(() => {
     fetchAnnouncement()
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        checkIsAdmin(session.user.id).then(setIsAdmin)
-      }
-    })
   }, [])
 
   const fetchAnnouncement = async () => {
@@ -45,6 +37,12 @@ export default function AnnouncementBar() {
 
   const handleSave = async () => {
     if (!editContent.trim()) return
+
+    const contentCheck = validateContent(editContent)
+    if (!contentCheck.valid) {
+      showToast(contentCheck.message, 'error')
+      return
+    }
 
     setSaving(true)
     try {

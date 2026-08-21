@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
-import { checkIsAdmin } from '../lib/admin'
 import { getUserWorldInfo, updateCustomBackstory } from '../lib/worldbuilding'
 import PostCard from '../components/PostCard'
 import Avatar from '../components/Avatar'
@@ -19,12 +19,11 @@ export default function Profile() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { showToast } = useToast()
+  const { user, isAdmin } = useAuth()
   const [profile, setProfile] = useState(null)
   const [worldInfo, setWorldInfo] = useState(null)
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
-  const [currentUser, setCurrentUser] = useState(null)
-  const [isAdmin, setIsAdmin] = useState(false)
   const [showRaceSelector, setShowRaceSelector] = useState(false)
   const [editingBackstory, setEditingBackstory] = useState(false)
   const [backstoryText, setBackstoryText] = useState('')
@@ -43,14 +42,13 @@ export default function Profile() {
       setProfile(data)
 
       // 检查是否是自己的主页且未选择种族
-      const session = await supabase.auth.getSession()
-      if (session.data.session?.user?.id === id && !data.race_selected) {
+      if (user?.id === id && !data.race_selected) {
         setShowRaceSelector(true)
       }
     } catch (error) {
       console.error('获取用户信息失败:', error)
     }
-  }, [id])
+  }, [id, user])
 
   const fetchWorldInfo = useCallback(async () => {
     try {
@@ -94,14 +92,6 @@ export default function Profile() {
   }, [id])
 
   useEffect(() => {
-    // 获取当前登录用户
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setCurrentUser(session?.user ?? null)
-      if (session?.user) {
-        checkIsAdmin(session.user.id).then(setIsAdmin)
-      }
-    })
-
     fetchProfile()
     fetchWorldInfo()
     fetchUserPosts()
@@ -132,7 +122,7 @@ export default function Profile() {
     }
 
     const { selectRace } = await import('../lib/worldbuilding')
-    const result = await selectRace(currentUser.id, race)
+    const result = await selectRace(user.id, race)
 
     if (result.success) {
       setShowRaceSelector(false)
@@ -200,7 +190,7 @@ export default function Profile() {
     sentinel: <Crown size={14} />
   }
 
-  const isOwnProfile = currentUser && currentUser.id === id
+  const isOwnProfile = user && user.id === id
 
   return (
     <div className="page-container py-8">
@@ -423,7 +413,7 @@ export default function Profile() {
                     onDelete={handleDeletePost}
                     onPinChange={handlePinChange}
                     isAdmin={isAdmin}
-                    currentUserId={currentUser?.id}
+                    currentUserId={user?.id}
                   />
                 </div>
               ))}

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
-import { checkIsAdmin, togglePinPost } from '../lib/admin'
+import { togglePinPost } from '../lib/admin'
 import { RACES } from '../lib/worldbuilding'
 import CommentList from '../components/CommentList'
 import { Pin, Crown, Clock, Trash2, RefreshCw, Home, Inbox, AlertCircle } from 'lucide-react'
@@ -18,8 +19,7 @@ export default function PostDetail() {
   const [post, setPost] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [user, setUser] = useState(null)
-  const [isAdmin, setIsAdmin] = useState(false)
+  const { user, isAdmin } = useAuth()
 
   const fetchPost = useCallback(async () => {
     try {
@@ -47,15 +47,6 @@ export default function PostDetail() {
   }, [id])
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        checkIsAdmin(session.user.id).then(setIsAdmin)
-      }
-    }).catch(err => {
-      console.error('获取会话失败:', err)
-    })
-
     fetchPost()
   }, [id, fetchPost])
 

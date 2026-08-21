@@ -31,8 +31,7 @@ export const checkRaceSelected = async (userId) => {
 
     if (error) throw error
     return data?.race_selected || false
-  } catch (error) {
-    console.error('检查种族选择状态失败:', error)
+  } catch {
     return false
   }
 }
@@ -48,8 +47,7 @@ export const getUserRace = async (userId) => {
 
     if (error) throw error
     return data
-  } catch (error) {
-    console.error('获取用户种族信息失败:', error)
+  } catch {
     return null
   }
 }
@@ -85,8 +83,7 @@ export const getUserWorldInfo = async (userId) => {
       titleInfo: profile.race ? RACE_TITLES[profile.race] : null,
       defaultStory
     }
-  } catch (error) {
-    console.error('获取用户世界观信息失败:', error)
+  } catch {
     return null
   }
 }
@@ -99,8 +96,7 @@ export const generateMemberCode = async () => {
 
     if (error) throw error
     return data
-  } catch (error) {
-    console.error('生成编号失败:', error)
+  } catch {
     return null
   }
 }
@@ -173,7 +169,6 @@ export const selectRace = async (userId, race) => {
       storyId: story.id
     }
   } catch (error) {
-    console.error('选择种族失败:', error)
     return {
       success: false,
       error: error.message
@@ -191,8 +186,7 @@ export const updateCustomBackstory = async (userId, backstory) => {
 
     if (error) throw error
     return true
-  } catch (error) {
-    console.error('更新背景故事失败:', error)
+  } catch {
     return false
   }
 }
@@ -215,8 +209,7 @@ export const createWorldbuilding = async (userId, type, title, content) => {
 
     if (error) throw error
     return data
-  } catch (error) {
-    console.error('创建创作失败:', error)
+  } catch {
     return null
   }
 }
@@ -239,8 +232,7 @@ export const getWorldbuildingList = async (type = null, page = 1, limit = 10) =>
 
     if (error) throw error
     return data || []
-  } catch (error) {
-    console.error('获取创作列表失败:', error)
+  } catch {
     return []
   }
 }
@@ -256,8 +248,7 @@ export const getWorldbuildingDetail = async (id) => {
 
     if (error) throw error
     return data
-  } catch (error) {
-    console.error('获取创作详情失败:', error)
+  } catch {
     return null
   }
 }
@@ -285,8 +276,7 @@ export const deleteWorldbuilding = async (id, userId, isAdmin = false) => {
 
     if (error) throw error
     return true
-  } catch (error) {
-    console.error('删除创作失败:', error)
+  } catch {
     return false
   }
 }
@@ -316,8 +306,7 @@ export const updateWorldbuilding = async (id, userId, type, title, content) => {
 
     if (error) throw error
     return data
-  } catch (error) {
-    console.error('更新创作失败:', error)
+  } catch {
     return null
   }
 }
@@ -361,20 +350,15 @@ export const toggleLike = async (userId, worldbuildingId) => {
     }
 
     // 用 count 查询直接获取点赞数（head 只取计数，不拉取全表）
-    const { count, error: countError } = await supabase
+    const { count } = await supabase
       .from('worldbuilding_likes')
       .select('id', { count: 'exact', head: true })
       .eq('worldbuilding_id', worldbuildingId)
 
-    if (countError) {
-      console.error('获取点赞数失败:', countError)
-    }
-
     const likeCount = count ?? 0
 
     return { isLiked, count: likeCount }
-  } catch (error) {
-    console.error('点赞操作失败:', error)
+  } catch {
     return null
   }
 }
@@ -389,14 +373,9 @@ export const checkLiked = async (userId, worldbuildingId) => {
       .eq('worldbuilding_id', worldbuildingId)
       .limit(1)
 
-    if (error) {
-      // 如果是 406 错误或表不存在，返回 false
-      console.warn('检查点赞状态时出错:', error.message)
-      return false
-    }
+    if (error) return false
     return data && data.length > 0
-  } catch (error) {
-    console.warn('检查点赞状态失败:', error.message)
+  } catch {
     return false
   }
 }
@@ -419,8 +398,7 @@ export const addWorldbuildingComment = async (userId, worldbuildingId, content) 
     if (error) throw error
 
     return data
-  } catch (error) {
-    console.error('添加评论失败:', error)
+  } catch {
     return null
   }
 }
@@ -436,8 +414,7 @@ export const getWorldbuildingComments = async (worldbuildingId) => {
 
     if (error) throw error
     return data || []
-  } catch (error) {
-    console.error('获取评论列表失败:', error)
+  } catch {
     return []
   }
 }

@@ -18,14 +18,14 @@ const BADGE_SIZES = {
 }
 
 const GRADIENTS = [
-  'from-blue-500 to-purple-500',
-  'from-green-500 to-teal-500',
-  'from-purple-500 to-pink-500',
-  'from-pink-500 to-red-500',
-  'from-indigo-500 to-blue-500',
-  'from-yellow-500 to-orange-500',
-  'from-red-500 to-pink-500',
-  'from-teal-500 to-cyan-500'
+  'var(--avatar-gradient-1)',
+  'var(--avatar-gradient-2)',
+  'var(--avatar-gradient-3)',
+  'var(--avatar-gradient-4)',
+  'var(--avatar-gradient-5)',
+  'var(--avatar-gradient-6)',
+  'var(--avatar-gradient-7)',
+  'var(--avatar-gradient-8)'
 ]
 
 // 根据用户名生成渐变颜色（纯函数）
@@ -60,7 +60,7 @@ const Avatar = memo(function Avatar({ url, username, size = 'md', role = 'user',
             decoding="async"  // 异步解码
           />
         ) : (
-          <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold shadow-inner`}>
+          <div className="w-full h-full flex items-center justify-center text-white font-bold shadow-inner" style={{ background: gradient }}>
             {initial}
           </div>
         )}

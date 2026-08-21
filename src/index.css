@@ -142,6 +142,16 @@
   --color-type-character: #0EA5E9;
   --color-type-setting: #7C3AED;
   --color-type-idea: #D97706;
+
+  /* 头像渐变 */
+  --avatar-gradient-1: linear-gradient(135deg, #3B82F6 0%, #A855F7 100%);
+  --avatar-gradient-2: linear-gradient(135deg, #22C55E 0%, #14B8A6 100%);
+  --avatar-gradient-3: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
+  --avatar-gradient-4: linear-gradient(135deg, #EC4899 0%, #EF4444 100%);
+  --avatar-gradient-5: linear-gradient(135deg, #6366F1 0%, #3B82F6 100%);
+  --avatar-gradient-6: linear-gradient(135deg, #EAB308 0%, #F97316 100%);
+  --avatar-gradient-7: linear-gradient(135deg, #EF4444 0%, #EC4899 100%);
+  --avatar-gradient-8: linear-gradient(135deg, #14B8A6 0%, #06B6D4 100%);
 }
 
 /* ========================================
@@ -213,6 +223,16 @@
   --color-type-character: #38BDF8;
   --color-type-setting: #C4B5FD;
   --color-type-idea: #FBBF24;
+
+  /* 头像渐变（暗色保持可读性） */
+  --avatar-gradient-1: linear-gradient(135deg, #60A5FA 0%, #C084FC 100%);
+  --avatar-gradient-2: linear-gradient(135deg, #4ADE80 0%, #2DD4BF 100%);
+  --avatar-gradient-3: linear-gradient(135deg, #C084FC 0%, #F472B6 100%);
+  --avatar-gradient-4: linear-gradient(135deg, #F472B6 0%, #F87171 100%);
+  --avatar-gradient-5: linear-gradient(135deg, #818CF8 0%, #60A5FA 100%);
+  --avatar-gradient-6: linear-gradient(135deg, #FACC15 0%, #FB923C 100%);
+  --avatar-gradient-7: linear-gradient(135deg, #F87171 0%, #F472B6 100%);
+  --avatar-gradient-8: linear-gradient(135deg, #2DD4BF 0%, #22D3EE 100%);
 }
 
 /* ========================================

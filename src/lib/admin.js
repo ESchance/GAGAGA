@@ -11,8 +11,7 @@ export const checkIsAdmin = async (userId) => {
 
     if (error) throw error
     return data?.role === 'admin' || data?.role === 'superadmin'
-  } catch (error) {
-    console.error('检查管理员身份失败:', error)
+  } catch {
     return false
   }
 }
@@ -28,8 +27,7 @@ export const checkIsSuperAdmin = async (userId) => {
 
     if (error) throw error
     return data?.role === 'superadmin'
-  } catch (error) {
-    console.error('检查超级管理员身份失败:', error)
+  } catch {
     return false
   }
 }
@@ -45,8 +43,7 @@ export const getUserRole = async (userId) => {
 
     if (error) throw error
     return data?.role || 'user'
-  } catch (error) {
-    console.error('获取用户角色失败:', error)
+  } catch {
     return 'user'
   }
 }
@@ -61,8 +58,7 @@ export const getUsersList = async () => {
 
     if (error) throw error
     return data || []
-  } catch (error) {
-    console.error('获取用户列表失败:', error)
+  } catch {
     return []
   }
 }
@@ -80,7 +76,6 @@ export const toggleAdmin = async (userId, currentRole) => {
     if (error) throw error
     return { success: true, newRole }
   } catch (error) {
-    console.error('切换管理员身份失败:', error)
     return { success: false, error: error.message }
   }
 }
@@ -98,19 +93,11 @@ export const deleteUser = async (userId) => {
       target_user_id: userId
     })
 
-    if (error) {
-      console.error('❌ 删除用户 RPC 失败:', error)
-      throw error
-    }
-
-    if (data === false) {
-      console.error('❌ SQL 函数返回 false，可能存在外键约束问题')
-      throw new Error('删除失败：SQL 函数执行失败')
-    }
+    if (error) throw error
+    if (data === false) throw new Error('删除失败：SQL 函数执行失败')
 
     return { success: true }
   } catch (error) {
-    console.error('删除用户失败:', error)
     return { success: false, error: error.message }
   }
 }
@@ -125,14 +112,13 @@ export const togglePinPost = async (postId, isPinned) => {
 
     if (error) throw error
     return true
-  } catch (error) {
-    console.error('置顶帖子失败:', error)
+  } catch {
     return false
   }
 }
 
-// 管理员删除任意帖子
-export const adminDeletePost = async (postId) => {
+// 删除帖子（作者或管理员均可调用，最终权限由 RLS 控制）
+export const deletePost = async (postId) => {
   try {
     const { error } = await supabase
       .from('posts')
@@ -141,14 +127,13 @@ export const adminDeletePost = async (postId) => {
 
     if (error) throw error
     return true
-  } catch (error) {
-    console.error('删除帖子失败:', error)
+  } catch {
     return false
   }
 }
 
-// 管理员删除任意评论
-export const adminDeleteComment = async (commentId) => {
+// 删除评论（作者或管理员均可调用，最终权限由 RLS 控制）
+export const deleteComment = async (commentId) => {
   try {
     const { error } = await supabase
       .from('comments')
@@ -157,8 +142,7 @@ export const adminDeleteComment = async (commentId) => {
 
     if (error) throw error
     return true
-  } catch (error) {
-    console.error('删除评论失败:', error)
+  } catch {
     return false
   }
 }
