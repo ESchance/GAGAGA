@@ -7,8 +7,7 @@ import { useToast } from './Toast'
 import Avatar from './Avatar'
 import { LogIn, AlertTriangle, Send, MessageSquare, Clock, Crown } from 'lucide-react'
 import EmptyState from './EmptyState'
-import { RaceInsignia } from './RaceBadge'
-import { RACE_COLORS } from '../lib/raceVisuals'
+import { RaceAvatar } from './RaceBadge'
 
 export default function CommentList({ postId, requireRace = false }) {
   const { showToast } = useToast()
@@ -267,11 +266,14 @@ export default function CommentList({ postId, requireRace = false }) {
                         {comment.profiles?.role === 'admin' && (
                           <span className="sm:hidden text-xs" title="管理员"><Crown size={14} /></span>
                         )}
-                        {comment.profiles?.member_code && (
-                          <span className="text-xs text-(--color-text-tertiary) inline-flex items-center space-x-1">
-                            <span className="inline-flex" style={{ color: RACE_COLORS[comment.profiles?.race] }}>
-                              <RaceInsignia race={comment.profiles?.race} className="w-3.5 h-3.5" />
-                            </span>
+                       {comment.profiles?.member_code && (
+                         <span className="text-xs text-(--color-text-tertiary) inline-flex items-center space-x-1">
+                            <RaceAvatar
+                              race={comment.profiles?.race}
+                              size="sm"
+                              fallbackClassName="w-3.5 h-3.5"
+                              style={{ filter: `drop-shadow(0 0 5px rgba(255,255,255,0.3))` }}
+                            />
                             <span className="member-code">{comment.profiles.member_code}</span>
                           </span>
                         )}

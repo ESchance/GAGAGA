@@ -62,17 +62,27 @@ export const RaceInsignia = ({ race, className = 'w-5 h-5', color }) => {
   return <Icon className={className} style={color ? { color } : undefined} />
 }
 
+const SIZE_CLASSES = {
+  sm: 'w-5 h-5 rounded-full overflow-hidden object-cover',
+  md: 'w-10 h-10 object-contain',
+  lg: 'w-28 h-28 object-contain',
+  xl: 'w-full max-w-[320px] object-contain'
+}
+
 // 种族头像（高清透明 PNG），无对应头像时回退到 SVG 徽记
-export const RaceAvatar = ({ race, className = 'w-16 h-16', fallbackClassName }) => {
+export const RaceAvatar = ({ race, size, className, fallbackClassName, style }) => {
   const src = RACE_AVATARS[race]
+  const sizeClasses = size ? SIZE_CLASSES[size] : null
+  const classes = `${sizeClasses || className || 'w-16 h-16'} ${size ? className || '' : ''}`.trim()
   if (!src) {
-    return <RaceInsignia race={race} className={fallbackClassName || className} color={RACE_COLORS[race]} />
+    return <RaceInsignia race={race} className={fallbackClassName || classes} color={RACE_COLORS[race]} style={style} />
   }
   return (
     <img
       src={src}
       alt={(RACES[race]?.name || '种族') + '头像'}
-      className={`object-contain ${className}`}
+      className={classes}
+      style={style}
       loading="lazy"
       decoding="async"
     />

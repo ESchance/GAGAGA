@@ -12,8 +12,7 @@ import { useToast } from '../components/Toast'
 import { Crown, FileText, PenLine, Save, BarChart3, Lightbulb, BookOpen, Rocket, User } from 'lucide-react'
 import Skeleton from '../components/Skeleton'
 import EmptyState from '../components/EmptyState'
-import { RaceInsignia } from '../components/RaceBadge'
-import { RACE_COLORS } from '../lib/raceVisuals'
+import { RaceAvatar } from '../components/RaceBadge'
 import { deriveAchievements } from '../lib/achievements'
 
 export default function Profile() {
@@ -248,10 +247,13 @@ export default function Profile() {
                     {worldInfo.member_code ? (
                       <>
                         <span className="member-code text-[var(--color-secondary)] font-bold">{worldInfo.member_code}</span>
-                        <span className="inline-flex items-center space-x-1.5 text-(--color-text-secondary)">
-                          <span className="inline-flex" style={{ color: RACE_COLORS[worldInfo.race] }}>
-                            <RaceInsignia race={worldInfo.race} className="w-4 h-4" />
-                          </span>
+                       <span className="inline-flex items-center space-x-1.5 text-(--color-text-secondary)">
+                          <RaceAvatar
+                            race={worldInfo.race}
+                            size="sm"
+                            fallbackClassName="w-4 h-4"
+                            style={{ filter: `drop-shadow(0 0 6px rgba(255,255,255,0.3))` }}
+                          />
                           <span>{worldInfo.raceInfo?.name}</span>
                         </span>
                         {worldInfo.title && (

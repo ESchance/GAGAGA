@@ -20,6 +20,7 @@ const WorldbuildingCreate = lazy(() => import('./pages/WorldbuildingCreate'))
 const WorldbuildingDetail = lazy(() => import('./pages/WorldbuildingDetail'))
 const WorldbuildingEdit = lazy(() => import('./pages/WorldbuildingEdit'))
 const UserManagement = lazy(() => import('./pages/UserManagement'))
+const Races = lazy(() => import('./pages/Races'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
 // 加载状态组件
@@ -47,8 +48,9 @@ function App() {
             <div className="flex-1">
               <Suspense fallback={<LoadingFallback />}>
                 <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
+               <Route path="/" element={<Home />} />
+                <Route path="/races" element={<Races />} />
+               <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/create" element={<CreatePost />} />
                 <Route path="/post/:id" element={<PostDetail />} />

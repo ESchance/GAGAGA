@@ -15,8 +15,7 @@ import { validateComment } from '../lib/validation'
 import { useToast } from '../components/Toast'
 import Avatar from '../components/Avatar'
 import { BookIcon, MaskIcon, GlobeIcon, LightbulbIcon } from '../components/Icons'
-import { RaceInsignia } from '../components/RaceBadge'
-import { RACE_COLORS } from '../lib/raceVisuals'
+import { RaceAvatar } from '../components/RaceBadge'
 import { TYPE_COLORS } from '../lib/typeVisuals'
 import { Heart, MessageCircle, PenLine, Trash2, LogIn, AlertTriangle, Send, MessageSquare, Inbox, FileText } from 'lucide-react'
 import Skeleton from '../components/Skeleton'
@@ -247,11 +246,14 @@ export default function WorldbuildingDetail() {
                   </span>
                 )}
               </div>
-              {post.profiles?.member_code && (
-                <div className="flex items-center space-x-2 text-xs text-(--color-text-tertiary)">
-                  <span className="inline-flex" style={{ color: RACE_COLORS[post.profiles?.race] }}>
-                    <RaceInsignia race={post.profiles?.race} className="w-3.5 h-3.5" />
-                  </span>
+             {post.profiles?.member_code && (
+               <div className="flex items-center space-x-2 text-xs text-(--color-text-tertiary)">
+                  <RaceAvatar
+                    race={post.profiles?.race}
+                    size="sm"
+                    fallbackClassName="w-3.5 h-3.5"
+                    style={{ filter: `drop-shadow(0 0 5px rgba(255,255,255,0.3))` }}
+                  />
                   <span className="member-code">{post.profiles.member_code}</span>
                   <span>{RACES[post.profiles?.race]?.name || '人类'}</span>
                 </div>
@@ -385,14 +387,17 @@ export default function WorldbuildingDetail() {
                         <span className="font-semibold text-(--color-text-primary)">
                           {comment.profiles?.username || '匿名用户'}
                         </span>
-                        {comment.profiles?.member_code && (
-                          <span className="text-xs text-(--color-text-tertiary) inline-flex items-center space-x-1">
-                            <span className="inline-flex" style={{ color: RACE_COLORS[comment.profiles?.race] }}>
-                              <RaceInsignia race={comment.profiles?.race} className="w-3.5 h-3.5" />
-                            </span>
-                            <span className="member-code">{comment.profiles.member_code}</span>
-                          </span>
-                        )}
+                       {comment.profiles?.member_code && (
+                         <span className="text-xs text-(--color-text-tertiary) inline-flex items-center space-x-1">
+                            <RaceAvatar
+                              race={comment.profiles?.race}
+                              size="sm"
+                              fallbackClassName="w-3.5 h-3.5"
+                              style={{ filter: `drop-shadow(0 0 5px rgba(255,255,255,0.3))` }}
+                            />
+                           <span className="member-code">{comment.profiles.member_code}</span>
+                         </span>
+                       )}
                         <span className="text-xs text-(--color-text-tertiary)">
                           {formatDate(comment.created_at)}
                         </span>

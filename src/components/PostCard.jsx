@@ -5,8 +5,7 @@ import { togglePinPost } from '../lib/admin'
 import { useToast } from './Toast'
 import Avatar from './Avatar'
 import { Pin, MapPin, Trash2, Crown, MessageCircle } from 'lucide-react'
-import { RaceInsignia } from './RaceBadge'
-import { RACE_COLORS } from '../lib/raceVisuals'
+import { RaceAvatar } from './RaceBadge'
 
 const formatDate = (dateString) => {
   const date = new Date(dateString)
@@ -108,14 +107,17 @@ const PostCard = memo(function PostCard({ post, onDelete, onPinChange, isAdmin =
                   <span className="sm:hidden text-xs" title="管理员"><Crown size={14} /></span>
                 )}
               </div>
-              {post.profiles?.member_code && (
-                <div className="flex items-center space-x-1.5 text-xs text-(--color-text-tertiary)">
-                  <span className="inline-flex" style={{ color: RACE_COLORS[post.profiles?.race] }}>
-                    <RaceInsignia race={post.profiles?.race} className="w-3.5 h-3.5" />
-                  </span>
-                  <span className="member-code">{post.profiles.member_code}</span>
-                </div>
-              )}
+               {post.profiles?.member_code && (
+                 <div className="flex items-center space-x-1.5 text-xs text-(--color-text-tertiary)">
+                    <RaceAvatar
+                      race={post.profiles?.race}
+                      size="sm"
+                      fallbackClassName="w-3.5 h-3.5"
+                      style={{ filter: `drop-shadow(0 0 5px rgba(255,255,255,0.3))` }}
+                    />
+                    <span className="member-code">{post.profiles.member_code}</span>
+                  </div>
+                )}
             </div>
           </div>
 

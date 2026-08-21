@@ -82,11 +82,12 @@ export default function RaceSelector({ onSelect }) {
                     <div className="absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none"
                       style={{ boxShadow: `0 0 46px -14px ${color}` }}
                     />
-                    <RaceAvatar
-                      race={key}
-                      className="mx-auto mb-4 h-28 w-28 object-contain transition-transform duration-300 group-hover:scale-105"
+                   <RaceAvatar
+                     race={key}
+                      size="lg"
+                      className="mx-auto mb-4 transition-transform duration-300 group-hover:scale-105"
                       style={{ filter: `drop-shadow(0 0 18px ${color})` }}
-                    />
+                   />
                     <div className="text-white font-bold text-lg tracking-wide">{race.name}</div>
                     <div className="text-[#8e9aae] text-xs mt-2 leading-relaxed line-clamp-2">
                       {race.description}
@@ -108,11 +109,12 @@ export default function RaceSelector({ onSelect }) {
                     className="absolute inset-[15%] rounded-full blur-[56px] opacity-30"
                     style={{ background: getRaceColor(selectedRace) }}
                   />
-                  <RaceAvatar
-                    race={selectedRace}
-                    className="relative z-10 w-full max-w-[260px] object-contain"
+                 <RaceAvatar
+                   race={selectedRace}
+                    size="xl"
+                    className="relative z-10"
                     style={{ filter: `drop-shadow(0 0 34px ${getRaceColor(selectedRace)})` }}
-                  />
+                 />
                 </div>
                 <div>
                   <h3

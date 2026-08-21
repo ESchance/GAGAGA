@@ -85,8 +85,20 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-1">
             {user ? (
               <>
+               <NavLink
+                 to="/worldbuilding"
+                 className={({ isActive }) =>
+                   `px-3 py-1.5 rounded-md transition-all duration-150 text-sm ${
+                     isActive
+                       ? 'text-[var(--color-primary)] font-medium nav-link-active'
+                       : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-tertiary)]'
+                   }`
+                 }
+               >
+                 创作
+               </NavLink>
                 <NavLink
-                  to="/worldbuilding"
+                  to="/races"
                   className={({ isActive }) =>
                     `px-3 py-1.5 rounded-md transition-all duration-150 text-sm ${
                       isActive
@@ -95,9 +107,9 @@ export default function Navbar() {
                     }`
                   }
                 >
-                  创作
+                  种族
                 </NavLink>
-                <Link
+               <Link
                   to="/create"
                   className="btn btn-primary btn-sm"
                 >
@@ -178,8 +190,21 @@ export default function Navbar() {
                   <Avatar url={profile?.avatar_url} username={profile?.username} size="sm" race={profile?.race} />
                   <span className="text-[var(--color-text-primary)] text-sm">{profile?.username}</span>
                 </Link>
+               <NavLink
+                 to="/worldbuilding"
+                 className={({ isActive }) =>
+                   `block px-3 py-2 rounded-md transition-colors text-sm ${
+                     isActive
+                       ? 'text-[var(--color-primary)] font-medium nav-link-active'
+                       : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)]'
+                   }`
+                 }
+                 onClick={() => setMobileMenuOpen(false)}
+               >
+                 创作
+               </NavLink>
                 <NavLink
-                  to="/worldbuilding"
+                  to="/races"
                   className={({ isActive }) =>
                     `block px-3 py-2 rounded-md transition-colors text-sm ${
                       isActive
@@ -189,9 +214,9 @@ export default function Navbar() {
                   }
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  创作
+                  种族
                 </NavLink>
-                <Link
+               <Link
                   to="/create"
                   className="flex items-center gap-1.5 px-3 py-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] rounded-md transition-colors text-sm"
                   onClick={() => setMobileMenuOpen(false)}

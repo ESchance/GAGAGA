@@ -1,5 +1,5 @@
 import { RACES } from '../lib/worldbuilding'
-import { RaceInsignia, RaceAvatar } from './RaceBadge'
+import { RaceAvatar } from './RaceBadge'
 import { RACE_COLORS } from '../lib/raceVisuals'
 import { ClipboardList, BookOpen } from 'lucide-react'
 
@@ -9,12 +9,15 @@ export default function WorldInfo({ profile, showStory = false, compact = false 
   const raceInfo = RACES[profile.race] || RACES.human
 
   // 紧凑模式 - 用于帖子/评论
-  if (compact) {
-    return (
-      <div className="flex items-center space-x-2 text-xs">
-        <span className="inline-flex" style={{ color: RACE_COLORS[profile.race] }}>
-          <RaceInsignia race={profile.race} className="w-4 h-4" />
-        </span>
+ if (compact) {
+   return (
+     <div className="flex items-center space-x-2 text-xs">
+        <RaceAvatar
+          race={profile.race}
+          size="sm"
+          fallbackClassName="w-4 h-4"
+          style={{ filter: `drop-shadow(0 0 6px ${RACE_COLORS[profile.race]})` }}
+        />
         <span className="text-(--color-text-tertiary)">{raceInfo.name}</span>
         {profile.member_code && (
           <span className="member-code text-(--color-text-tertiary)">{profile.member_code}</span>
@@ -41,12 +44,12 @@ export default function WorldInfo({ profile, showStory = false, compact = false 
           <div className="flex items-center justify-between">
             <span className="text-(--color-text-secondary) text-sm">种族</span>
             <span className="font-medium text-(--color-text-primary) inline-flex items-center space-x-2">
-              <RaceAvatar
-                race={profile.race}
-                className="w-8 h-8"
+             <RaceAvatar
+               race={profile.race}
+                size="md"
                 fallbackClassName="w-4 h-4"
-                style={{ filter: `drop-shadow(0 0 8px ${RACE_COLORS[profile.race]})` }}
-              />
+                style={{ filter: `drop-shadow(0 0 10px ${RACE_COLORS[profile.race]})` }}
+             />
               <span>{raceInfo.name}</span>
             </span>
           </div>

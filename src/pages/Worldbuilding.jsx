@@ -4,8 +4,7 @@ import { supabase } from '../lib/supabase'
 import { getWorldbuildingList } from '../lib/worldbuilding'
 import Avatar from '../components/Avatar'
 import { GalaxyIcon, BookIcon, MaskIcon, GlobeIcon, LightbulbIcon, StarIcon } from '../components/Icons'
-import { RaceInsignia } from '../components/RaceBadge'
-import { RACE_COLORS } from '../lib/raceVisuals'
+import { RaceAvatar } from '../components/RaceBadge'
 import { TYPE_COLORS } from '../lib/typeVisuals'
 import { PenLine, Heart, MessageCircle, FileText } from 'lucide-react'
 import Skeleton from '../components/Skeleton'
@@ -208,11 +207,14 @@ export default function Worldbuilding() {
                           </span>
                         )}
                       </div>
-                      {post.profiles?.member_code && (
-                        <div className="flex items-center space-x-2 text-xs text-[var(--color-text-tertiary)]">
-                          <span className="inline-flex" style={{ color: RACE_COLORS[post.profiles?.race] }}>
-                            <RaceInsignia race={post.profiles?.race} className="w-3.5 h-3.5" />
-                          </span>
+                     {post.profiles?.member_code && (
+                       <div className="flex items-center space-x-2 text-xs text-[var(--color-text-tertiary)]">
+                          <RaceAvatar
+                            race={post.profiles?.race}
+                            size="sm"
+                            fallbackClassName="w-3.5 h-3.5"
+                            style={{ filter: `drop-shadow(0 0 5px rgba(255,255,255,0.3))` }}
+                          />
                           <span className="member-code">{post.profiles.member_code}</span>
                         </div>
                       )}

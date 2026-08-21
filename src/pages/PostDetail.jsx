@@ -9,8 +9,7 @@ import Skeleton from '../components/Skeleton'
 import EmptyState from '../components/EmptyState'
 import Avatar from '../components/Avatar'
 import { useToast } from '../components/Toast'
-import { RaceInsignia } from '../components/RaceBadge'
-import { RACE_COLORS } from '../lib/raceVisuals'
+import { RaceAvatar } from '../components/RaceBadge'
 
 export default function PostDetail() {
   const { id } = useParams()
@@ -242,11 +241,14 @@ export default function PostDetail() {
                     <span className="sm:hidden text-xs" title="管理员"><Crown size={14} /></span>
                   )}
                 </div>
-                {post.profiles?.member_code ? (
-                  <div className="flex items-center space-x-2 text-xs text-(--color-text-tertiary)">
-                    <span className="inline-flex" style={{ color: RACE_COLORS[post.profiles?.race] }}>
-                      <RaceInsignia race={post.profiles?.race} className="w-3.5 h-3.5" />
-                    </span>
+               {post.profiles?.member_code ? (
+                 <div className="flex items-center space-x-2 text-xs text-(--color-text-tertiary)">
+                    <RaceAvatar
+                      race={post.profiles?.race}
+                      size="sm"
+                      fallbackClassName="w-3.5 h-3.5"
+                      style={{ filter: `drop-shadow(0 0 5px rgba(255,255,255,0.3))` }}
+                    />
                     <span className="member-code">{post.profiles.member_code}</span>
                     <span>{RACES[post.profiles?.race]?.name || '人类'}</span>
                   </div>
