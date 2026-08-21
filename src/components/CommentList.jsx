@@ -246,8 +246,8 @@ export default function CommentList({ postId, requireRace = false }) {
                             <RaceAvatar
                               race={comment.profiles?.race}
                               size="sm"
-                              fallbackClassName="w-3.5 h-3.5"
-                              style={{ filter: `drop-shadow(0 0 5px rgba(255,255,255,0.3))` }}
+                              fallbackClassName="w-4 h-4"
+                              style={{ filter: `drop-shadow(0 0 4px rgba(255,255,255,0.25))` }}
                             />
                             <span className="member-code">{comment.profiles.member_code}</span>
                           </span>

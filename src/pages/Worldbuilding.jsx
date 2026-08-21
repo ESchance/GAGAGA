@@ -82,7 +82,7 @@ export default function Worldbuilding() {
         {/* 页面标题 */}
         <div className="text-center mb-8 animate-fade-in-up">
           <div className="flex items-center justify-center space-x-3 mb-2">
-            <GalaxyIcon className="w-10 h-10 text-[var(--color-primary)]" />
+            <GalaxyIcon className="w-8 h-8 text-[var(--color-primary)]" />
             <h1 className="text-4xl font-bold text-[var(--color-text-primary)]">
               嘎宇宙创作
             </h1>
@@ -212,8 +212,8 @@ export default function Worldbuilding() {
                           <RaceAvatar
                             race={post.profiles?.race}
                             size="sm"
-                            fallbackClassName="w-3.5 h-3.5"
-                            style={{ filter: `drop-shadow(0 0 5px rgba(255,255,255,0.3))` }}
+                            fallbackClassName="w-4 h-4"
+                            style={{ filter: `drop-shadow(0 0 4px rgba(255,255,255,0.25))` }}
                           />
                           <span className="member-code">{post.profiles.member_code}</span>
                         </div>

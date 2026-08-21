@@ -3,7 +3,7 @@ import { memo, useCallback } from 'react'
 import { deletePost, togglePinPost } from '../lib/admin'
 import { useToast } from './Toast'
 import Avatar from './Avatar'
-import { Pin, MapPin, Trash2, Crown, MessageCircle } from 'lucide-react'
+import { Pin, Trash2, Crown, MessageCircle } from 'lucide-react'
 import { RaceAvatar } from './RaceBadge'
 
 const formatDate = (dateString) => {
@@ -61,8 +61,8 @@ const PostCard = memo(function PostCard({ post, onDelete, onPinChange, isAdmin =
       <Link to={`/post/${post.id}`} className="block">
         {/* 置顶标记 */}
         {post.is_pinned && (
-          <div className="inline-flex items-center mb-2 px-2 py-0.5 bg-(--color-warning)/15 text-(--color-warning) text-xs font-medium rounded">
-            <Pin size={14} className="mr-1.5" /> 置顶
+          <div className="badge-pinned">
+            <Pin size={13} className="mr-1" /> 置顶
           </div>
         )}
 
@@ -105,8 +105,8 @@ const PostCard = memo(function PostCard({ post, onDelete, onPinChange, isAdmin =
                     <RaceAvatar
                       race={post.profiles?.race}
                       size="sm"
-                      fallbackClassName="w-3.5 h-3.5"
-                      style={{ filter: `drop-shadow(0 0 5px rgba(255,255,255,0.3))` }}
+                      fallbackClassName="w-4 h-4"
+                      style={{ filter: `drop-shadow(0 0 4px rgba(255,255,255,0.25))` }}
                     />
                     <span className="member-code">{post.profiles.member_code}</span>
                   </div>
@@ -129,7 +129,7 @@ const PostCard = memo(function PostCard({ post, onDelete, onPinChange, isAdmin =
                 className="text-[var(--color-text-tertiary)] hover:text-[var(--color-primary)] transition-colors p-1"
                 title={post.is_pinned ? '取消置顶' : '置顶'}
               >
-                {post.is_pinned ? <Pin size={16} className="fill-current" /> : <MapPin size={16} />}
+                {post.is_pinned ? <Pin size={16} className="fill-current text-[var(--color-primary)]" /> : <Pin size={16} />}
               </button>
             )}
 

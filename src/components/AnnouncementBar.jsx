@@ -94,7 +94,7 @@ export default function AnnouncementBar() {
   return (
     <>
       {/* 公告栏 - 滚动显示 */}
-      <div className="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white py-2.5 overflow-hidden">
+      <div className="announcement-bar">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex items-center">
             {/* 滚动内容 */}
@@ -108,7 +108,7 @@ export default function AnnouncementBar() {
             {isAdmin && (
               <button
                 onClick={openEditModal}
-                className="flex-shrink-0 ml-4 px-3 py-1 text-white text-opacity-80 hover:text-opacity-100 hover:bg-(--color-surface) hover:bg-opacity-20 rounded-full text-xs transition-all duration-200 inline-flex items-center"
+                className="flex-shrink-0 ml-4 px-3 py-1 text-current/80 hover:text-current hover:bg-[var(--color-bg-tertiary)]/50 rounded-full text-xs transition-all duration-200 inline-flex items-center"
               >
                 <PenLine size={14} className="mr-1" /> 编辑
               </button>

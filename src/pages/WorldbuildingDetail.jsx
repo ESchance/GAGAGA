@@ -228,8 +228,8 @@ export default function WorldbuildingDetail() {
                   <RaceAvatar
                     race={post.profiles?.race}
                     size="sm"
-                    fallbackClassName="w-3.5 h-3.5"
-                    style={{ filter: `drop-shadow(0 0 5px rgba(255,255,255,0.3))` }}
+                    fallbackClassName="w-4 h-4"
+                    style={{ filter: `drop-shadow(0 0 4px rgba(255,255,255,0.25))` }}
                   />
                   <span className="member-code">{post.profiles.member_code}</span>
                   <span>{RACES[post.profiles?.race]?.name || '人类'}</span>
@@ -369,8 +369,8 @@ export default function WorldbuildingDetail() {
                             <RaceAvatar
                               race={comment.profiles?.race}
                               size="sm"
-                              fallbackClassName="w-3.5 h-3.5"
-                              style={{ filter: `drop-shadow(0 0 5px rgba(255,255,255,0.3))` }}
+                            fallbackClassName="w-4 h-4"
+                            style={{ filter: `drop-shadow(0 0 4px rgba(255,255,255,0.25))` }}
                             />
                            <span className="member-code">{comment.profiles.member_code}</span>
                          </span>

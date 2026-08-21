@@ -100,6 +100,7 @@
   /* 语义色 */
   --color-success: #10B981;
   --color-warning: #F59E0B;
+  --color-warning-text: #B45309;
   --color-error: #EF4444;
   --color-info: #3B82F6;
 
@@ -167,6 +168,7 @@
 
   /* 语义色 - hover（暗色提亮） */
   --color-success-hover: #34D399;
+  --color-warning-text: #FDE68A;
   --color-warning-hover: #FBBF24;
   --color-error-hover: #F87171;
   --color-info-hover: #60A5FA;
@@ -918,6 +920,37 @@ textarea:focus-visible {
 [data-theme="dark"] .space-vignette,
 .dark .space-vignette {
   opacity: 1;
+}
+
+/* 置顶徽章 */
+.badge-pinned {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding: 0.125rem 0.5rem;
+  background-color: color-mix(in srgb, var(--color-warning) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-warning) 40%, transparent);
+  color: var(--color-warning-text);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  line-height: 1.25;
+}
+
+/* 公告栏 */
+.announcement-bar {
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  color: #fff;
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .announcement-bar,
+.dark .announcement-bar {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
 }
 
 /* 展示字体工具类 */
